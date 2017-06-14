@@ -65,6 +65,7 @@ g.print_graph()
 adjmat = np.array([[0,0,0,1,0,0],[0,0,1,0,0,0],[0,1,1,1,1,0],[1,0,1,0,0,0],[0,0,1,0,0,0],[0,0,0,0,0,0]])
 print(adjmat)
 
+#Need to figure out a method to transform the printed adjacency matrix to a numpy matrix. Then all we need is an nxn matrix of rate coefficents and whatever dynamics we use!
 
     
     
