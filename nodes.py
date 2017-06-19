@@ -45,7 +45,12 @@ def value_vector(nodes):
     '''take a list of nodes and return a list contain their value'''
     value = [i.value for i in nodes]
     return value
+
+def update_states(init_state, functions):
+    '''given a list of intital_value, and functions, return a list of new_value'''
+    for i in init_state:
         
+            
 
 def simulation(nodes,functions):
     '''take a list of nodes and a list of functions, then update the value for 
@@ -55,10 +60,10 @@ def simulation(nodes,functions):
     rate_changes = []
     t = 0
     while t <= 1000:
-        new_state = #give the new state if not in a steady state
+        new_state = update_state(states[-1],functions)#give the new state if not in a steady state
         bo,ind = steady_state(new_state,states)
         if bo:
-            return states[ind]# return different thing depanded on what we need later on 
+            return (states,ind)]# return different things depanding on what we need later on 
         states.append(new_state)#add the new state to existing states
         t +=1
     print('no steady state has been found in',t,'times, None is returned')
@@ -75,3 +80,5 @@ dx1 = k11*x1.value + k12 *(x1.value + x2.value)
 dx2 = k21*x2.value + k22 *(x1.value + x2.value)
 dx3 = k31*x3.value + k32 *(x1.value + x2.value + x3.value)
 fuctions = []
+
+food_web = []

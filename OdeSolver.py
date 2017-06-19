@@ -3,9 +3,11 @@
 """
 Created on Mon Jun 19 10:32:49 2017
 
-@author: zdiamond
+@author: zdiamond zhaoqi wang
 """
 #Solves scalar and vector 1st order ODEs by Forward Euler's Method. 
+import matplotlib.pyplot as plt
+
 class OdeSolver(object):
     
     import numpy as np
@@ -29,7 +31,7 @@ class OdeSolver(object):
         if self.neq == 1: #Scalar
             self.u = np.zeros(n)
         else:
-            self.u = np.zeros((n.self.neq)) #Vector
+            self.u = np.zeros((n,self.neq)) #Vector
         
         self.u[0] = self.U0
         
@@ -48,7 +50,7 @@ def f(u,t):
     return u
 
 solver = OdeSolver(f)
-solver.set_initial_condition(1.0)
+solver.set_initial_condition(np.array([1.0,2.0,3.0]))
 tp = np.linspace(0,5,100)
 u,t = solver.solve(tp)
-plot(t,u)
+print(u)
