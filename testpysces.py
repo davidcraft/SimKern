@@ -73,12 +73,19 @@ def sim_plot(pscfilename):
 #cc2_mod.doState()
 #cc2_mod.doSimPlot(end=10.0,points=210,plot='species', fmt='lines',filename = None)
 
-#sim_plot('sen2.psc')
+
 convert('/Users/taylorsorenson/inputs/apop243.xml','apop243.psc')
-apop2 = sim_plot('apop243.psc')
 convert('/Users/taylorsorenson/inputs/apop005.xml','apop005.psc')
+
+#Simulate Apoptosis Models
+apop2 = sim_plot('apop243.psc')
 apop5 = sim_plot('apop005.psc')
-sen2 = sim_plot('sen2.psc')
+
+#Simulate Senescene Models
 sen1 = sim_plot('sen1.psc')
+sen2 = sim_plot('sen2.psc')
+sen2_mod = sim_plot('2sen.psc')
+
+#Simulate Cell Cycle Models
 cc1 = sim_plot('cellcycle1.psc')
 cc2 = sim_plot('cellcycle2.psc')
