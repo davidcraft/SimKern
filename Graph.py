@@ -15,18 +15,20 @@ class Node(object):
         self.value = value
         self.change_rate = change_rate
 
-    def change_val(self,new_vlaue):
-        self.value = new_vlaue
+    def change_val(self, new_value):
+        self.value = new_value
     
     def up_date(self):
+        pass
         
         
         
 class Function(object):
     def __init__(self,left,function):
-        self.node = node
+        self.node = left # is this correct?
         self.fucntion = function
     def delete_node(seld,d_node):
+        pass
         #delete a node from a connection 
 #
 #class Graph(object):
@@ -81,7 +83,7 @@ def simulation(nodes,functions):
     values = []
     rate_changes = []
     for i in nodes:
-        value.append(i.value)
+        values.append(i.value)
         
         
 #
