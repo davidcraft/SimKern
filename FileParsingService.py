@@ -69,8 +69,8 @@ class FileParsingService(object):
         elif distribution == SupportedDistributions.POISSON:
             return self.generateRandomValueFromPoissonDistribution(params[0], params[1])
 
-    def generateRandomValueFromUniformDistribution(self, min, max):
-        return random.uniform(min, max)
+    def generateRandomValueFromUniformDistribution(self, mini, maxi):
+        return random.uniform(mini, maxi)
 
     def generateRandomValueFromGaussianDistribution(self, mu, sigma):
         return random.gauss(mu, sigma)
