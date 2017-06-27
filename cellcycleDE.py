@@ -86,7 +86,15 @@ sol = odeint(f,U0,times)
 #print(sol)
 
 plt.figure()
+plt.plot(times,sol[:,5])
+plt.plot(times,sol[:,2])
+#plt.plot(times,sol[:,1])
+plt.plot(times,sol[:,3])
+plt.plot(times,sol[:,4])
+plt.plot(times,sol[:,6])
 plt.plot(times,sol[:,7])
+#plt.plot(times,sol[:,0])
+plt.show()
 
 
 #Create matrix of concentrations of each node at each time step
