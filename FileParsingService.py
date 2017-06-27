@@ -13,13 +13,17 @@ class FileParsingService(object):
     def extractGenomePermutations(self):
         if self.file_type == SupportedFileTypes.MATLAB:
             return self.handleOctaveOrMATLABFile()
+        elif self.file_type == SupportedFileTypes.TXT:
+            pass
+            #TODO - create handleTXTFile() Function
+                    #Note - fn will need to be able to take in files containing booleans
 
     def handleOctaveOrMATLABFile(self):
         identifier_regex = re.compile(r'\$.+\$')
 
         genomes = {}
 
-        for genome in range(1, self.permutations):
+        for genome in range(1, self.permutations): #self.permutations +1 ? 
             genome_name = "g" + str(genome)
 
             coefficient_map = {}
@@ -53,12 +57,12 @@ class FileParsingService(object):
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
     
-    #Selection from a series of both Discrete and Continious Probability Distributions
+    #Selection from a series of both Discrete and Continous Probability Distributions
     
     def retreieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
             return self.generateRandomValueFromUniformDistribution(params[0], params[1])
-        elif distribution == SupportedDistributions.GAUSSIAN:
+        elif distribution == SupportedDistributions.GAUSS: #changed form GAUSSIAN TO GAUSS
             return self.generateRandomValueFromGaussianDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.GAMMA:
             return self.generateRandomValueFromGammaDistribution(params[0], params[1])
