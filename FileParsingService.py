@@ -52,7 +52,9 @@ class FileParsingService(object):
 
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
-
+    
+    #Selection from a series of both Discrete and Continious Probability Distributions
+    
     def retreieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
             return self.generateRandomValueFromUniformDistribution(params[0], params[1])
@@ -62,6 +64,10 @@ class FileParsingService(object):
             return self.generateRandomValueFromGammaDistribution(params[0], params[1])
         elif distribution == SupportedDistribustions.LOGNORMAL:
             return self.generateRandomValueFromLogNormalDistribution(params[0], params[1])
+        elif distribution == SupportedDistributions.BINOMIAL:
+            return self.generateRandomValueFromBinomialDistribution(params[0], params[1])
+        elif distribution == SupportedDistributions.POISSON:
+            return self.generateRandomValueFromPoissonDistribution(params[0], params[1])
 
     def generateRandomValueFromUniformDistribution(self, min, max):
         return random.uniform(min, max)
@@ -74,4 +80,13 @@ class FileParsingService(object):
     
     def generateRandomValueFromLogNormalDistribution(self, mu, sigma):
         return random.lognormal(mu, sigma)
+    
+    def generateRandomValueFromBionomialDistribution(self, n, p):
+        return random.binomial(n, p)
+    
+    def generateRandomValueFromPoissonDistribution(self, k, lmbda):
+        return random.poisson(k, lmbda)
+    
+   
+    
     
