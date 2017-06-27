@@ -55,12 +55,23 @@ class FileParsingService(object):
 
     def retreieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
-            return self.generateRandomValueFromNormalDistribution(params[0], params[1])
-        elif distribution == SupportedDistributions.GAUSS:
+            return self.generateRandomValueFromUniformDistribution(params[0], params[1])
+        elif distribution == SupportedDistributions.GAUSSIAN:
             return self.generateRandomValueFromGaussianDistribution(params[0], params[1])
+        elif distribution == SupportedDistributions.GAMMA:
+            return self.generateRandomValueFromGammaDistribution(params[0], params[1])
+        elif distribution == SupportedDistribustions.LOGNORMAL:
+            return self.generateRandomValueFromLogNormalDistribution(params[0], params[1])
 
-    def generateRandomValueFromNormalDistribution(self, min, max):
+    def generateRandomValueFromUniformDistribution(self, min, max):
         return random.uniform(min, max)
 
     def generateRandomValueFromGaussianDistribution(self, mu, sigma):
         return random.gauss(mu, sigma)
+    
+    def generateRandomValueFromGammaDistribution(self, k, theta):
+        return random.gamma(k, theta)
+    
+    def generateRandomValueFromLogNormalDistribution(self, mu, sigma):
+        return random.lognormal(mu, sigma)
+    
