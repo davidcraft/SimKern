@@ -44,7 +44,7 @@ class FileProcessingService(object):
                     coefficient_name = self.extractCoefficientName(target_sequence)
                     distribution = self.extractDistributionName(target_sequence)
                     params = self.extractParameters(target_sequence)
-                    coefficient_value = self.retreieveCoefficientValueFromDistribution(distribution, params)
+                    coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
                     newLine=identifier_regex.sub(str(coefficient_value),line)
                     f.write(newLine)
                     coefficient_map[coefficient_name] = coefficient_value
@@ -70,25 +70,31 @@ class FileProcessingService(object):
     
     #Selection from a series of both Discrete and Continous Probability Distributions
     
-    def retreieveCoefficientValueFromDistribution(self, distribution, params):
+    def retrieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
             return self.generateRandomValueFromUniformDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.GAUSS: #changed form GAUSSIAN TO GAUSS
             return self.generateRandomValueFromGaussianDistribution(params[0], params[1])
+        elif distribution == SupportedDistributions.DISCRETE:
+            return self.generateRandomValueFromDiscreteDistribution(params) #TODO - test this
         elif distribution == SupportedDistributions.GAMMA:
             return self.generateRandomValueFromGammaDistribution(params[0], params[1])
-        elif distribution == SupportedDistribustions.LOGNORMAL:
+        elif distribution == SupportedDistributions.LOGNORMAL:
             return self.generateRandomValueFromLogNormalDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.BINOMIAL:
             return self.generateRandomValueFromBinomialDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.POISSON:
             return self.generateRandomValueFromPoissonDistribution(params[0], params[1])
 
+
     def generateRandomValueFromUniformDistribution(self, mini, maxi):
         return random.uniform(mini, maxi)
 
     def generateRandomValueFromGaussianDistribution(self, mu, sigma):
         return random.gauss(mu, sigma)
+    
+    def generateRandomValueFromDiscreteDistribution(self, values):
+        return random.choice(values)
     
     def generateRandomValueFromGammaDistribution(self, k, theta):
         return random.gamma(k, theta)
