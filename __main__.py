@@ -1,6 +1,6 @@
 import sys
 
-from FileParsingService import FileParsingService
+from FileProcessingService import FileProcessingService
 
 
 def main():
