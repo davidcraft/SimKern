@@ -5,7 +5,7 @@ from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
 
-class FileParsingService(object):
+class FileProcessingService(object):
     def __init__(self, data_file, file_type, permutations):
         self.data_file = data_file
         self.file_type = file_type
