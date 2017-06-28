@@ -1,4 +1,5 @@
 class SupportedDistributions:
+    DISCRETE = "discrete"
     GAUSS = "gauss"
     UNIFORM = "uniform"
     GAMMA = "gamma"
