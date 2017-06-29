@@ -22,6 +22,7 @@ class FileProcessingService(object):
     def handleOctaveOrMATLABFile(self): 
         #TODO - allow user to specify Folder Name or Names of files within folder
         #TODO - If files with same names already exist, will not run.
+            #- returns with - FileExistsError: [Errno 17] File exists: 'GenomeFiles'
         os.mkdir("GenomeFiles")
         path=os.getcwd()+"/GenomeFiles/"
  
@@ -62,8 +63,9 @@ class FileProcessingService(object):
     def extractCoefficientName(self, target_sequence):
         return target_sequence.split("name=")[1].strip()
 
-    def extractParameters(self, target_sequence):
-        return [float(substring) for substring in re.findall(r'[\d.]+', target_sequence.split("name=")[0])]
+    def extractParameters(self,target_sequence):
+        pattern = re.compile('-?\ *[0-9]+?\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?') #now supports scientific notation
+        return [float(substring) for substring in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
