@@ -14,7 +14,7 @@ def main():
     file_extension = input_file.split(".")[1]
     with open(input_file) as data_file:
         try:
-            file_parsing_service = FileParsingService(data_file, file_extension, permutations)
+            file_parsing_service = FileProcessingService(data_file, file_extension, permutations)
             genome_permutations = file_parsing_service.extractGenomePermutations()
             saveGeneratedFiles(genome_permutations)
         except ValueError as valueError:
