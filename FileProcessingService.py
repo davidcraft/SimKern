@@ -23,7 +23,11 @@ class FileProcessingService(object):
         #TODO - allow user to specify Folder Name or Names of files within folder
         #TODO - If files with same names already exist, will not run.
             #- returns with - FileExistsError: [Errno 17] File exists: 'GenomeFiles'
-        os.mkdir("GenomeFiles")
+        try:
+            os.mkdir("GenomeFiles")
+        except FileExistsError:
+            pass #TODO - handle this later
+        
         path=os.getcwd()+"/GenomeFiles/"
  
         identifier_regex = re.compile(r'\$.+\$')
@@ -33,11 +37,11 @@ class FileProcessingService(object):
             genome_name = "g" + str(genome)
 
             coefficient_map = {}
-            f=open(path+genome_name+".m","w")
+            NewMFile=open(path+genome_name+".m","w")
 
             for line in self.data_file.readlines():
                 if line[0] == '%':
-                    f.write(line)
+                    NewMFile.write(line)
                     continue
                 search_result = identifier_regex.search(line)
                 if search_result is not None:
@@ -46,19 +50,19 @@ class FileProcessingService(object):
                     distribution = self.extractDistributionName(target_sequence)
                     params = self.extractParameters(target_sequence)
                     coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
-                    newLine=identifier_regex.sub(str(coefficient_value),line)
-                    f.write(newLine)
+                    #Replace $stuff$ with extracted coefficient value, write to file
+                    NewLine=identifier_regex.sub(str(coefficient_value),line)
+                    NewMFile.write(NewLine)
                     coefficient_map[coefficient_name] = coefficient_value
                 else:
-                    f.write(line)
-            f.close()
+                    NewMFile.write(line)
+            NewMFile.close()
 
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
-        g=open(path+"genomes.txt","w")
-        g.write(str(genomes))
-        g.close()
+        writeGenomesToFile(path,"genomes.txt",genomes)
+
         
     def extractCoefficientName(self, target_sequence):
         return target_sequence.split("name=")[1].strip()
@@ -69,6 +73,11 @@ class FileProcessingService(object):
 
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
+    
+    def writeGenomesToFile(self,path,NewGenomesFileName,genomesDictionary):
+        GenomesFile=open(path+NewGenomesFileName,"w")
+        GenomesFile.write(str(genomesDictionary))
+        GenomesFile.close()
     
     #Selection from a series of both Discrete and Continous Probability Distributions
     
