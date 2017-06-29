@@ -1,24 +1,32 @@
 import os
 import subprocess
+import csv
 
 class OctaveCaller(object):
-    def __init__(self,file_name,output_file_name):
+    def __init__(self,file_name,output_file_name,cmd_path = '/Applications/Octave.app/Contents/Resources/usr/bin/octave -q'):
         self.file_name = file_name
         self.output_file_name = output_file_name
+        self.cmd_path = cmd_path
 
     def callOctave(self):
-        for mfile in range(len(self.file_name))
+        self.outputs = []
+        for mfile in self.file_name:
             #might want to change dir by using os.chdir(r'/Users/zhaoqiwang/Desktop')
-            cmd = '/Applications/Octave.app/Contents/Resources/usr/bin/octave -q myApoCall.m'
+            cmd = self.cmd_path + ' '+ mfile
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             (out, err) = proc.communicate()
-            int(out)
+            output = int(out)
+            self.outputs.append(output)
+        return self.outputs
 
-#output goes to stdout:
-#cmd = 'octave -q myApoCall.m'
-#or if you want to write a file instead, called myout.txt for example, use:
-cmd = '/Applications/Octave.app/Contents/Resources/usr/bin/octave -q myApoCall.m > myout.txt'
+    def writeOutputFile(self):
+        with open(self.output_file_name , 'w') as csvfile:
+            print(self.outputs)
+            outputs_writer = csv.writer(csvfile)
+            outputs_writer.writerow(self.outputs)
 
-#cmd1 = 'open /Users/zhaoqiwang/Desktop/test.m -a Octave'
-os.system(cmd)
-
+#test:
+# x = OctaveCaller(['myApoCall.m'],'outfile.csv')
+# print(x.callOctave())
+#
+# x.writeOutputFile()

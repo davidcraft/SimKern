@@ -1,20 +1,22 @@
 import sys
 
-from FileParsingService import FileParsingService
+from FileProcessingService import FileProcessingService
 
 
 def main():
     arguments = sys.argv[1:]
-    if len(arguments) != 1:
-        print "Program expects one argument, a file of differential equations."
+    if len(arguments) != 2:
+        print "Program expects two arguments, a file of differential equations," \
+              " and an integer representing number of permutations."
         return
     input_file = arguments[0]
+    permutations = arguments[1]
     file_extension = input_file.split(".")[1]
     with open(input_file) as data_file:
         try:
-            file_parsing_service = FileParsingService(data_file, file_extension)
-            differential_equations = file_parsing_service.extractDifferentialEquations()
-            parseDifferentialEquations(differential_equations)
+            file_parsing_service = FileProcessingService(data_file, file_extension, permutations)
+            genome_permutations = file_parsing_service.extractGenomePermutations()
+            saveGeneratedFiles(genome_permutations)
         except ValueError as valueError:
             print valueError.message
         finally:
@@ -22,9 +24,9 @@ def main():
             data_file.close()
 
 
-def parseDifferentialEquations(differential_equations):
-    for differential_equation in differential_equations:
-        print "Original Differential Equation: dx/dt=", differential_equation.original_string
+def saveGeneratedFiles(genomes):
+    for gene in genomes:
+        pass
 
 if __name__ == "__main__":
     main()

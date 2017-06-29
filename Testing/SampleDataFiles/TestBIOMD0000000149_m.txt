@@ -87,9 +87,9 @@ function xdot=f(x,t)
 % End Octave code
 
 % Compartment: id = cytoplasm, name = cytoplasm, constant
-	compartment_cytoplasm=1.0;
+	compartment_cytoplasm=$uniform(.1,.2),name=k1$;
 % Compartment: id = nucleus, name = nucleus, constant
-	compartment_nucleus=1.0;
+	compartment_nucleus=$gauss(0,1),name=k2$;
 % Parameter:   id =  k1, name = k1
 	global_par_k1=0.182;
 % Parameter:   id =  W, name = W

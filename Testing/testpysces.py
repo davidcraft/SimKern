@@ -11,6 +11,8 @@ Created on Wed Jun 21 12:09:32 2017
 
 import pysces
 from pysces.PyscesInterfaces import Core2interfaces 
+from pysces.PyscesModel import StateDataObj
+from pysces.PyscesModel import IntegrationDataObj
 #pysces.test()
 
 #Convert the senescene sbml file to psc file
@@ -24,19 +26,25 @@ def convert(sbml_file,psc_output):
     core = Core2interfaces() #needed for first argument of Core2Interfaces
     Core2interfaces.convertSBML2PSC(core, sbml_file, pscfile = psc_output)
 
-def sim_plot(pscfilename):
+def sim_plot(pscfilename, end_time, plot=True):
     '''
     Takes in a psc file, creates a pysces model, finds the steady states,
     and plots the values of each Species concentration over time
+    Also takes in plot arg - input True if a plot is desired, False if the plot
+    is NOT desired
     Returns : a model object
     '''
     model = pysces.model(pscfilename)
+    model.p21 = 13.123456
     model.sim_start = 0.0
     model.sim_end = 20
     model.sim_points = 50
     model.Simulate()
     model.doState()
-    model.doSimPlot(end=10.0,points=210,plot='species', fmt='lines',filename = None)
+    if plot:
+        model.doSimPlot(end=end_time,points=end_time*10,plot='species', fmt='lines',filename = None)
+    else:
+        pass
     return model
 
 #s1_mod = pysces.model('sen2.psc')
@@ -73,12 +81,19 @@ def sim_plot(pscfilename):
 #cc2_mod.doState()
 #cc2_mod.doSimPlot(end=10.0,points=210,plot='species', fmt='lines',filename = None)
 
-#sim_plot('sen2.psc')
-convert('/Users/taylorsorenson/inputs/apop243.xml','apop243.psc')
-apop2 = sim_plot('apop243.psc')
-convert('/Users/taylorsorenson/inputs/apop005.xml','apop005.psc')
-apop5 = sim_plot('apop005.psc')
-sen2 = sim_plot('sen2.psc')
-sen1 = sim_plot('sen1.psc')
-cc1 = sim_plot('cellcycle1.psc')
-cc2 = sim_plot('cellcycle2.psc')
+
+#convert('/Users/taylorsorenson/inputs/apop243.xml','apop243.psc')
+#convert('/Users/taylorsorenson/inputs/apop005.xml','apop005.psc')
+
+#Simulate Apoptosis Models
+#apop2 = sim_plot('apop243.psc')
+#apop5 = sim_plot('apop005.psc')
+
+#Simulate Senescene Models
+#sen2 = sim_plot('sen1.psc', 10, plot=True)
+#sen3 = sim_plot('sen2.psc')
+sen3_mod = sim_plot('2sen.psc', 10, plot=True)
+
+#Simulate Cell Cycle Models
+#cc1 = sim_plot('cellcycle1.psc')
+#cc2 = sim_plot('cellcycle2.psc')

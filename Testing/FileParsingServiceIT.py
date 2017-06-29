@@ -16,9 +16,9 @@ class FileParsingServiceIT(unittest.TestCase):
         testing.tearDown()
 
     def testOctaveFile(self):
-        print("Testing Differential Equation extraction with Octave file")
+        print("Testing permutations of genomes as Octave files are successfully generated.")
         with testing.testConfig() as config:
             file = config.add_route('Testing', '/SampleDataFiles/BIOMD0000000149_M.txt')
-            fileParsingService = FileParsingService(file, SupportedFileTypes.MATLAB)
-            differential_equations = fileParsingService.extractDifferentialEquations()
-            assert len(differential_equations) > 0
+            fileParsingService = FileParsingService(file, SupportedFileTypes.MATLAB, 10)
+            genome_permutations = fileParsingService.extractGenomePermutations()
+            assert len(genome_permutations) > 0
