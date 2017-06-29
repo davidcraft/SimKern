@@ -12,10 +12,12 @@ class OctaveCaller(object):
         self.outputs = []
         for mfile in self.file_name:
             #might want to change dir by using os.chdir(r'/Users/zhaoqiwang/Desktop')
+#            os.chdir('GenomeFiles') #TODO allow user to change later?
             cmd = self.cmd_path + ' '+ mfile
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             (out, err) = proc.communicate()
-            output = int(out)
+            print(out)
+            output = int.from_bytes(out,byteorder='big')
             self.outputs.append(output)
         return self.outputs
 
@@ -26,7 +28,6 @@ class OctaveCaller(object):
             outputs_writer.writerow(self.outputs)
 
 #test:
-# x = OctaveCaller(['myApoCall.m'],'outfile.csv')
-# print(x.callOctave())
-#
-# x.writeOutputFile()
+#x = OctaveCaller(['myg5Call.m'],'outfile.csv')
+#print(x.callOctave())
+#x.writeOutputFile()

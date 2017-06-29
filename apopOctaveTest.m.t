@@ -98,19 +98,19 @@ function xdot=f(x,t)
 % Compartment: id = nucleus, name = nucleus, constant
 
 %dollar craft 1
-compartment_nucleus=$uniform[1,5]$;
+compartment_nucleus=$uniform[1,5],name=compartment_nucleus$;
 
 % Reaction: id = J1, name = TNFR transport into membrane	% Local Parameter:   id =  ka_1, name = TNFR transport into membrane ka
 
 %dollar craft 2
-reaction_J1_ka_1=$uniform[0.001,.005]$;
+reaction_J1_ka_1=$uniform[0.001,0.005],name=ka_1$;
 
 	reaction_J1=reaction_J1_ka_1*x(4);
 
 % Reaction: id = J2, name = TNFR production	% Local Parameter:
 % id =  ka_2, name = TNFR production ka
 %dollar craft 3
-	reaction_J2_ka_2=$gauss(2.8e-7,1e-8)$;
+	reaction_J2_ka_2=$gauss(2.8e-7,1e-8),name=ka_2$;
 
 	reaction_J2=reaction_J2_ka_2;
 
@@ -723,7 +723,7 @@ reaction_J4_ka_4=2.0256E-5;
 
         %dollar craft 4 : discrete example:by this syntax I mean
         %any number in the list [] will be chosen with equal likelihood
-        craftDiscreteVar = $discrete[1,3,5]$;
+        craftDiscreteVar = $discrete[1,3,5],name=craftDiscreteVar$;
 	
 % Species:   id = cPARP, name = cPARP, affected by kineticLaw
 	xdot(47) = (-1.0 * reaction_J78) + ( craftDiscreteVar* reaction_J87);
