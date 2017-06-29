@@ -21,23 +21,27 @@ class FileProcessingService(object):
 
     def handleOctaveOrMATLABFile(self): 
         #TODO - allow user to specify Folder Name or Names of files within folder
-        #TODO - If files with same names already exist, will not run.
-            #- returns with - FileExistsError: [Errno 17] File exists: 'GenomeFiles'
-        try:
-            os.mkdir("GenomeFiles")
-        except FileExistsError:
-            pass #TODO - handle this later
-        
+
+        coefs =range(self.permutations)
+        files=range(self.permutations)
+        os.mkdir("GenomeFiles")
         path=os.getcwd()+"/GenomeFiles/"
+        #TODO - What if file exists already?
+        #- returns with - FileExistsError: [Errno 17] File exists: 'GenomeFiles'
+        
+        
  
         identifier_regex = re.compile(r'\$.+\$')
         genomes = {}
+        genomesFileList = []
 
         for genome in range(1, self.permutations+1):
             genome_name = "g" + str(genome)
 
             coefficient_map = {}
             NewMFile=open(path+genome_name+".m","w")
+            files[genome-1]=genome_name+".m"
+            coefs[genome-1]=[]
 
             for line in self.data_file.readlines():
                 if line[0] == '%':
@@ -54,14 +58,18 @@ class FileProcessingService(object):
                     NewLine=identifier_regex.sub(str(coefficient_value),line)
                     NewMFile.write(NewLine)
                     coefficient_map[coefficient_name] = coefficient_value
+                    coefs[genome-1].append(coefficient_value)
                 else:
                     NewMFile.write(line)
+            genomesFileList.append(New)
             NewMFile.close()
 
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
         writeGenomesToFile(path,"genomes.txt",genomes)
+        print(coefs)
+        print(files)
 
         
     def extractCoefficientName(self, target_sequence):
