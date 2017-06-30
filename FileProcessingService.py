@@ -29,9 +29,9 @@ class FileProcessingService(object):
         genomesFileList = []
 
         self.createNewFileDirectory()
-        path = self.path+"/GenomeFiles"
+        path = self.path + "/GenomeFiles"
         os.mkdir(path + "/" + self.output_folder_name)
-        path=path+"/"+self.output_folder_name
+        path = path + "/" + self.output_folder_name
         m_call_file = open(path + '/mCallFile.m', 'w')
 
         identifier_regex = re.compile(r'\$.+\$')
@@ -44,7 +44,7 @@ class FileProcessingService(object):
             coefficient_map = {}
             new_m_file = open(path + "/" + genome_name + ".m", "w")
             genomesFileList.append(genome_name + ".m")
-            m_call_file.write(genome_name+"\n")
+            m_call_file.write(genome_name + "\n")
 
             for line in self.data_file.readlines():
                 if line[0] == '%':
@@ -70,17 +70,17 @@ class FileProcessingService(object):
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
-        f=open(path+"/" + self.output_folder_name + "Genomes.txt","w")
-        f.write(str(genomes))
-        f.close()
+        new_genomes_file = open(path + "/" + self.output_folder_name + "Genomes.txt", "w")
+        new_genomes_file.write(str(genomes))
+        new_genomes_file.close()
 
         print(coefs)
         return genomesFileList
 
     def createNewFileDirectory(self):
         if os.getcwd() != "/":
-            if not os.path.isdir(self.path+"/GenomeFiles"):
-                os.mkdir(self.path+"/GenomeFiles")
+            if not os.path.isdir(self.path + "/GenomeFiles"):
+                os.mkdir(self.path + "/GenomeFiles")
         else:
             raise ValueError('Must provide valid folder name and not be root directory.')
 
