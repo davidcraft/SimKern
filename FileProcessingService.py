@@ -1,6 +1,7 @@
 import re
 import os
 import random
+import shutil
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
@@ -25,28 +26,25 @@ class FileProcessingService(object):
         coefs = []
         #list(range(self.permutations))
         genomesFileList=[]
-        os.mkdir("GenomeFiles")
-        path=os.getcwd()+"/GenomeFiles/"
-        #TODO - What if file exists already?
-        #- returns with - FileExistsError: [Errno 17] File exists: 'GenomeFiles'
-        
-        MCallFile=open(os.getcwd()+'/mCallFile.m','w')
+
+        path = self.createNewFileDirectory("GenomeFiles")
+        m_call_file = open(os.getcwd()+'/mCallFile.m', 'w')
  
         identifier_regex = re.compile(r'\$.+\$')
         genomes = {}
 
-        for genome in range(1, self.permutations+1):
+        for genome in range(1, self.permutations + 1):
             familycoefs = []
             genome_name = "g" + str(genome)
 
             coefficient_map = {}
-            NewMFile=open(path+genome_name+".m","w")
-            genomesFileList.append(genome_name+".m")
-            MCallfile.write('genome_name') #TODO - Talk with David about this
+            new_m_file = open(path + genome_name + ".m", "w")
+            genomesFileList.append(genome_name + ".m")
+            m_call_file.write('genome_name') #TODO - Talk with David about this
 
             for line in self.data_file.readlines():
                 if line[0] == '%':
-                    NewMFile.write(line)
+                    new_m_file.write(line)
                     continue
                 search_result = identifier_regex.search(line)
                 if search_result is not None:
@@ -56,23 +54,32 @@ class FileProcessingService(object):
                     params = self.extractParameters(target_sequence)
                     coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
                     #Replace $stuff$ with extracted coefficient value, write to file
-                    NewLine=identifier_regex.sub(str(coefficient_value),line)
-                    NewMFile.write(NewLine)
+                    new_line = identifier_regex.sub(str(coefficient_value), line)
+                    new_m_file.write(new_line)
                     coefficient_map[coefficient_name] = coefficient_value
                     familycoefs.append(coefficient_value)
                 else:
-                    NewMFile.write(line)
-            NewMFile.close()
+                    new_m_file.write(line)
+            new_m_file.close()
             coefs.append(familycoefs)
 
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
-        self.writeGenomesToFile(path,"genomes.txt",genomes)
+        self.writeGenomesToFile(path, "genomes.txt", genomes)
         print(coefs)
         return genomesFileList
 
-        
+    def createNewFileDirectory(self, folder_name):
+        if folder_name != "" and os.getcwd() != "/":
+            if os.path.isdir(folder_name):
+                shutil.rmtree(folder_name) #Careful with this one. We might want to require full path as an input.
+            os.mkdir(folder_name)
+            path = os.getcwd() + "/" + folder_name + "/"
+            return path
+        else:
+            raise ValueError('Must provide valid folder name and not be root directory.')
+
     def extractCoefficientName(self, target_sequence):
         return target_sequence.split("name=")[1].strip()
 
@@ -83,8 +90,8 @@ class FileProcessingService(object):
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
     
-    def writeGenomesToFile(self,path,NewGenomesFileName,genomesDictionary):
-        GenomesFile=open(path+NewGenomesFileName,"w")
+    def writeGenomesToFile(self,path, NewGenomesFileName, genomesDictionary):
+        GenomesFile = open(path+NewGenomesFileName,"w")
         GenomesFile.write(str(genomesDictionary))
         GenomesFile.close()
     

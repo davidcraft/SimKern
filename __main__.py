@@ -25,7 +25,7 @@ def main():
 
 
 def saveGeneratedFiles(genomes):
-    for gene in genomes:
+    for genome in genomes:
         pass
 
 if __name__ == "__main__":
