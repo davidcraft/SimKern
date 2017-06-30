@@ -103,7 +103,7 @@ compartment_nucleus=$uniform[1,5],name=compartment_nucleus$;
 % Reaction: id = J1, name = TNFR transport into membrane	% Local Parameter:   id =  ka_1, name = TNFR transport into membrane ka
 
 %dollar craft 2
-reaction_J1_ka_1=$uniform[0.001,0.005],name=ka_1$;
+reaction_J1_ka_1=$uniform[0.001,.005],name=ka_1$;
 
 	reaction_J1=reaction_J1_ka_1*x(4);
 

@@ -40,7 +40,7 @@ class FileProcessingService(object):
             coefficient_map = {}
             new_m_file = open(path + genome_name + ".m", "w")
             genomesFileList.append(genome_name + ".m")
-            m_call_file.write('genome_name') #TODO - Talk with David about this
+            m_call_file.write(genome_name + '\n') #TODO - Talk with David about this
 
             for line in self.data_file.readlines():
                 if line[0] == '%':

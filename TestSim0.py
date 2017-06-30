@@ -16,6 +16,6 @@ f = open('apopOctaveTest.m.t','r')
 FileProcess = FileProcessingService(f,'MAT',10)
 fileList = FileProcess.handleOctaveOrMATLABFile()
 
-test = OctaveCaller([],'Sim0Output.csv')
+test = OctaveCaller('mCallFile.m','Sim0Output.csv')
 test.callOctave()
 test.writeOutputFile()
