@@ -1,7 +1,6 @@
 import re
 import os
 import random
-import shutil
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
@@ -26,7 +25,7 @@ class FileProcessingService(object):
 
         coefs = []
         # list(range(self.permutations))
-        genomesFileList = []
+        genomes_file_list = []
 
         self.createNewFileDirectory()
         path = self.path + "/GenomeFiles"
@@ -38,12 +37,12 @@ class FileProcessingService(object):
         genomes = {}
 
         for genome in range(1, self.permutations + 1):
-            familycoefs = []
+            family_coefs = []
             genome_name = self.output_folder_name + str(genome)
 
             coefficient_map = {}
             new_m_file = open(path + "/" + genome_name + ".m", "w")
-            genomesFileList.append(genome_name + ".m")
+            genomes_file_list.append(genome_name + ".m")
             m_call_file.write(genome_name + "\n")
 
             for line in self.data_file.readlines():
@@ -61,11 +60,11 @@ class FileProcessingService(object):
                     new_line = identifier_regex.sub(str(coefficient_value), line)
                     new_m_file.write(new_line)
                     coefficient_map[coefficient_name] = coefficient_value
-                    familycoefs.append(coefficient_value)
+                    family_coefs.append(coefficient_value)
                 else:
                     new_m_file.write(line)
             new_m_file.close()
-            coefs.append(familycoefs)
+            coefs.append(family_coefs)
 
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
@@ -75,7 +74,7 @@ class FileProcessingService(object):
         new_genomes_file.close()
 
         print(coefs)
-        return genomesFileList
+        return genomes_file_list
 
     def createNewFileDirectory(self):
         if os.getcwd() != "/":
