@@ -4,14 +4,17 @@ import random
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
-
 class FileProcessingService(object):
-    def __init__(self, data_file, file_type, path, output_folder_name, permutations):
+
+    GENERATED_FOLDER_NAME = "/GenomeFiles"
+    GENOMES_FILE_NAME = "Genomes.txt"
+    IDENTIFIER_REGEX = re.compile(r'\$.+\$')
+
+    def __init__(self, data_file, file_type, permutations, path):
         self.data_file = data_file
         self.file_type = file_type
-        self.path = path
-        self.output_folder_name = output_folder_name
         self.permutations = int(permutations)
+        self.path = path
 
     def extractGenomePermutations(self):
         if self.file_type == SupportedFileTypes.MATLAB:
@@ -22,23 +25,17 @@ class FileProcessingService(object):
             # Note - fn will need to be able to take in files containing booleans
 
     def handleOctaveOrMATLABFile(self):
-
         coefs = []
-        # list(range(self.permutations))
         genomes_file_list = []
 
-        self.createNewFileDirectory()
-        path = self.path + "/GenomeFiles"
-        os.mkdir(path + "/" + self.output_folder_name)
-        path = path + "/" + self.output_folder_name
+        path = self.maybeCreateNewFileDirectory()
         m_call_file = open(path + '/mCallFile.m', 'w')
 
-        identifier_regex = re.compile(r'\$.+\$')
         genomes = {}
 
         for genome in range(1, self.permutations + 1):
             family_coefs = []
-            genome_name = self.output_folder_name + str(genome)
+            genome_name = "genome" + str(genome)
 
             coefficient_map = {}
             new_m_file = open(path + "/" + genome_name + ".m", "w")
@@ -49,7 +46,7 @@ class FileProcessingService(object):
                 if line[0] == '%':
                     new_m_file.write(line)
                     continue
-                search_result = identifier_regex.search(line)
+                search_result = self.IDENTIFIER_REGEX.search(line)
                 if search_result is not None:
                     target_sequence = line[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
                     coefficient_name = self.extractCoefficientName(target_sequence)
@@ -57,7 +54,7 @@ class FileProcessingService(object):
                     params = self.extractParameters(target_sequence)
                     coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
                     # Replace $stuff$ with extracted coefficient value, write to file
-                    new_line = identifier_regex.sub(str(coefficient_value), line)
+                    new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
                     new_m_file.write(new_line)
                     coefficient_map[coefficient_name] = coefficient_value
                     family_coefs.append(coefficient_value)
@@ -69,19 +66,19 @@ class FileProcessingService(object):
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
-        new_genomes_file = open(path + "/" + self.output_folder_name + "Genomes.txt", "w")
-        new_genomes_file.write(str(genomes))
-        new_genomes_file.close()
+        self.writeGenomesFileToDirectory(genomes, path)
 
-        print(coefs)
         return genomes_file_list
 
-    def createNewFileDirectory(self):
+    def maybeCreateNewFileDirectory(self):
+        target_directory = self.path + self.GENERATED_FOLDER_NAME
         if os.getcwd() != "/":
-            if not os.path.isdir(self.path + "/GenomeFiles"):
-                os.mkdir(self.path + "/GenomeFiles")
+            if not os.path.isdir(target_directory):
+                os.mkdir(target_directory)
         else:
-            raise ValueError('Must provide valid folder name and not be root directory.')
+            raise ValueError('Provided path must not be root directory.')
+        return target_directory
+
 
     def extractCoefficientName(self, target_sequence):
         return target_sequence.split("name=")[1].strip()
@@ -93,7 +90,7 @@ class FileProcessingService(object):
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
 
-    # Selection from a series of both Discrete and Continous Probability Distributions
+    # Selection from a series of both discrete and continuous probability distributions
 
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
@@ -131,3 +128,9 @@ class FileProcessingService(object):
 
     def generateRandomValueFromPoissonDistribution(self, k, lmbda):
         return random.poisson(k, lmbda)
+
+    def writeGenomesFileToDirectory(self, genomes, path):
+        new_genomes_file = open(path + "/" + self.GENOMES_FILE_NAME, "w")
+        for genome in genomes.keys():
+            new_genomes_file.write(str(genome) + ": " + str(genomes[genome]) + "\n")
+        new_genomes_file.close()

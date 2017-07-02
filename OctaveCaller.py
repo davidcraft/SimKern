@@ -3,7 +3,9 @@ import subprocess
 import csv
 
 class OctaveCaller(object):
-    def __init__(self,caller_file_name,output_file_name,cmd_path = '/Applications/Octave.app/Contents/Resources/usr/bin/octave -q'):
+
+
+    def __init__(self, caller_file_name, output_file_name, cmd_path = '/Applications/Octave.app/Contents/Resources/usr/bin/octave -q'):
         self.caller_file_name = caller_file_name
         self.output_file_name = output_file_name
         self.cmd_path = cmd_path
@@ -28,6 +30,6 @@ class OctaveCaller(object):
             outputs_writer.writerow(output)
 
 #test:
-x = OctaveCaller('myApoCall.m','outfile.csv')
+x = OctaveCaller('myApoCall.m', 'outfile.csv')
 print(x.callOctave())
 x.writeOutputFile()

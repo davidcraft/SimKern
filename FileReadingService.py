@@ -20,13 +20,13 @@ class FileReadingService(object):
         self.my_files = my_files
         
     def ReadFiles(self,my_files):
-        
+        pass
         #Calls simulator and runs though data
         
     def getClassifications(self,my_files):
-        
+        pass
         for file in my_files:
-            
+            pass
             #Extract 0/1s
         
         return #a list, array, etc. of these for SVM
