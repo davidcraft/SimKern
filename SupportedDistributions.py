@@ -6,4 +6,3 @@ class SupportedDistributions:
     LOGNORMAL = "lognormal"
     BINOMIAL = "binomial"
     POISSON = "poisson"
-    

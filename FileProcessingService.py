@@ -4,6 +4,7 @@ import random
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
+
 class FileProcessingService(object):
 
     GENERATED_FOLDER_NAME = "/GenomeFiles"
@@ -16,7 +17,7 @@ class FileProcessingService(object):
         self.permutations = int(permutations)
         self.path = path
 
-    def extractGenomePermutations(self):
+    def createGenomePermutations(self):
         if self.file_type == SupportedFileTypes.MATLAB:
             return self.handleOctaveOrMATLABFile()
         elif self.file_type == SupportedFileTypes.TXT:
@@ -66,6 +67,7 @@ class FileProcessingService(object):
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
+        m_call_file.close()
         self.writeGenomesFileToDirectory(genomes, path)
 
         return genomes_file_list
@@ -107,6 +109,8 @@ class FileProcessingService(object):
             return self.generateRandomValueFromBinomialDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.POISSON:
             return self.generateRandomValueFromPoissonDistribution(params[0], params[1])
+        else:
+            raise ValueError('Unsupported distribution: ' + distribution)
 
     def generateRandomValueFromUniformDistribution(self, mini, maxi):
         return random.uniform(mini, maxi)
