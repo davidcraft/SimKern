@@ -134,7 +134,8 @@ class FileProcessingService(object):
         return random.poisson(k, lmbda)
 
     def writeGenomesFileToDirectory(self, genomes, path):
-        new_genomes_file = open(path + "/" + self.GENOMES_FILE_NAME, "w")
         for genome in genomes.keys():
-            new_genomes_file.write(str(genome) + ": " + str(genomes[genome]) + "\n")
-        new_genomes_file.close()
+            new_genome_file = open(path + "/" + genome + "_key.m", "w")
+            for value in genomes[genome].keys():
+                new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
+            new_genome_file.close()
