@@ -11,7 +11,7 @@ log.setLevel(logging.INFO)
 def main():
     arguments = sys.argv[1:]
     if len(arguments) != 3:
-        log.warn("Program expects three arguments, a file expressing differential equations," +
+        log.warn("Program expects three arguments, a file expressing differential equations, " +
                  "an integer representing number of permutations, and a path to store generated files.")
         return
     input_file = arguments[0]

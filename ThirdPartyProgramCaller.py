@@ -3,6 +3,7 @@ import subprocess
 import csv
 from SupportedFileTypes import SupportedFileTypes
 
+
 class ThirdPartyProgramCaller(object):
 
     OUTPUT_FILE_NAME = 'Sim0Output.csv'
@@ -19,9 +20,9 @@ class ThirdPartyProgramCaller(object):
 
     def writeOutputFileForOctave(self):
         current_directory = os.getcwd()
-        directory_of_mCallFile = self.files_directory + "/GenomeFiles"
-        self.changeWorkingDirectory(directory_of_mCallFile)
-        output = self.callOctave(directory_of_mCallFile)
+        directory_of_m_call_file = self.files_directory + "/GenomeFiles"
+        self.changeWorkingDirectory(directory_of_m_call_file)
+        output = self.callOctave(directory_of_m_call_file)
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 outputs_writer = csv.writer(csv_file)
