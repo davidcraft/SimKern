@@ -33,7 +33,7 @@ DNA_DSB_due_to_IR = IR_Gy*DNA_DSB_per_IR_Gy/tp2; % irradiation phase duration-
                                                  % adjusted rate
 
 %CRAFT: these lines instantiate the person-specific genomes  
-global Gs6 Gp8 Gt2 Gp1 Gp2 Gp3 Gd12
+global Gs6 Gt2 Gd12 
 %this next line just reads in the g1.m file.
 %if this file were a CSV or something it would take a couple more
 %lines of processing, so I'm just assuming it's an m file
@@ -144,7 +144,7 @@ end
 function dy = p53_network(~,y)  
 %% --------------------------===[ PARAMETERS ]===--------------------------
 %CRAFT: added globals here as well
-global Gs6 Gp8 Gt2 Gp1 Gp2 Gp3 Gd12
+global Gs6 Gt2 Gd12
 
 global is_IR_switched_on;  % shared with run_simulation where defined
 
@@ -226,14 +226,14 @@ s10=   3;        % Cyclin_E synthesis, spontaneous
     
 % phosphorylation 
 %
-p1  = Gp1;      % ATM phosphorylation due to IR-induced DNA DSBs   
-p2  = Gp2;      % SIAH1 phosphorylation by ATM_p     
-p3  = Gp3;      % p53 phosphorylation by ATM_p at Ser15 and Ser20
+p1  = 3e-4;      % ATM phosphorylation due to IR-induced DNA DSBs   
+p2  = 1e-8;      % SIAH1 phosphorylation by ATM_p     
+p3  = 3e-8;      % p53 phosphorylation by ATM_p at Ser15 and Ser20
 p4  = 1e-10+$gauss(0,1e-11),name=p4$;     % p53 arrester phosphorylation by HIPK2 at Ser46    
 p5  = 1e-8;      % Mdm2_cyt phosphorylation
 p6  = 1e-8;      % Mdm2_nuc_S166S186p phosphorylation by ATM_p at Ser395     
 p7  = 3e-9;      % Bad phosphorylation by AKT_p [BMC Syst.Biol.2013: 3e-10]
-p8  = Gp8;      % PIP3 phosphorylation by (implicit) PI3K
+p8  = 3e-9;      % PIP3 phosphorylation by (implicit) PI3K
 p9  = 3e-6;      % Rb1 phosphorylation by Cyclin_E
 p10 =  p9;       % Rb1 phosphorylation by Cyclin_E in Rb1:E2F1 complex 
 p11 =  p4;       % p53 phosphorylation by HIPK2 at Ser46
