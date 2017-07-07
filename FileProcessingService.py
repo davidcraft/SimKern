@@ -25,7 +25,7 @@ class FileProcessingService(object):
             # TODO - create handleTXTFile() Function
             # Note - fn will need to be able to take in files containing booleans
 
-    def handleOctaveOrMATLABFile(self):
+    def handleOctaveOrMATLABFile(self, file_name_root = "genome"):
         coefs = []
         genomes_file_list = []
 
@@ -36,7 +36,7 @@ class FileProcessingService(object):
 
         for genome in range(1, self.permutations + 1):
             family_coefs = []
-            genome_name = "genome" + str(genome)
+            genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
 
             coefficient_map = {}
             new_m_file = open(path + "/" + genome_name + ".m", "w")
@@ -71,6 +71,7 @@ class FileProcessingService(object):
         self.writeGenomesFileToDirectory(genomes, path)
 
         return genomes_file_list
+
 
     def maybeCreateNewFileDirectory(self):
         target_directory = self.path + self.GENERATED_FOLDER_NAME
