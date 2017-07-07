@@ -24,28 +24,28 @@ function main()
 	x0=zeros(40,1);
 	x0(1) = 10.0;
 	x0(2) = 10.0;
-	x0(3) = 10.0;
+	x0(3) = 10.0; %AMPK 
 	x0(4) = 10.0;
 	x0(5) = 10.0;
 	x0(6) = 10.0;
 	x0(7) = 10.0;
-	x0(8) = 10.0;
+	x0(8) = 10.0; %FoxO3A 
 	x0(9) = 10.0;
-	x0(10) = 10.0;
-	x0(11) = 10.0;
+	x0(10) = 10.0; %CDKN1A (p27)
+	x0(11) = 10.0; %CDKN1A (p21)
 	x0(12) = 25.0;
 	x0(13) = 10.0;
-	x0(14) = 10.0;
-	x0(15) = 1.0;
+	x0(14) = 10.0; %ROS
+	x0(15) = 1.0; %DNA Damage
 	x0(16) = 0.81;
 	x0(17) = 10.0;
-	x0(18) = 1.0;
-	x0(19) = 0.0;
+	x0(18) = 1.0; %Mito_new mass
+	x0(19) = 0.0; %Mito_old mass
 	x0(20) = 25.0;
-	x0(21) = 12.12;
-	x0(22) = 0.0;
-	x0(23) = 0.0;
-	x0(24) = 1.0;
+	x0(21) = 12.12; %Mito_new membrane pot
+	x0(22) = 0.0; %Mito_old membrane pot
+	x0(23) = 0.0; %Nil (Senescence?)
+	x0(24) = 1.0; %24-40 all fixed species
 	x0(25) = 1.0;
 	x0(26) = 1.0;
 	x0(27) = 1.0;
@@ -73,13 +73,20 @@ function main()
 	[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
-% Start Octave code
-% 	t=linspace(0,100,100);
-% 	x=lsode('f',x0,t);
+% % Start Octave code
+% t=linspace(0,100,100);
+% x=lsode('f',x0,t);
 % End Octave code
 
-
-	plot(t,x);
+if x0(14) > 10
+    disp('1')
+else
+    disp('0')
+end
+% 	plot(t,x(:,[3 8 10 11 14 15 18 19 21 22]));
+%         legend('AMPK', 'FOXO3A', 'CDKN1A', 'CDKN1B', 'ROS', 'DDR', 'mito.mass.new', ...
+%         'mito.mass.old','mito.pot.new','mito.pot.old');
+%     plot(t,x(:,[23]));
 end
 
 
@@ -96,6 +103,7 @@ function xdot=f(t,x)
 % End Octave code
 
 time = linspace(1,20,100)
+% All 'Parameters' represent rate constants
 % Compartment: id = Cell, name = Cell, constant
 	compartment_Cell=1.0;
 % Parameter:   id =  Akt_S473_phos_by_insulin, name = Akt_S473_phos_by_insulin
@@ -163,11 +171,11 @@ time = linspace(1,20,100)
 % Parameter:   id =  sen_ass_beta_gal_dec, name = sen_ass_beta_gal_dec
 	global_par_sen_ass_beta_gal_dec=0.154821166783837;
 % Parameter:   id =  mito_biogenesis_by_mTORC1_pS2448, name = mito_biogenesis_by_mTORC1_pS2448
-	global_par_mito_biogenesis_by_mTORC1_pS2448=0.0133620123598202;
+	global_par_mito_biogenesis_by_mTORC1_pS2448=0.133620123598202;
 % Parameter:   id =  mito_biogenesis_by_AMPK_pT172, name = mito_biogenesis_by_AMPK_pT172
 	global_par_mito_biogenesis_by_AMPK_pT172=5.8915457309741E-5;
 % Parameter:   id =  mitophagy_new, name = mitophagy_new
-	global_par_mitophagy_new=0.22465992989378;
+	global_par_mitophagy_new=22465992989378;
 % Parameter:   id =  mitophagy_old, name = mitophagy_old
 	global_par_mitophagy_old=0.00122607614891116;
 % Parameter:   id =  mito_dysfunction, name = mito_dysfunction
@@ -558,5 +566,3 @@ function z = piecewise(varargin)
 	end
 	z = result;
 end
-
-

@@ -5,13 +5,24 @@ class Sim1FileProcessingService(FileProcessingService):
     def __init__(self,u_file_instance,file_type,r_trials,path = os.getcwd()):
         FileProcessingService.__init__(self,u_file_instance,file_type,r_trials,path = os.getcwd()) #Note r_trials is analogous to permutations
 
+    def SIM1_createTrialFiles(self): #Basically does the same thing as createGenomePermutations
+        if self.file_type == SupportedFileTypes.MATLAB:
+            return self.SIM1_HandleMATLABOrOctave()
+        elif self.file_type == SupportedFileTypes.TXT:
+            pass
+
     def getRValue(self):
         return self.permutations
 
     def SIM1_HandleMATLABOrOctave(self):
+        '''
+        Creates r_trials .m files with $distribution(a,b),name=x$ replaced with values
+        Also creates TrialCallFile, which calls each of the R generated .m values
+        :return: list of trial names
+        '''
         trial_file_list = []
         path = self.maybeCreateNewFileDirectory()
-        genome_call_file = open(path + '/GenomeCallFile.m', 'w') #Will contain the R .m files
+        genome_call_file = open(path + '/TrialCallFile.m', 'w') #Will contain the R .m files
 
         for trial in range(1, self.permutations + 1): #note - permutations refers to R now, not K
             family_coefs = []

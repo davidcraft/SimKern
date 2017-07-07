@@ -35,8 +35,8 @@ class ThirdPartyProgramCaller(object):
     def changeWorkingDirectory(self, new_directory):
         os.chdir(new_directory)
 
-    def callOctave(self, directory_of_mCallFile):
-        cmd = 'octave -q ' + directory_of_mCallFile + "/mCallFile.m"
+    def callOctave(self, directory_of_mCallFile, callFile):
+        cmd = 'octave -q ' + directory_of_mCallFile + callFile #Could also be "/GenomeCallFile.m for SIM1"
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         print(out)
