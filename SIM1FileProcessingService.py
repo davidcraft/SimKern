@@ -1,5 +1,9 @@
 from FileProcessingService import FileProcessingService
+from SupportedFileTypes import SupportedFileTypes
+from SupportedDistributions import SupportedDistributions
 import os
+import random
+
 
 class Sim1FileProcessingService(FileProcessingService):
     def __init__(self,u_file_instance,file_type,r_trials,path = os.getcwd()):
@@ -52,9 +56,10 @@ class Sim1FileProcessingService(FileProcessingService):
             self.data_file.seek(0)
         genome_call_file.close()
         return trial_file_list
-
-Sim1File = open('sim1/run_simulation_readGenome.m.u','r')
-R = 10
-path = os.getcwd()
-Sim1fps = Sim1FileProcessingService(Sim1File, 'm', R,path)
-print(Sim1fps.getRValue())
+#
+# Sim1File = open('sim1/run_simulation_readGenome.m.u','r')
+# R = 10
+# path = os.getcwd()
+# Sim1fps = Sim1FileProcessingService(Sim1File, 'm', R,path)
+# Sim1fps.SIM1_createTrialFiles()
+# print(Sim1fps.getRValue())
