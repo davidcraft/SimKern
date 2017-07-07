@@ -49,7 +49,7 @@ def createRTrialFilesAndGenomeCallFile(R,K): #FileProcessingServiceSim1
 
 def runRSimulationsAndCreateOutputList(): #
     octaveCall = ThirdPartyProgramCaller(os.getcwd(),'MAT')
-    outputList = octaveCall.callOctave('/GenomeFiles','/GenomeCallFile')
+    outputList = octaveCall.callOctave('/GenomeFiles','/TrialCallFile')
     return outputList
 
 def replaceGenomeFileNamefromFiles(trialFileList):
