@@ -7,7 +7,6 @@ import os
 import shutil
 import logging
 
-
 class ThirdPartyProgramCallerIT(unittest.TestCase):
 
     log = logging.getLogger(__name__)

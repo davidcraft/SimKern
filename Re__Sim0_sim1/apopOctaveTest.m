@@ -54,14 +54,14 @@ function apopOctaveTest()
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%	tspan=[0:0.01:100];
-%	opts = odeset('AbsTol',1e-3);
-%	[t,x]=ode23tb(@f,tspan,x0,opts);
+tspan=[0:0.01:100];
+opts = odeset('AbsTol',1e-3);
+[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
 % Start Octave code
-	t=linspace(0,100,100);
-	x=lsode('f',x0,t);
+% 	t=linspace(0,100,100);
+% 	x=lsode('f',x0,t);
 % End Octave code
 
 
@@ -71,12 +71,12 @@ function apopOctaveTest()
 %here I will just print out to the system terminal (stdout) the
 %0/1 result. note could also write a file, but this is easier.
 %could runs this out put into a file by calling this like oc
-if x(end,1)>.35
-    disp('1');
-else
-    disp('0');
-
-end
+% % if x(end,1)>.35
+% %     disp('1');
+% % else
+% %     disp('0');
+% % 
+% end
 
 endfunction
 
@@ -84,11 +84,11 @@ endfunction
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%function xdot=f(t,x)
+function xdot=f(t,x)
 % End Matlab code
 
 % Start Octave code
-function xdot=f(x,t)
+% function xdot=f(x,t)
 % End Octave code
 
 % Compartment: id = cytoplasm, name = cytoplasm, constant
@@ -725,7 +725,7 @@ reaction_J4_ka_4=2.0256E-5;
         craftDiscreteVar = 5;
 	
 % Species:   id = cPARP, name = cPARP, affected by kineticLaw
-	xdot(47) = (-1.0 * reaction_J78) + ( craftDiscreteVar* reaction_J87);
+	xdot(47) = (-1.0 * reaction_J78) + ( craftDiscreteVar* reaction_J87);    
 endfunction
 
 % adding few functions representing operators used in SBML but not present directly 

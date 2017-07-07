@@ -47,16 +47,16 @@ function apopOctaveTest()
    0.221412
    0.545610
    0.424752
-   0.762266];
+   0.162266];
 
 
 % Depending on whether you are using Octave or Matlab,
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%	tspan=[0:0.01:100];
-%	opts = odeset('AbsTol',1e-3);
-%	[t,x]=ode23tb(@f,tspan,x0,opts);
+% 	tspan=[0:0.01:100];
+% 	opts = odeset('AbsTol',1e-3);
+% 	[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
 % Start Octave code
@@ -64,27 +64,27 @@ function apopOctaveTest()
 	x=lsode('f',x0,t);
 % End Octave code
 
+% plot(t,x(:,[1 5 10 15 20 25]));
+%        legend('1', '5', '10', '15', '20', '25'); 
 
-%plot(t,x(:,[1 5 10 15 20]));
-%        legend('1', '5', '10', '15', '20'); 
 
 %here I will just print out to the system terminal (stdout) the
 %0/1 result. note could also write a file, but this is easier.
 %could runs this out put into a file by calling this like oc
-if x(end,1)>.35
+
+if x(end,1)>.28
     disp('1');
 else
     disp('0');
 
 end
 
-endfunction
 
 % Depending on whether you are using Octave or Matlab,
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%function xdot=f(t,x)
+% function xdot=f(t,x)
 % End Matlab code
 
 % Start Octave code
@@ -726,7 +726,7 @@ reaction_J4_ka_4=2.0256E-5;
 	
 % Species:   id = cPARP, name = cPARP, affected by kineticLaw
 	xdot(47) = (-1.0 * reaction_J78) + ( craftDiscreteVar* reaction_J87);
-endfunction
+
 
 % adding few functions representing operators used in SBML but not present directly 
 % in either matlab or octave. 

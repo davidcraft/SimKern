@@ -24,28 +24,28 @@ function main()
 	x0=zeros(40,1);
 	x0(1) = 10.0;
 	x0(2) = 10.0;
-	x0(3) = 10.0;
+	x0(3) = $discrete[10,20,30%],name=AMPK_init$; %AMPK 
 	x0(4) = 10.0;
 	x0(5) = 10.0;
 	x0(6) = 10.0;
 	x0(7) = 10.0;
-	x0(8) = 10.0;
+	x0(8) = $discrete[10.0,20,30],name =Fox03A$; %FoxO3A 
 	x0(9) = 10.0;
-	x0(10) = 10.0;
-	x0(11) = 10.0;
+	x0(10) = $discrete[10.0,20,30],name=CDKN1A$; %CDKN1A (p27)
+	x0(11) = $discrete[10.0,20,30],name=CDKN1B$; %CDKN1B (p21)
 	x0(12) = 25.0;
 	x0(13) = 10.0;
-	x0(14) = 10.0;
-	x0(15) = 1.0;
+	x0(14) = $discrete[10.0,100.0,1000.0],name=ROS$; %ROS
+	x0(15) = 1.0; %DNA Damage
 	x0(16) = 0.81;
 	x0(17) = 10.0;
-	x0(18) = 1.0;
-	x0(19) = 0.0;
+	x0(18) = 1.0; %Mito_new mass
+	x0(19) = 0.0; %Mito_old mass
 	x0(20) = 25.0;
-	x0(21) = 12.12;
-	x0(22) = 0.0;
-	x0(23) = 0.0;
-	x0(24) = 1.0;
+	x0(21) = 12.12; %Mito_new membrane pot
+	x0(22) = 0.0; %Mito_old membrane pot
+	x0(23) = 0.0; %Nil (Senescence?)
+	x0(24) = 1.0; %24-40 all fixed species
 	x0(25) = 1.0;
 	x0(26) = 1.0;
 	x0(27) = 1.0;
@@ -68,19 +68,27 @@ function main()
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-	tspan=[0:0.01:100];
-	opts = odeset('AbsTol',1e-3);
-	[t,x]=ode23tb(@f,tspan,x0,opts);
+%	tspan=[0:0.01:100];
+%	opts = odeset('AbsTol',1e-3);
+%	[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
-% Start Octave code
-% 	t=linspace(0,100,100);
-% 	x=lsode('f',x0,t);
+% % Start Octave code
+t=linspace(0,100,100);
+x=lsode('f',x0,t);
 % End Octave code
 
-
-	plot(t,x);
+if x0(14) > 10
+    disp('1')
+else
+    disp('0')
 end
+
+%	plot(t,x(:,[3 8 10 11 14 15 18 19 21 22]));
+%       legend('AMPK', 'FOXO3A', 'CDKN1A', 'CDKN1B', 'ROS', 'DDR', 'mito.mass.new', ...
+%       'mito.mass.old','mito.pot.new','mito.pot.old');
+%     plot(t,x(:,[23]));
+endfunction
 
 
 
@@ -88,24 +96,25 @@ end
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-function xdot=f(t,x)
+% function xdot=f(t,x)
 % End Matlab code
 
 % Start Octave code
-% function xdot=f(x,t)
+function xdot=f(x,t)
 % End Octave code
 
 time = linspace(1,20,100)
+% All 'Parameters' represent rate constants
 % Compartment: id = Cell, name = Cell, constant
 	compartment_Cell=1.0;
 % Parameter:   id =  Akt_S473_phos_by_insulin, name = Akt_S473_phos_by_insulin
-	global_par_Akt_S473_phos_by_insulin=$gauss(.6,.4),name=Akt$;
+	global_par_Akt_S473_phos_by_insulin=0.588783148144923;
 % Parameter:   id =  Akt_pS473_dephos_by_mTORC1_pS2448, name = Akt_pS473_dephos_by_mTORC1_pS2448
-	global_par_Akt_pS473_dephos_by_mTORC1_pS2448=$uniform(0,.5),name=Aka_pS473$;
+	global_par_Akt_pS473_dephos_by_mTORC1_pS2448=0.114598191621279;
 % Parameter:   id =  AMPK_T172_phos, name = AMPK_T172_phos
 	global_par_AMPK_T172_phos=0.355183987378767;
 % Parameter:   id =  AMPK_pT172_dephos_by_Mito_membr_pot_new, name = AMPK_pT172_dephos_by_Mito_membr_pot_new
-	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_new=$gauss(.3,.1),name=AMPK_pT172$;
+	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_new=0.117744691539618;
 % Parameter:   id =  AMPK_pT172_dephos_by_Mito_membr_pot_old, name = AMPK_pT172_dephos_by_Mito_membr_pot_old
 	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_old=1.00000000000003E-6;
 % Parameter:   id =  mTORC1_S2448_phos_by_AA, name = mTORC1_S2448_phos_by_AA
@@ -163,11 +172,11 @@ time = linspace(1,20,100)
 % Parameter:   id =  sen_ass_beta_gal_dec, name = sen_ass_beta_gal_dec
 	global_par_sen_ass_beta_gal_dec=0.154821166783837;
 % Parameter:   id =  mito_biogenesis_by_mTORC1_pS2448, name = mito_biogenesis_by_mTORC1_pS2448
-	global_par_mito_biogenesis_by_mTORC1_pS2448=0.0133620123598202;
+	global_par_mito_biogenesis_by_mTORC1_pS2448= $gauss(0.133620123598202,.1)$;
 % Parameter:   id =  mito_biogenesis_by_AMPK_pT172, name = mito_biogenesis_by_AMPK_pT172
 	global_par_mito_biogenesis_by_AMPK_pT172=5.8915457309741E-5;
 % Parameter:   id =  mitophagy_new, name = mitophagy_new
-	global_par_mitophagy_new=0.22465992989378;
+	global_par_mitophagy_new=$gauss(0.22465992989378,.16)$;
 % Parameter:   id =  mitophagy_old, name = mitophagy_old
 	global_par_mitophagy_old=0.00122607614891116;
 % Parameter:   id =  mito_dysfunction, name = mito_dysfunction
@@ -472,7 +481,7 @@ time = linspace(1,20,100)
 % Species:   id = JNK_pT183_obs, name = JNK_pT183_obs, involved in a rule 	xdot(39) = x(39);
 	
 % Species:   id = SA_beta_gal_obs, name = SA_beta_gal_obs, involved in a rule 	xdot(40) = x(40);
-end
+endfunction
 
 function z=function_2(v), z=(v);end
 
