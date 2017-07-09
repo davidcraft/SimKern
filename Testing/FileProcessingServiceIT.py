@@ -5,14 +5,14 @@ import pkg_resources
 import os
 import shutil
 import logging
-
+import re
 
 class FileProcessingServiceIT(unittest.TestCase):
 
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
 
-    current_working_dir = os.getcwd() # Should be this package.
+    current_working_dir = os.getcwd()  # Should be this package.
 
     def setUp(self):
         resource_path = '/'.join(('SampleDataFiles', 'WNT_ERK_crosstalk.m'))
@@ -36,5 +36,6 @@ class FileProcessingServiceIT(unittest.TestCase):
 
         assert os.path.isdir(self.current_working_dir)
         created_files = [file for file in os.listdir(self.generated_folder)]
-        assert len(created_files) == permutations + 2
-        assert len([file for file in created_files if file == self.fileProcessingService.GENOMES_FILE_NAME]) == 1
+        assert len(created_files) == (2 * permutations) + 1
+        assert len([file for file in created_files if re.findall(r'.*_key.*', file)]) == permutations
+

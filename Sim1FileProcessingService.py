@@ -6,8 +6,10 @@ import random
 
 
 class Sim1FileProcessingService(FileProcessingService):
-    def __init__(self,u_file_instance,file_type,r_trials,path = os.getcwd()):
-        FileProcessingService.__init__(self,u_file_instance,file_type,r_trials,path = os.getcwd()) #Note r_trials is analogous to permutations
+
+    def __init__(self, u_file_instance, file_type, r_trials, path=os.getcwd()):
+        # Note r_trials is analogous to permutations
+        FileProcessingService.__init__(self, u_file_instance, file_type, r_trials, path)
 
     def SIM1_createTrialFiles(self): #Basically does the same thing as createGenomePermutations
         if self.file_type == SupportedFileTypes.MATLAB:

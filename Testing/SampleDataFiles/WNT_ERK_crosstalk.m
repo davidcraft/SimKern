@@ -69,8 +69,10 @@ function main()
 	x=lsode('f',x0,t);
 % End Octave code
 
-
-	plot(t,x);
+%here I will just print out to the system terminal (stdout) the
+%0/1 result. note could also write a file, but this is easier.
+%could runs this out put into a file by calling this like oc
+    disp(x(end, end) > 0.85);
 end
 
 
