@@ -16,4 +16,7 @@ class sim1(object):
         sim1FileProcessor = Sim1FileProcessingService(self.data_file, self.file_type, self.number_of_genomes, self.trials)
         sim1FileProcessor.SIM1_HandleMATLABOrOctave()
         programCaller = ThirdPartyProgramCaller(self.path, "m")
-        programCaller.callOctave(programCaller.files_directory+"/GenomeFiles", "TrialCallFile.m")
+
+        programCaller.callOctave(programCaller.files_directory+"/GenomeFiles", "TrialCallFile.m") #Change TrialCallFile
+
+    def create

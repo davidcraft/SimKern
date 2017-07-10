@@ -9,7 +9,8 @@ Created on Thu Jun 29 15:04:29 2017
 #TESTING Sim0
 
 import os
-from FileProcessingService import FileProcessingService 
+from FileProcessingService import FileProcessingService
+from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 
 #f = open('Testing/TFiles/apopOctaveTest.m.t','r')
@@ -18,19 +19,17 @@ file_type = 'm'
 file_processing_service = FileProcessingService(f, 'm', 10, os.getcwd())
 fileList = file_processing_service.createGenomes()
 
-test = ThirdPartyProgramCaller(os.getcwd(), file_type)
-# test.callOctave()
-test.callThirdPartyProgram()
+# test = ThirdPartyProgramCaller(os.getcwd(), file_type)
+# # test.callOctave()
+# test.callThirdPartyProgram()
 
 
 
 #TESTING Sim1
-f = open('Testing/SampleDataFiles/apopOctaveTest.m.t', 'r')
-file_processing_service = FileProcessingService(f, 'm', 10, os.getcwd())
-GenomeFileList = file_processing_service.createGenomes()
-run_simulation_readGenome = open(os.getcwd() + '/sim1/run_simulation_readGenome.m.u')
-R = 20
-sim1_processing = FileProcessingService(run_simulation_readGenome,'m',R,os.getcwd())
-#TODO - where are these
-sim1_processing.createGenomes()
+dot_u_file = open('sim1/run_simulation_readGenome.m.u', 'r')
+Sim1file_processing_service = Sim1FileProcessingService(dot_u_file, 'm', 10, 6,path = os.getcwd())
+Sim1FileList = Sim1file_processing_service.createTrialFiles()
+# run_simulation_readGenome = open(os.getcwd() + '/sim1/run_simulation_readGenome.m.u')
+
+
 

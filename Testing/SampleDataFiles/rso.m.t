@@ -216,7 +216,7 @@ s5 = $gauss(.1,.015),name=s5$;        % p21  mRNA synthesis
 %t4 = 0.1;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
 %t5 = 0.1;        % p21  translation
 t1 = 0.1;        % Wip1 translation
-t2 = 0.1 +$gauss(0,.01),name=t2$;        % PTEN translation
+t2 = 0.1 +$gauss(0,.01),name=Gt2$;        % PTEN translation
 t3 = 0.1;        % Mdm2 translation   
 t4 = $gauss(.1,.02),name=t4$;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
 t5 = 0.1;        % p21  translation
@@ -224,7 +224,7 @@ t5 = 0.1;        % p21  translation
 % protein synthesis    
 %
 %s6 = 300;        % p53 sythesis
-s6 = 300+$gauss(0,30),name=s6$;        % p53 sythesis
+s6 = 300+$gauss(0,30),name=Gs6$;        % p53 sythesis
 s7 =  30;        % proCaspases sythesis [BMC Syst.Biol.2013: 20]
 s8 =  30;        % HIPK2 synthesis    
 s9 =  30;        % Cyclin_E synthesis, induced by E2F1
@@ -263,7 +263,7 @@ d9  = 3e-5;      % spontaneous Bad_p dephosphorylation [BMC Syst.Biol.2013: 3e-5
 
 d10 =  d3+$gauss(0,2e-5),name=d10$;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20  
 d11 =  d4;       % p53_S46 dephoshorylation of Ser46 by Wip1 
-d12 = 1e4+$gauss(0,1.5e3),name=d12$;       % Rb1 dephosphorylation  
+d12 = 1e4+$gauss(0,1.5e3),name=Gd12$;       % Rb1 dephosphorylation  
     
 % proteins binding    
 %

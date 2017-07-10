@@ -26,9 +26,9 @@ class Sim1FileProcessingService(FileProcessingService):
         '''
         Creates r_trials .m files with $distribution(a,b),name=x$ replaced with values
         Also creates TrialCallFile, which calls each of the R generated .m values
-        :return: list of trial names
+        :return: sim1_file_list --> list of names of all files created
         '''
-        trial_file_list = []
+        sim1_file_list = []
         path = self.maybeCreateNewFileDirectory()
         genome_call_file = open(path + '/TrialCallFile.m', 'w') #Will contain the R .m files
 
@@ -38,7 +38,7 @@ class Sim1FileProcessingService(FileProcessingService):
                 trial_name = 'trial' + str(trial)  # Note - T
                 genome_name = 'genome' + str(genome)
                 new_m_file = open(path + "/" + trial_name + "_" + genome_name + ".m", "w") #
-                trial_file_list.append(trial_name + "_" + genome_name + ".m") #Writing file name to python list
+                sim1_file_list.append(trial_name + "_" + genome_name + ".m") #Writing file name to python list
                 genome_call_file.write(trial_name + "_" + genome_name + "\n") #Writing filename to GenomeCall File
 
                 for line in self.data_file.readlines():
@@ -65,7 +65,7 @@ class Sim1FileProcessingService(FileProcessingService):
                 new_m_file.close()
                 self.data_file.seek(0)
         genome_call_file.close()
-        return trial_file_list
+        return sim1_file_list
 #
 # Sim1File = open('sim1/run_simulation_readGenome.m.u','r')
 # R = 10
