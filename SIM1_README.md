@@ -20,7 +20,7 @@ The user must create a text file of the desired simulation for the SIM0 framewor
 
 (MATLAB/Octave): `my_simulation.m` -> `my_simulation.m.u`
 
-In the simulation text file, the user should change model-specific parameters from singular values to randomly chosen values derived from a number of discrete and continuous probability distributions provided.
+In the simulation text file, the user should change model-specific parameters from singular values to randomly chosen values derived from a number of discrete and continuous probability distributions provided. This is performed by placing desired changable parameters between two dollar signs. 
 
 Example(s) (MATLAB):
 
