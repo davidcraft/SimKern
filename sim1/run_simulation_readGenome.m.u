@@ -218,7 +218,7 @@ t5 = 0.1;        % p21  translation
     
 % protein synthesis    
 %
-s6 = Gs6+$gauss(0,30),name=s6$;        % p53 sythesis
+s6 = Gs6+$gauss(0,10),name=s6$;        % p53 sythesis
 s7 =  30;        % proCaspases sythesis [BMC Syst.Biol.2013: 20]
 s8 =  30;        % HIPK2 synthesis    
 s9 =  30;        % Cyclin_E synthesis, induced by E2F1
@@ -250,9 +250,9 @@ d6  = 1e-10;     % Mdm2_nuc_S166S186p_S395p dephosphorylation of Ser395 by Wip1
 d7  = 3e-7;      % PIP3 dephosphorylation to PIP2 by PTEN
 d8  = 1e-4;      % AKT_p spontaneous dephosphorylation     
 d9  = 3e-5;      % spontaneous Bad_p dephosphorylation [BMC Syst.Biol.2013: 3e-5]
-d10 =  d3+$gauss(0,2e-5),name=d10$;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20  
+d10 =  d3+$gauss(0,2e-6),name=d10$;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20  
 d11 =  d4;       % p53_S46 dephoshorylation of Ser46 by Wip1 
-d12 = Gd12+$gauss(0,1.5e3),name=d12$;       % Rb1 dephosphorylation  
+d12 = Gd12+$gauss(0,1.5e2),name=d12$;       % Rb1 dephosphorylation  
     
 % proteins binding    
 %
@@ -264,11 +264,11 @@ b5 = 1e-5;       % p21 and Cyclin_E
 
 % unbinding 
 %
-u1 = $uniform(.8e-3,2.5e-3),name=u1$;       % Bax:BclXL complex  [BMC Syst.Biol.2013: 1e-4]       
+u1 = $uniform(.8e-3,2.5e-5),name=u1$;       % Bax:BclXL complex  [BMC Syst.Biol.2013: 1e-4]       
 u2 = 1e-3;       % Bad:BclXL complex   [BMC Syst.Biol.2013: 1e-4] 
 u3 = 1e-3;       % Bad_p:14-3-3 complex [BMC Syst.Biol.2013: 1e-4] 
 u5 = 1e-4;       % Rb1:E2F1 complex
-u6 = $uniform(.6e-4,2e-4),name=u6$;       % p21:Cyclin_E complex 
+u6 = $uniform(.6e-4,2e-5),name=u6$;       % p21:Cyclin_E complex 
 
 % import/export
 %

@@ -40,7 +40,7 @@ class ThirdPartyProgramCaller(object):
         os.chdir(new_directory)
 
     def callOctave(self, directory_of_file, callFile):
-        cmd = 'octave -q ' + directory_of_file + "/" + callFile
+        cmd = '/Applications/Octave.app/Contents/Resources/usr/bin/octave -q ' + directory_of_file + "/" + callFile
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         print(out)
@@ -56,7 +56,7 @@ class ThirdPartyProgramCaller(object):
 
     def getSim1Responses(self):
         current_directory = os.getcwd()
-        directory_of_files = self.files_directory + "/GenomeFiles"
+        directory_of_files = self.files_directory  # + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
         outputs = []
         for file in self.file_list:

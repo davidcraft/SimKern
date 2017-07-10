@@ -1,7 +1,8 @@
+from __future__ import division
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 import os
-from __future__ import division
+
 
 class sim1(object):
 
@@ -15,7 +16,6 @@ class sim1(object):
     def generateSimilarityMatrix(self):
         sim1FileProcessor = Sim1FileProcessingService(self.data_file, self.file_type, self.number_of_genomes, self.trials)
         sim1_file_list = sim1FileProcessor.createTrialFiles()
-
         programCaller = ThirdPartyProgramCaller(self.path, "m",sim1_file_list)
         sim1_response_list = programCaller.getSim1Responses()
         response_matrix  = self.generateResponseMatrix(sim1_response_list)
@@ -55,3 +55,7 @@ class sim1(object):
 
         return kernel #TODO - are the dimensions of this correct?
 
+u_file = open('sim1/run_simulation_readGenome.m.u','r')
+sim = sim1(u_file,'m',5,6)
+mat = sim.generateSimilarityMatrix()
+print(mat)
