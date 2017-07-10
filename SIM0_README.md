@@ -42,7 +42,7 @@ my_simulation.m.t -> text file of simulation with '$my_param$' inputted previous
 K -> integral number of total network simulations
 my_path -> output path that saves the K network simulations
 
-SIM0 will then return a list/array with elements either 0 or 1. The resulting list/array can then be used for 
+SIM0 will then return a list/array with elements either 0 or 1. If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1. The resulting list/array can then be used for 
 machine learning using any choice of software.
 
 
