@@ -8,9 +8,10 @@ class ThirdPartyProgramCaller(object):
 
     OUTPUT_FILE_NAME = 'Sim0Output.csv'
 
-    def __init__(self, files_directory, file_type):
+    def __init__(self, files_directory, file_type, file_list):
         self.files_directory = files_directory
         self.file_type = file_type
+        self.file_list = file_list
 
     def callThirdPartyProgram(self):
         if self.file_type == SupportedFileTypes.MATLAB:
@@ -20,23 +21,26 @@ class ThirdPartyProgramCaller(object):
 
     def writeOutputFileForOctave(self):
         current_directory = os.getcwd()
-        directory_of_m_call_file = self.files_directory + "/GenomeFiles"
-        self.changeWorkingDirectory(directory_of_m_call_file)
-        output = self.callOctave(directory_of_m_call_file, "mCallFile.m")
+        directory_of_files = self.files_directory + "/GenomeFiles"
+        self.changeWorkingDirectory(directory_of_files)
+        outputs=[]
+        for file in self.file_list:
+            result= self.callOctave(directory_of_files, file)
+            outputs.append(result)
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 outputs_writer = csv.writer(csv_file)
-                outputs_writer.writerow(output)
+                outputs_writer.writerow(outputs)
             finally:
                 csv_file.close()
         self.changeWorkingDirectory(current_directory)
-        return output
+        return outputs
 
     def changeWorkingDirectory(self, new_directory):
         os.chdir(new_directory)
 
-    def callOctave(self, directory_of_mCallFile, callFile):
-        cmd = 'octave -q ' + directory_of_mCallFile + "/" + callFile
+    def callOctave(self, directory_of_file, callFile):
+        cmd = 'octave -q ' + directory_of_file + "/" + callFile
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         print(out)
@@ -46,6 +50,17 @@ class ThirdPartyProgramCaller(object):
             output = [int(i) for i in output]
         except ValueError as valueError:
             print(valueError.message)  # TODO: setup logging for this class.
-            output = []
+            output = [int(-1)]
 
-        return output
+        return output[0]
+
+    def getSim1Responses(self):
+        current_directory = os.getcwd()
+        directory_of_files = self.files_directory + "/GenomeFiles"
+        self.changeWorkingDirectory(directory_of_files)
+        outputs = []
+        for file in self.file_list:
+            result = self.callOctave(directory_of_files, file)
+            outputs.append(result)
+        self.changeWorkingDirectory(current_directory)
+        return outputs
