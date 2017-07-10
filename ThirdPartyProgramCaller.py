@@ -22,7 +22,7 @@ class ThirdPartyProgramCaller(object):
         current_directory = os.getcwd()
         directory_of_m_call_file = self.files_directory + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_m_call_file)
-        output = self.callOctave(directory_of_m_call_file)
+        output = self.callOctave(directory_of_m_call_file, "mCallFile.m")
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 outputs_writer = csv.writer(csv_file)
@@ -45,7 +45,7 @@ class ThirdPartyProgramCaller(object):
         try:
             output = [int(i) for i in output]
         except ValueError as valueError:
-            print(valueError.message) # TODO: setup logging for this class.
+            print(valueError.message)  # TODO: setup logging for this class.
             output = []
 
         return output
