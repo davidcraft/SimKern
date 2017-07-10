@@ -14,7 +14,8 @@ placing dollar signs at the start and end of the parameter definition. The user 
 discrete and continuous probability distributions that can be used to generate a given number of different 
 models.
 
-Example (MATLAB): my_param = 0.5 -> $my_param = normrnd(0.5,0.1)$
+Example (MATLAB): my_param = 0.5 -> $my_param = normrnd(0.5,0.1)$ - Normally distributed parameter with mean 0.5 and standard 
+deviation 0.1.
 
 # FRAMEWORK
 The SIM0 framework was written in Python 3.6 and tested using Octave. For those favoring UNIX/LINUX systems, the framework
