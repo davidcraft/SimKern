@@ -6,7 +6,7 @@ import re
 
 class Sim1FileProcessingService(FileProcessingService):
 
-    GENOMES_KEY_FILE_REGEX = re.compile(r'genome(\d*)?')
+    GENOMES_KEY_FILE_REGEX = re.compile(r'genome(\d+)?')
 
     def __init__(self, u_file_instance, file_type, k_genomes, r_trials, path=os.getcwd()):
         self.number_of_trials = int(r_trials)
@@ -58,7 +58,7 @@ class Sim1FileProcessingService(FileProcessingService):
                         new_m_file.write(new_line)
                         family_coefs.append(coefficient_value)
                     elif search_result_for_genomes_file is not None:
-                        new_line = self.GENOMES_KEY_FILE_REGEX.sub(genome_name + "_key", line)
+                        new_line = self.GENOMES_KEY_FILE_REGEX.sub(genome_name, line)
                         new_m_file.write(new_line)
                     else:
                         new_m_file.write(line)
@@ -66,10 +66,3 @@ class Sim1FileProcessingService(FileProcessingService):
                 self.data_file.seek(0)
         genome_call_file.close()
         return trial_file_list
-#
-# Sim1File = open('sim1/run_simulation_readGenome.m.u','r')
-# R = 10
-# path = os.getcwd()
-# Sim1fps = Sim1FileProcessingService(Sim1File, 'm', R,path)
-# Sim1fps.SIM1_createTrialFiles()
-# print(Sim1fps.getRValue())

@@ -14,6 +14,17 @@ class sim1(object):
     def generateSimilarityMatrix(self):
 
         sim1FileProcessor = Sim1FileProcessingService(self.data_file, self.file_type, self.number_of_genomes, self.trials)
-        sim1FileProcessor.SIM1_HandleMATLABOrOctave()
-        programCaller = ThirdPartyProgramCaller(self.path, "m")
-        programCaller.callOctave(programCaller.files_directory+"/GenomeFiles", "TrialCallFile.m")
+        file_list=sim1FileProcessor.createTrialFiles()
+        programCaller = ThirdPartyProgramCaller(self.path, "m", file_list)
+        responses=programCaller.getSim1Responses()
+        responses=self.generateResponseMatrix(responses)
+
+    def generateResponseMatrix(self, response_list):
+        responses=range(self.number_of_genomes)
+        for genome in self.number_of_genomes:
+            responses[genome-1]=[]
+        pos=0
+        for trial in self.trials:
+            for genome in self.number_of_genomes:
+                responses[genome-1].append(response_list[pos])
+                pos=pos+1
