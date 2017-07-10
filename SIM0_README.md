@@ -29,11 +29,11 @@ values derived from a number of discrete and continuous probability distribution
 Example (MATLAB): my_param = 0.757 -> $my_param = normrnd(0.757,0.12)$
 
 # RUNNING SIM0
-Once the framework is downloaded into an appropriate depository, the user can initiate SIMO by the following prompt:
+Once the framework is downloaded into an appropriate depository, the user can initiate SIM0 by the following prompt:
 
 python "__main__.py"
 
-A menu will appear in the command window. To immeadiately run the SIMO enviornment, enter the following three arguments into 
+A menu will appear in the command window. To immeadiately run the SIM0 enviornment, enter the following three arguments into 
 the command line:
 
 my_simulation.m.t,K,my_path
