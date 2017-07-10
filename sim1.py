@@ -19,4 +19,19 @@ class sim1(object):
 
         programCaller.callOctave(programCaller.files_directory+"/GenomeFiles", "TrialCallFile.m") #Change TrialCallFile
 
-    def create
+
+        file_list=sim1FileProcessor.createTrialFiles()
+        programCaller = ThirdPartyProgramCaller(self.path, "m", file_list)
+        responses=programCaller.getSim1Responses()
+        responses=self.generateResponseMatrix(responses)
+
+    def generateResponseMatrix(self, response_list):
+        responses=range(self.number_of_genomes)
+        for genome in self.number_of_genomes:
+            responses[genome-1]=[]
+        pos=0
+        for trial in self.trials:
+            for genome in self.number_of_genomes:
+                responses[genome-1].append(response_list[pos])
+                pos=pos+1
+
