@@ -8,7 +8,7 @@ genomes in a population, the user will run a total number of R simulations for e
 
 # REQUIREMENTS
 
-The SIM1 framework currently supports MATLAB and Octave as viable simulation engines. We have not yet extended the framework to consider logical or qualitative simulation engines. In the simulation engine, the user must specify which model-specific parameters are to be changed to produce a total number of K simulations of the system in question. (ADD TBD)
+The SIM1 framework currently supports MATLAB and Octave as viable simulation engines. We have not yet extended the framework to consider logical or qualitative simulation engines. In the simulation engine, the user must specify which model-specific parameters are to be changed to produce a total number of K simulations of the system in question. For each of the K simulations, we will further simulate each member a total number of R times. 
 
 # FRAMEWORK
 
@@ -22,14 +22,14 @@ The user must create a text file of the desired simulation for the SIM0 framewor
 
 In the simulation text file, the user should change model-specific parameters from singular values to randomly chosen values derived from a number of discrete and continuous probability distributions provided.
 
-Example (MATLAB): my_param = 0.757 -> $my_param = normrnd(0.757,0.12)$
+Example (MATLAB): `my_param = 0.757` -> `$my_param = normrnd(0.757,0.12)$`
 
 # RUNNING SIM1
 
 Once the framework is located and placed into an appropriate depository, the user can initiate SIM1 by 
 the following prompt (assuming the path is defined as well):
 
-python "__main__.py"
+`python2.7 "__main__.py"`
 
 A menu will appear in the command window. To immeadiately run the SIM0 enviornment, enter the following four arguments into the command line:
 
@@ -40,4 +40,4 @@ K -> integral number of total network simulations
 R -> integral number of total network simulations of each of the K family members
 my_path -> output path that saves the K network simulations
 
-SIM1 will then return a list/matrix with elements either 0 or 1. If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1. The resulting list/matrix can then be used for machine learning using any choice of software.
+SIM1 will then return a list/matrix of dimensions K-by-R with elements either 0 or 1. If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1. The resulting list/matrix can then be used for machine learning using any choice of software.
