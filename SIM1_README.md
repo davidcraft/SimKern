@@ -35,14 +35,14 @@ the following prompt (assuming the path is defined as well):
 
 `python2.7 "__main__.py"`
 
-A menu will appear in the command window. To immeadiately run the SIM0 enviornment, enter the following four arguments into the command line:
+A menu will appear in the command window. To immeadiately run the SIM1 enviornment, enter the following four arguments into the command line:
 
 `my_simulation.m.t,K,R,my_path`
 
 `my_simulation.m.t` -> text file of simulation with '$my_param$' inputted previously by user
 `K` -> integral number of total network simulations
 `R` -> integral number of total network simulations of each of the K family members
-`my_path` -> output path that saves the K network simulations
+`my_path` -> output path that saves the K network simulations in new directory
 
 SIM1 will then return a list/matrix of dimensions K-by-R with elements either 0 or 1. If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1. The resulting list/matrix can then be used for machine learning using any choice of software.
 
