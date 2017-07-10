@@ -24,7 +24,7 @@ adding the ".t" after the simulation file:
 (MATLAB/Octave): `my_simulation.m` -> `my_simulation.m.t`
 
 In the simulation text file, the user should change model-specific parameters from singular values to randomly chosen
-values derived from a number of discrete and continuous probability distributions provided. 
+values derived from a number of discrete and continuous probability distributions provided. This is performed by placing desired changable parameters between two dollar signs. 
 
 Example(s) (MATLAB): 
 
