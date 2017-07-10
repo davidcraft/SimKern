@@ -28,6 +28,26 @@ values derived from a number of discrete and continuous probability distribution
 
 Example (MATLAB): my_param = 0.757 -> $my_param = normrnd(0.757,0.12)$
 
+# RUNNING SIM0
+Once the framework is downloaded into an appropriate depository, the user can initiate SIMO by the following prompt:
+
+python "__main__.py"
+
+A menu will appear in the command window. To immeadiately run the SIMO enviornment, enter the following three arguments into 
+the command line:
+
+my_simulation.m.t,K,my_path
+
+my_simulation.m.t -> text file of simulation with '$my_param$' inputted previously by user
+K -> integral number of total network simulations
+my_path -> output path that saves the K network simulations
+
+SIM0 will then return a list/array with elements either 0 or 1. The resulting list/array can then be used for 
+machine learning using any choice of software.
+
+
+
+
 
 
 
