@@ -11,13 +11,13 @@ class FileProcessingService(object):
     GENOMES_FILE_NAME = "Genomes.txt"
     IDENTIFIER_REGEX = re.compile(r'\$.+\$')
 
-    def __init__(self, data_file, file_type, permutations, path):
+    def __init__(self, data_file, file_type, number_of_genomes, path):
         self.data_file = data_file
         self.file_type = file_type
-        self.permutations = int(permutations)
+        self.number_of_genomes = int(number_of_genomes)
         self.path = path
 
-    def createGenomePermutations(self):
+    def createGenomes(self):
         if self.file_type == SupportedFileTypes.MATLAB:
             return self.handleOctaveOrMATLABFile()
         elif self.file_type == SupportedFileTypes.TXT:
@@ -34,7 +34,7 @@ class FileProcessingService(object):
 
         genomes = {}
 
-        for genome in range(1, self.permutations + 1):
+        for genome in range(1, self.number_of_genomes + 1):
             family_coefs = []
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
 
