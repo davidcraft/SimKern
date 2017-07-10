@@ -17,28 +17,30 @@ def main():
     elif len(arguments) == 3:
         # Sim0
         input_file = arguments[0]
-        permutations = arguments[1]
+        number_of_genomes = arguments[1]
         path = arguments[2]
         file_extension = input_file.split(".")[1]
-        createAndAnalyzeKGenomes(file_extension, input_file, path, permutations)
+        createAndAnalyzeKGenomes(file_extension, input_file, path, number_of_genomes)
     elif len(arguments) == 4:
         # Sim1
         input_file = arguments[0]
-        permutations = arguments[1]  # raw_input("Enter number of permutations (K):\n") # arguments[1]
-        big_r = arguments[2]
+        number_of_genomes = arguments[1]  # raw_input("Enter number of permutations (K):\n") # arguments[1]
+        number_of_trials = arguments[2]
         path = arguments[3]  # raw_input("Enter path of output folder:\n") #arguments[2]
         file_extension = input_file.split(".")[1]
-        createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path, permutations, big_r)
+        createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path,
+                                                           number_of_genomes, number_of_trials)
     else:
         log.warn("Program expects three arguments for SIM0: a file expressing differential equations, " +
                  "an integer representing number of genomes to create, and a path to store generated files,\n" +
                  "or four arguments for SIM1:  a file expressing differential equations, " +
-                 "an integer representing number of genomes to create, an integer representing number of permutations "
+                 "an integer representing number of genomes to create, an integer representing number of trials "
                  "to compute, and a path to store generated files")
     return
 
 
 def promptUserForInput():
+    # TODO: Reprompt if non-sensible answer.
     simulation_to_run = raw_input("-------Main Menu-------\n"
                                   "Choose your simulation:\n"
                                   "\t0: SIM0 - create and analyze K genomes\n"
@@ -55,10 +57,10 @@ def promptUserForInput():
     elif simulation_as_int == 1:
         input_file = raw_input("Enter path of input file:\n")
         permutations = int(raw_input("Enter number of genomes (K) as an integer:\n"))
-        big_r = int(raw_input("Enter number of permutation for each genome (R) as an integer:\n"))
+        number_of_trials = int(raw_input("Enter number of trials for each genome (R) as an integer:\n"))
         path = raw_input("Enter path of output folder (must not be root directory):\n")
         file_extension = input_file.split(".")[1]
-        createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path, permutations, big_r)
+        createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path, permutations, number_of_trials)
     elif simulation_as_string == "Q":
         return
 
@@ -70,11 +72,11 @@ def safe_cast(val, to_type, default=None):
         return default
 
 
-def createAndAnalyzeKGenomes(file_extension, input_file, path, permutations):
+def createAndAnalyzeKGenomes(file_extension, input_file, path, number_of_genomes):
     with open(input_file) as data_file:
         try:
-            genome_permutations = processInputFileAndCreateGenomePermutations(data_file, file_extension,
-                                                                              path, permutations)
+            genomes = processInputFileAndCreateGenomes(data_file, file_extension,
+                                                                   path, number_of_genomes)
             third_party_result = callThirdPartyService(file_extension, path)
         except ValueError as valueError:
             log.error(valueError.message)
@@ -82,21 +84,24 @@ def createAndAnalyzeKGenomes(file_extension, input_file, path, permutations):
             log.debug("Closing file %s", input_file)
             data_file.close()
 
-# Sim0 file parser:
-def processInputFileAndCreateGenomePermutations(data_file, file_extension, path, permutations):
-    file_parsing_service = FileProcessingService(data_file, file_extension, permutations, path)
-    return file_parsing_service.createGenomePermutations()
+
+def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_genomes):
+    file_parsing_service = FileProcessingService(data_file, file_extension, number_of_genomes, path)
+    return file_parsing_service.createGenomes()
+
 
 def callThirdPartyService(file_extension, path):
     thirdPartyCallerService = ThirdPartyProgramCaller(path, file_extension)
     return thirdPartyCallerService.callThirdPartyProgram()
 
 
-def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path, permutations, big_r):
+def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path,
+                                                       number_of_genomes, number_of_trials):
     with open(input_file) as data_file:
         try:
-            trial_files = createRTrialFilesAndGenomeCallFile(data_file, file_extension, permutations, big_r, path)
-            simulations = runAllKGenomesAndCreateMatrix(data_file, file_extension, permutations, big_r, path)
+            trial_files = createRTrialFilesAndGenomeCallFile(data_file, file_extension, number_of_genomes,
+                                                             number_of_trials, path)
+            simulations = runAllKGenomesAndCreateMatrix(file_extension, number_of_genomes, number_of_trials, path)
             print(trial_files)
         except ValueError as valueError:
             log.error(valueError.message)
@@ -106,29 +111,29 @@ def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_fil
 
 
 #Begin SIM1 using Octave: --> #TODO - Maybe incorporate these into SIM1
-def createRTrialFilesAndGenomeCallFile(data_file, file_extension, permutations, big_r, path): #FileProcessingServiceSim1
-    f = open('sim1/run_simulation_readGenome.m.u')
-    process_R_Files = Sim1FileProcessingService(data_file, file_extension, big_r, path)
-    return process_R_Files.SIM1_createTrialFiles()
+def createRTrialFilesAndGenomeCallFile(data_file, file_extension, number_of_genomes, number_of_trials, path): #FileProcessingServiceSim1
+    # f = open('sim1/run_simulation_readGenome.m.u')
+    process_R_Files = Sim1FileProcessingService(data_file, file_extension, number_of_genomes, number_of_trials, path)
+    return process_R_Files.createTrialFiles()
 
 
-def runAllKGenomesAndCreateMatrix(data_file, file_extension, permutations, big_r, path):
+def runAllKGenomesAndCreateMatrix(file_extension, number_of_genomes, number_of_trials, path):
     outputMatrix = []
-    trialFileList = createAndNameRTrialFiles(big_r, permutations)
-    for genome in range(permutations):
-        outputRow = runRSimulationsAndCreateOutputList()
+    trialFileList = createAndNameRTrialFiles(number_of_trials, number_of_genomes)
+    for genome in range(1, int(number_of_genomes) + 1):
+        outputRow = runRSimulationsAndCreateOutputList(path, file_extension, genome)
         replaceGenomeFileNamefromFiles(trialFileList) #TODO - pass in a list? Or smthg like a directory?
         outputMatrix.append(outputRow)
     return outputMatrix
 
 
-def createAndNameRTrialFiles(R, K):
+def createAndNameRTrialFiles(number_of_trials, number_of_genomes):
     return []
 
 
-def runRSimulationsAndCreateOutputList(path, file_extension): #
+def runRSimulationsAndCreateOutputList(path, file_extension, genome):
     octaveCall = ThirdPartyProgramCaller(path, file_extension)
-    outputList = octaveCall.callOctave('/GenomeFiles', '/TrialCallFile')
+    outputList = octaveCall.callOctave(path + "/GenomeFiles", 'TrialCallFile.m')
     return outputList
 
 
