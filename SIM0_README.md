@@ -26,12 +26,12 @@ adding the ".t" after the simulation file:
 In the simulation text file, the user should change model-specific parameters from singular values to randomly chosen
 values derived from a number of discrete and continuous probability distributions provided. 
 
-Example (MATLAB): my_param = 0.757 -> $my_param = normrnd(0.757,0.12)$
+Example (MATLAB): `my_param = 0.757` -> `$my_param = normrnd(0.757,0.12)$`
 
 # RUNNING SIM0
 Once the framework is downloaded into an appropriate depository, the user can initiate SIM0 by the following prompt:
 
-python "__main__.py"
+`python2.7 "__main__.py"`
 
 A menu will appear in the command window. To immeadiately run the SIM0 enviornment, enter the following three arguments into 
 the command line:
@@ -42,7 +42,7 @@ my_simulation.m.t -> text file of simulation with '$my_param$' inputted previous
 K -> integral number of total network simulations
 my_path -> output path that saves the K network simulations
 
-SIM0 will then return a list/array with elements either 0 or 1. If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1. The resulting list/array can then be used for 
+SIM0 will then return a list/array of length K with elements either 0 or 1. If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1. The resulting list/array can then be used for 
 machine learning using any choice of software.
 
 
