@@ -1,6 +1,6 @@
 import logging
 import sys
-
+#FYI: Written in Python 2.7 - need to indicate in command line by python2.7
 from FileProcessingService import FileProcessingService
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
