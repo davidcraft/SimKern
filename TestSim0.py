@@ -30,6 +30,10 @@ dot_u_file = open('sim1/run_simulation_readGenome.m.u', 'r')
 Sim1file_processing_service = Sim1FileProcessingService(dot_u_file, 'm', 10, 6,path = os.getcwd())
 Sim1FileList = Sim1file_processing_service.createTrialFiles()
 # run_simulation_readGenome = open(os.getcwd() + '/sim1/run_simulation_readGenome.m.u')
+octave_caller = ThirdPartyProgramCaller('GenomeFiles','m',Sim1FileList)
+Sim1Outputs = octave_caller.getSim1Responses()
+dot_u_file.close()
+
 
 
 
