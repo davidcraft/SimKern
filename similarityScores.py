@@ -19,3 +19,7 @@ def computeSimilarityScores(responses):
             kernel[j][i] = score
 
     return kernel
+
+
+responses = [[0,0,0],[1,0,1],[0,0,1]]
+kernel = computeSimilarityScores(responses)

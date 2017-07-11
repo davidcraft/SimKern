@@ -24,9 +24,9 @@ In the simulation text file, the user should change model-specific parameters fr
 
 Example(s) (MATLAB):
 
-`my_param_1 = 0.757` -> `$my_param_1 = normrnd(0.757,0.12)$`
+`my_param_1 = 0.757` -> `$my_param_1 = normrnd(0.757,0.12),name=my_param_1$`
 
-`my_param_2 = 0.123` -> `$my_param_2 = gamrnd(0.123,0.414)$`
+`my_param_2 = 0.123` -> `$my_param_2 = gamrnd(0.123,0.414),name=my_param_2$`
 
 ### RUNNING SIM1
 

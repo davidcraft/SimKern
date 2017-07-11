@@ -1,4 +1,5 @@
 from __future__ import division
+from FileProcessingService import FileProcessingService #TODO - remove this later, just here for testing
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 import os
@@ -54,8 +55,3 @@ class sim1(object):
                 kernel[j][i] = score
 
         return kernel #TODO - are the dimensions of this correct?
-
-u_file = open('sim1/run_simulation_readGenome.m.u','r')
-sim = sim1(u_file,'m',5,6)
-mat = sim.generateSimilarityMatrix()
-print(mat)
