@@ -36,23 +36,24 @@ class sim1(object):
 
 
     def computeSimilarityScores(self, response_matrix):
-        numGenomes = response_matrix.__len__()
-        numTrials = response_matrix[1].__len__()
-        kernel = range(numGenomes)
-        for i in range(0, numGenomes):
-            kernel[i] = range(numGenomes)
+        kernel = range(self.number_of_genomes)
+        for i in range(0, self.number_of_genomes):
+            kernel[i] = range(self.number_of_genomes)
             kernel[i][i] = 1
 
-        for i in range(0, numGenomes - 1):
-            for j in range(i + 1, numGenomes):
+        for i in range(0, self.number_of_genomes - 1):
+            for j in range(i + 1, self.number_of_genomes):
                 numValid = 0
                 count = 0
-                for k in range(0, numTrials):
+                for k in range(0, self.trials):
                     if response_matrix[i][k] is not int(-1) and response_matrix[j][k] is not int(-1):
                         numValid = numValid+1
                         if response_matrix[i][k] == response_matrix[j][k]:
                             count = count + 1
-                score = count / numValid
+                if numValid==0:
+                    score=None
+                else:
+                    score = count / numValid
                 kernel[i][j] = score
                 kernel[j][i] = score
 
