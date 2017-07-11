@@ -45,17 +45,16 @@ class sim1(object):
 
         for i in range(0, numGenomes - 1):
             for j in range(i + 1, numGenomes):
+                numValid = 0
                 count = 0
                 for k in range(0, numTrials):
-                    if response_matrix[i][k] == response_matrix[j][k]:
-                        count = count + 1
-                score = count / numTrials
+                    if response_matrix[i][k] is not int(-1) and response_matrix[j][k] is not int(-1):
+                        numValid = numValid+1
+                        if response_matrix[i][k] == response_matrix[j][k]:
+                            count = count + 1
+                score = count / numValid
                 kernel[i][j] = score
                 kernel[j][i] = score
 
-        return kernel #TODO - are the dimensions of this correct?
+        return kernel
 
-u_file = open('sim1/run_simulation_readGenome.m.u','r')
-sim = sim1(u_file,'m',5,6)
-mat = sim.generateSimilarityMatrix()
-print(mat)
