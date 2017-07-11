@@ -8,7 +8,7 @@ genomes in a population, the user will run a total number of R simulations for e
 
 ### REQUIREMENTS
 
-The SIM1 framework currently supports MATLAB and Octave as viable simulation engines. We have not yet extended the framework to consider logical or qualitative simulation engines. In the simulation engine, the user must specify which model-specific parameters are to be changed to produce a total number of K simulations of the system in question. For each of the K simulations, we will further simulate each member a total number of R times. 
+The SIM1 framework currently supports Octave a viable simulation engine. We have not yet extended the framework to consider MATLAB, logical, or qualitative simulation engines. In the simulation engine, the user must specify which model-specific parameters are to be changed to produce a total number of K simulations of the system in question. For each of the K simulations, we will further simulate each member a total number of R times, keeping parameters the same.
 
 ### FRAMEWORK
 
@@ -56,3 +56,5 @@ The contents of each file will contain a list of parameters pertaining to each c
 my_param_1 = 0.748;
 my_param_2 = 0.366;
 ```
+
+
