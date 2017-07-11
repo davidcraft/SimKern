@@ -8,8 +8,8 @@ based upon model-specific parameter variation. In order to run machine learning,
 value (0 or 1) based upon specific network dynamics. 
 
 ### REQUIREMENTS
-The SIM0 framework currently supports MATLAB and Octave as viable simulation engines. We have not
-yet extended the framework to consider logical or qualitative simulation engines.
+The SIM0 framework currently supports Octave as a viable simulation engine. We have not
+yet extended the framework to consider MATLAB, logical, or qualitative simulation engines.
 In the simulation engine, the user must specify which model-specific parameters are to be changed to produce a total number
 of K simulations of the system in question.
 
