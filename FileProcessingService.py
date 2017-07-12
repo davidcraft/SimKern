@@ -20,28 +20,62 @@ class FileProcessingService(object):
     def createGenomes(self):
         if self.file_type == SupportedFileTypes.MATLAB:
             return self.handleOctaveOrMATLABFile()
-        elif self.file_type == SupportedFileTypes.TXT:
-            pass
-            # TODO - create handleTXTFile() Function
+        elif self.file_type == SupportedFileTypes.R:
+            return self.handleRFile()
             # Note - fn will need to be able to take in files containing booleans
 
-    def handleOctaveOrMATLABFile(self, file_name_root = "genome"):
-        coefs = []
+    def handleRFile(self, file_name_root = "genome"):
         genomes_file_list = []
 
         path = self.maybeCreateNewFileDirectory()
-        m_call_file = open(path + '/mCallFile.m', 'w')
 
         genomes = {}
 
         for genome in range(1, self.number_of_genomes + 1):
-            family_coefs = []
+            genome_name = file_name_root + str(genome)  # Note - changed this to a parameter for SIM1
+            coefficient_map = {}
+            new_r_file = open(path + "/" + genome_name + ".r", "w")
+            genomes_file_list.append(genome_name + ".r")
+
+            for line in self.data_file.readlines():
+                if line[0] == '#':
+                    new_r_file.write(line)
+                    continue
+                search_result = self.IDENTIFIER_REGEX.search(line)
+                if search_result is not None:
+                    target_sequence = line[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
+                    coefficient_name = self.extractCoefficientName(target_sequence)
+                    distribution = self.extractDistributionName(target_sequence)
+                    params = self.extractRParameters(target_sequence)
+                    coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
+                    # Replace $stuff$ with extracted coefficient value, write to file
+                    new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
+                    new_r_file.write(new_line)
+                    coefficient_map[coefficient_name] = coefficient_value
+                else:
+                    new_r_file.write(line)
+            new_r_file.close()
+
+            self.data_file.seek(0)
+            genomes[genome_name] = coefficient_map
+
+        self.writeRGenomesFileToDirectory(genomes, path)
+
+        return genomes_file_list
+
+    def handleOctaveOrMATLABFile(self, file_name_root = "genome"):
+        genomes_file_list = []
+
+        path = self.maybeCreateNewFileDirectory()
+
+        genomes = {}
+
+        for genome in range(1, self.number_of_genomes + 1):
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
 
             coefficient_map = {}
             new_m_file = open(path + "/" + genome_name + ".m", "w")
             genomes_file_list.append(genome_name + ".m")
-            m_call_file.write(genome_name + "\n")
 
             for line in self.data_file.readlines():
                 if line[0] == '%':
@@ -58,16 +92,13 @@ class FileProcessingService(object):
                     new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
                     new_m_file.write(new_line)
                     coefficient_map[coefficient_name] = coefficient_value
-                    family_coefs.append(coefficient_value)
                 else:
                     new_m_file.write(line)
             new_m_file.close()
-            coefs.append(family_coefs)
 
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
-        m_call_file.close()
         self.writeGenomesFileToDirectory(genomes, path)
 
         return genomes_file_list
@@ -85,6 +116,12 @@ class FileProcessingService(object):
 
     def extractCoefficientName(self, target_sequence):
         return target_sequence.split("name=")[1].strip()
+
+    def extractRParameters(self, target_sequence):
+        regex = re.compile(r'\(.+\)')
+        search_result = regex.search(target_sequence)
+        sequence = target_sequence[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
+        return sequence.split(",")
 
     def extractParameters(self, target_sequence):
         pattern = re.compile('-?\ *[0-9]+?\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
@@ -110,6 +147,10 @@ class FileProcessingService(object):
             return self.generateRandomValueFromBinomialDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.POISSON:
             return self.generateRandomValueFromPoissonDistribution(params[0], params[1])
+        elif distribution == SupportedDistributions.BOOLEAN:
+            return self.pickBoolean(params[0])
+        elif distribution == SupportedDistributions.MUTATE:
+            return self.pickMutation(params[0], params[1], params[2])
         else:
             raise ValueError('Unsupported distribution: ' + distribution)
 
@@ -128,15 +169,38 @@ class FileProcessingService(object):
     def generateRandomValueFromLogNormalDistribution(self, mu, sigma):
         return random.lognormal(mu, sigma)
 
-    def generateRandomValueFromBionomialDistribution(self, n, p):
+    def generateRandomValueFromBinomialDistribution(self, n, p):
         return random.binomial(n, p)
 
     def generateRandomValueFromPoissonDistribution(self, k, lmbda):
         return random.poisson(k, lmbda)
+
+    def pickBoolean(self, probability_of_zero):
+        val = random.uniform(0, 1)
+        if val < float(probability_of_zero):
+            return "0"
+        else:
+            return "1"
+
+    def pickMutation(self, node, probability_of_knock_out, probability_of_over_expression):
+        val = random.uniform(0, 1)
+        if val < float(probability_of_knock_out):
+            return "fixGenes( network, " + '"' + node + '"' + ", 0)"
+        elif val > float(probability_of_knock_out) and val < (float(probability_of_over_expression) + float(probability_of_knock_out)):
+            return "fixGenes( network, " + '"' + node + '"' + ", 1)"
+        else:
+            return ""
 
     def writeGenomesFileToDirectory(self, genomes, path):
         for genome in genomes.keys():
             new_genome_file = open(path + "/" + genome + "_key.m", "w")
             for value in genomes[genome].keys():
                 new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
+            new_genome_file.close()
+
+    def writeRGenomesFileToDirectory(self, genomes, path):
+        for genome in genomes.keys():
+            new_genome_file = open(path + "/" + genome + "_key.r", "w")
+            for value in genomes[genome].keys():
+                new_genome_file.write(str(genomes[genome][value]) + "\n")
             new_genome_file.close()
