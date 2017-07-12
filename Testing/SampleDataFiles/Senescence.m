@@ -70,12 +70,12 @@ function main()
 % Start Matlab code
 %	tspan=[0:0.01:100];
 %	opts = odeset('AbsTol',1e-3);
-%	[t,x]=ode23tb(@f,tspan,x0,opts);
+	[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
 % Start Octave code
- 	t=linspace(0,100,100);
- 	x=lsode('f',x0,t);
+%  	t=linspace(0,100,100);
+%  	x=lsode('f',x0,t);
 % End Octave code
 
 
@@ -88,11 +88,11 @@ end
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%function xdot=f(t,x)
+function xdot=f(t,x)
 % End Matlab code
 
 % Start Octave code
-function xdot=f(x,t)
+% function xdot=f(x,t)
 % End Octave code
 
 time = linspace(1,20,100)

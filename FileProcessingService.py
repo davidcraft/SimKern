@@ -87,7 +87,8 @@ class FileProcessingService(object):
         return target_sequence.split("name=")[1].strip()
 
     def extractParameters(self, target_sequence):
-        pattern = re.compile('-?\ *[0-9]+?\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
+        pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
+        # pattern = re.compile(r'[-+]?[0-9]*?\.?[0-9]+([eE][-+]?[0-9]+)?')
         return [float(substring) for substring in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def extractDistributionName(self, target_sequence):
@@ -98,10 +99,10 @@ class FileProcessingService(object):
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
             return self.generateRandomValueFromUniformDistribution(params[0], params[1])
-        elif distribution == SupportedDistributions.GAUSS:  # changed form GAUSSIAN TO GAUSS
+        elif distribution == SupportedDistributions.GAUSS:  # changed from GAUSSIAN TO GAUSS
             return self.generateRandomValueFromGaussianDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.DISCRETE:
-            return self.generateRandomValueFromDiscreteDistribution(params)  # TODO - test this
+            return self.generateRandomValueFromDiscreteDistribution(params)
         elif distribution == SupportedDistributions.GAMMA:
             return self.generateRandomValueFromGammaDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.LOGNORMAL:
@@ -140,3 +141,5 @@ class FileProcessingService(object):
             for value in genomes[genome].keys():
                 new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
             new_genome_file.close()
+
+

@@ -23,13 +23,13 @@ function main()
 %Initial conditions vector
 	x0=zeros(40,1);
 	x0(1) = 10.0;
-	x0(2) = 10.0;
-	x0(3) = $discrete[10,20,30%],name=AMPK_init$; %AMPK 
+	x0(2) = $gauss(10.0,1e-2),name=x2$;
+	x0(3) = $discrete[10,20,30],name=AMPK_init$; %AMPK 
 	x0(4) = 10.0;
 	x0(5) = 10.0;
 	x0(6) = 10.0;
 	x0(7) = 10.0;
-	x0(8) = $discrete[10.0,20,30],name =Fox03A$; %FoxO3A 
+	x0(8) = $discrete[10.0,20,30],name=Fox03A$; %FoxO3A 
 	x0(9) = 10.0;
 	x0(10) = $discrete[10.0,20,30],name=CDKN1A$; %CDKN1A (p27)
 	x0(11) = $discrete[10.0,20,30],name=CDKN1B$; %CDKN1B (p21)
@@ -172,11 +172,11 @@ time = linspace(1,20,100)
 % Parameter:   id =  sen_ass_beta_gal_dec, name = sen_ass_beta_gal_dec
 	global_par_sen_ass_beta_gal_dec=0.154821166783837;
 % Parameter:   id =  mito_biogenesis_by_mTORC1_pS2448, name = mito_biogenesis_by_mTORC1_pS2448
-	global_par_mito_biogenesis_by_mTORC1_pS2448= $gauss(0.133620123598202,.1)$;
+	global_par_mito_biogenesis_by_mTORC1_pS2448= $gauss(0.133620123598202,0.05),name=k33$;
 % Parameter:   id =  mito_biogenesis_by_AMPK_pT172, name = mito_biogenesis_by_AMPK_pT172
 	global_par_mito_biogenesis_by_AMPK_pT172=5.8915457309741E-5;
 % Parameter:   id =  mitophagy_new, name = mitophagy_new
-	global_par_mitophagy_new=$gauss(0.22465992989378,.16)$;
+	global_par_mitophagy_new=$gauss(0.22465992989378,0.08),name=k35$;
 % Parameter:   id =  mitophagy_old, name = mitophagy_old
 	global_par_mitophagy_old=0.00122607614891116;
 % Parameter:   id =  mito_dysfunction, name = mito_dysfunction
