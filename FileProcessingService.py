@@ -124,8 +124,7 @@ class FileProcessingService(object):
         return sequence.split(",")
 
     def extractParameters(self, target_sequence):
-        pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
-        # pattern = re.compile(r'[-+]?[0-9]*?\.?[0-9]+([eE][-+]?[0-9]+)?')
+        pattern = re.compile('-?\ *[0-9]+?\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
         return [float(substring) for substring in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def extractDistributionName(self, target_sequence):
@@ -136,10 +135,10 @@ class FileProcessingService(object):
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
         if distribution == SupportedDistributions.UNIFORM:
             return self.generateRandomValueFromUniformDistribution(params[0], params[1])
-        elif distribution == SupportedDistributions.GAUSS:  # changed from GAUSSIAN TO GAUSS
+        elif distribution == SupportedDistributions.GAUSS:  # changed form GAUSSIAN TO GAUSS
             return self.generateRandomValueFromGaussianDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.DISCRETE:
-            return self.generateRandomValueFromDiscreteDistribution(params)
+            return self.generateRandomValueFromDiscreteDistribution(params)  # TODO - test this
         elif distribution == SupportedDistributions.GAMMA:
             return self.generateRandomValueFromGammaDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.LOGNORMAL:
@@ -199,11 +198,16 @@ class FileProcessingService(object):
                 new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
             new_genome_file.close()
 
-
     def writeRGenomesFileToDirectory(self, genomes, path):
         for genome in genomes.keys():
             new_genome_file = open(path + "/" + genome + "_key.r", "w")
             for value in genomes[genome].keys():
-                new_genome_file.write(str(genomes[genome][value]) + "\n")
+                if value[0]=="s" and value[1]=="s":
+                    new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
+                else:
+                    if genomes[genome][value] is "":
+                        new_genome_file.write(str(value) + "<-" + str(-1) + "\n")
+                    else:
+                        pos = genomes[genome][value].index(")")
+                        new_genome_file.write(str(value) + "<-" + str(genomes[genome][value][pos-1]) + "\n")
             new_genome_file.close()
-
