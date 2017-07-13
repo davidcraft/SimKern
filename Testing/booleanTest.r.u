@@ -1,0 +1,27 @@
+library(BoolNet)
+
+network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
+
+source("~/PycharmProjects/scrap/GenomeFiles/genome1_key.r")
+
+if (Mp53 == 0) {
+	fixGenes(network, "p53", 0)
+} else if (Mp53 == 1) {
+	fixGenes(network, "p53", 1)
+}
+
+$mutate(ZEB2, .1, .43), name= MZEB2$
+
+attr <- getAttractors(network, method = "chosen", startStates = list(c(0, 0, ss3, 0, 0, 0, $boolean(.5), name= ss7$,
+ 0, 0, 0, 0, $boolean(.62), name= ss12$,
+ 0, ss14, 0, 0, 0, $boolean(.34), name= ss18$,
+ 0, 0, ss21, 0, 0, 0, $boolean(.25), name= ss25$,
+ 0, 0, 0, 0, 0, 0, 0)))
+
+attrSeq <- getAttractorSequence(attr, 1)
+
+if (all(attrSeq[ , 30] == 1)){
+  print(0)
+} else {
+  print(1)
+}
