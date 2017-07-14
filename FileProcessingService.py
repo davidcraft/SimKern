@@ -60,8 +60,8 @@ class FileProcessingService(object):
             genomes[genome_name] = coefficient_map
 
         self.writeRGenomesFileToDirectory(genomes, path)
-
-        return genomes_file_list
+        genomes_matrix = self.createGenomesMatrix(genomes)
+        return [genomes_file_list, genomes_matrix]
 
     def handleOctaveOrMATLABFile(self, file_name_root = "genome"):
         genomes_file_list = []
@@ -100,8 +100,8 @@ class FileProcessingService(object):
             genomes[genome_name] = coefficient_map
 
         self.writeGenomesFileToDirectory(genomes, path)
-
-        return genomes_file_list
+        genomes_matrix = self.createGenomesMatrix(genomes)
+        return [genomes_file_list, genomes_matrix]
 
 
     def maybeCreateNewFileDirectory(self):
@@ -211,3 +211,22 @@ class FileProcessingService(object):
                         pos = genomes[genome][value].index(")")
                         new_genome_file.write(str(value) + "<-" + str(genomes[genome][value][pos-1]) + "\n")
             new_genome_file.close()
+
+    def createGenomesMatrix(self, genomes):
+        genomes_matrix=[]
+        counter=0
+        for genome in genomes.keys():
+            genomes_matrix.append([])
+            for value in genomes[genome].keys():
+                if genomes[genome][value] is "":
+                    genomes_matrix[counter].append(int(-1))
+                elif(type(genomes[genome][value]) is not float):
+                    if genomes[genome][value][0].isalpha():
+                        pos = genomes[genome][value].index(")")
+                        genomes_matrix[counter].append(int(genomes[genome][value][pos - 1]))
+                    else:
+                        genomes_matrix[counter].append(int(genomes[genome][value]))
+                else:
+                    genomes_matrix[counter].append((genomes[genome][value]))
+            counter=counter+1
+        return genomes_matrix
