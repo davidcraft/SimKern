@@ -10,13 +10,19 @@ if (Mp53 == 0) {
 	fixGenes(network, "p53", 1)
 }
 
+if (MNICD == 0) {
+	fixGenes(network, "NICD", 0)
+} else if (MNICD == 1) {
+	fixGenes(network, "NICD", 1)
+}
+
 $mutate(ZEB2, .1, .43), name= MZEB2$
 
 attr <- getAttractors(network, method = "chosen", startStates = list(c(0, 0, ss3, 0, 0, 0, $boolean(.5), name= ss7$,
  0, 0, 0, 0, $boolean(.62), name= ss12$,
- 0, ss14, 0, 0, 0, $boolean(.34), name= ss18$,
+ 0, ss14, 0, ss16, 0, $boolean(.34), name= ss18$,
  0, 0, ss21, 0, 0, 0, $boolean(.25), name= ss25$,
- 0, 0, 0, 0, 0, 0, 0)))
+ 0, 0, 0, 0, 0, ss31, ss32)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 
