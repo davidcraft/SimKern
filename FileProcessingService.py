@@ -69,7 +69,7 @@ class FileProcessingService(object):
         path = self.maybeCreateNewFileDirectory()
 
         genomes = {}
-
+        #TODO - should we still create call file? OctaveCaller (form ThirdParty... doesn't appear to be working
         for genome in range(1, self.number_of_genomes + 1):
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
 
@@ -124,7 +124,7 @@ class FileProcessingService(object):
         return sequence.split(",")
 
     def extractParameters(self, target_sequence):
-        pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
+        pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?') # now supports scientific notation
         # pattern = re.compile(r'[-+]?[0-9]*?\.?[0-9]+([eE][-+]?[0-9]+)?')
         return [float(substring) for substring in re.findall(pattern, target_sequence.split("name=")[0])]
 

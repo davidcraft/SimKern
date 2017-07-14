@@ -68,27 +68,32 @@ function main()
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%	tspan=[0:0.01:100];
-%	opts = odeset('AbsTol',1e-3);
-%	[t,x]=ode23tb(@f,tspan,x0,opts);
+	tspan=[0:0.01:100];
+	opts = odeset('AbsTol',1e-3);
+	[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
-% % Start Octave code
-t=linspace(0,100,100);
-x=lsode('f',x0,t);
+% Start Octave code
+% t=linspace(0,100,100);
+% x=lsode('f',x0,t);
 % End Octave code
 
-if x0(14) > 10
-    disp('1')
-else
-    disp('0')
+try
+    if x(end,10)>10000 || x(end,11)>10000 || x(end,15) > 10000
+        disp('1');
+    else
+        disp('0');
+    end
+catch
+    disp('-1')
 end
+
 
 %	plot(t,x(:,[3 8 10 11 14 15 18 19 21 22]));
 %       legend('AMPK', 'FOXO3A', 'CDKN1A', 'CDKN1B', 'ROS', 'DDR', 'mito.mass.new', ...
 %       'mito.mass.old','mito.pot.new','mito.pot.old');
 %     plot(t,x(:,[23]));
-endfunction
+end
 
 
 
@@ -96,14 +101,14 @@ endfunction
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-% function xdot=f(t,x)
+function xdot=f(t,x)
 % End Matlab code
 
 % Start Octave code
-function xdot=f(x,t)
+% function xdot=f(x,t)
 % End Octave code
 
-time = linspace(1,20,100)
+time = linspace(1,20,100);
 % All 'Parameters' represent rate constants
 % Compartment: id = Cell, name = Cell, constant
 	compartment_Cell=1.0;
@@ -116,9 +121,9 @@ time = linspace(1,20,100)
 % Parameter:   id =  AMPK_pT172_dephos_by_Mito_membr_pot_new, name = AMPK_pT172_dephos_by_Mito_membr_pot_new
 	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_new=0.117744691539618;
 % Parameter:   id =  AMPK_pT172_dephos_by_Mito_membr_pot_old, name = AMPK_pT172_dephos_by_Mito_membr_pot_old
-	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_old=1.00000000000003E-6;
+	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_old=$gauss(1.0E-6,5e-7),name=k5$;
 % Parameter:   id =  mTORC1_S2448_phos_by_AA, name = mTORC1_S2448_phos_by_AA
-	global_par_mTORC1_S2448_phos_by_AA=1.00008999860285E-6;
+	global_par_mTORC1_S2448_phos_by_AA=$gauss(1.0E-6,5e-7),name=k6$;
 % Parameter:   id =  mTORC1_S2448_phos_by_AA_n_Akt_pS473, name = mTORC1_S2448_phos_by_AA_n_Akt_pS473
 	global_par_mTORC1_S2448_phos_by_AA_n_Akt_pS473=162.471039450073;
 % Parameter:   id =  mTORC1_pS2448_dephos_by_AMPK_pT172, name = mTORC1_pS2448_dephos_by_AMPK_pT172
@@ -150,11 +155,11 @@ time = linspace(1,20,100)
 % Parameter:   id =  DNA_damaged_by_ROS, name = DNA_damaged_by_ROS
 	global_par_DNA_damaged_by_ROS=0.118873655169353;
 % Parameter:   id =  ROS_prod_by_Mito_membr_pot_new, name = ROS_prod_by_Mito_membr_pot_new
-	global_par_ROS_prod_by_Mito_membr_pot_new=4.55464788075885;
+	global_par_ROS_prod_by_Mito_membr_pot_new=$gauss(4.55464788075885,1.5),name=k22$;
 % Parameter:   id =  ROS_prod_by_Mito_membr_pot_old, name = ROS_prod_by_Mito_membr_pot_old
-	global_par_ROS_prod_by_Mito_membr_pot_old=772.829490967078;
+	global_par_ROS_prod_by_Mito_membr_pot_old=$gauss(772.829490967078,100),name=k23$;
 % Parameter:   id =  ROS_turnover, name = ROS_turnover
-	global_par_ROS_turnover=3.23082321168464;
+	global_par_ROS_turnover=$gauss(3.23082321168464,1.0),name=k24$;
 % Parameter:   id =  JNK_activ_by_ROS, name = JNK_activ_by_ROS
 	global_par_JNK_activ_by_ROS=0.00502329152478409;
 % Parameter:   id =  JNK_pT183_inactiv, name = JNK_pT183_inactiv
@@ -164,11 +169,11 @@ time = linspace(1,20,100)
 % Parameter:   id =  IKKbeta_inactiv, name = IKKbeta_inactiv
 	global_par_IKKbeta_inactiv=1.0;
 % Parameter:   id =  mTORC1_S2448_phos_by_AA_n_IKKbeta, name = mTORC1_S2448_phos_by_AA_n_IKKbeta
-	global_par_mTORC1_S2448_phos_by_AA_n_IKKbeta=1.00008996727694E-5;
+	global_par_mTORC1_S2448_phos_by_AA_n_IKKbeta=$gauss(1.00008996727694E-5,1e-6),name=k29$;
 % Parameter:   id =  sen_ass_beta_gal_inc_by_ROS, name = sen_ass_beta_gal_inc_by_ROS
 	global_par_sen_ass_beta_gal_inc_by_ROS=0.0701139988718817;
 % Parameter:   id =  sen_ass_beta_gal_inc_by_Mitophagy, name = sen_ass_beta_gal_inc_by_Mitophagy
-	global_par_sen_ass_beta_gal_inc_by_Mitophagy=1.00000000000011E-6;
+	global_par_sen_ass_beta_gal_inc_by_Mitophagy=$gauss(1.00000000000011E-6,5e-7)name=k31$;
 % Parameter:   id =  sen_ass_beta_gal_dec, name = sen_ass_beta_gal_dec
 	global_par_sen_ass_beta_gal_dec=0.154821166783837;
 % Parameter:   id =  mito_biogenesis_by_mTORC1_pS2448, name = mito_biogenesis_by_mTORC1_pS2448
@@ -184,7 +189,7 @@ time = linspace(1,20,100)
 % Parameter:   id =  mito_membr_pot_new_inc, name = mito_membr_pot_new_inc
 	global_par_mito_membr_pot_new_inc=9882.02736076158;
 % Parameter:   id =  mito_membr_pot_old_inc, name = mito_membr_pot_old_inc
-	global_par_mito_membr_pot_old_inc=0.00586017882122243;
+	global_par_mito_membr_pot_old_inc=$gauss(0.00586017882122243,1e-4),name=k39$;
 % Parameter:   id =  mito_membr_pot_new_dec, name = mito_membr_pot_new_dec
 	global_par_mito_membr_pot_new_dec=1094.58423149719;
 % Parameter:   id =  mito_membr_pot_old_dec, name = mito_membr_pot_old_dec
@@ -220,11 +225,14 @@ time = linspace(1,20,100)
 % assignmentRule: variable = DNA_damage_gammaH2AX_obs
 	x(27)=global_par_scale_DNA_damage_gammaH2AX_obs*x(15);
 % assignmentRule: variable = Insulin
-	x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+	%x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+	x(24)=piecewise($discrete(1,5,10,20,30),name=Insulin$,time>0);
 % assignmentRule: variable = Amino_Acids
-	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+	%x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+	x(25)=piecewise($discrete(1,5,10,20,30),name=AminoAcids$,time>0);
 % assignmentRule: variable = Irradiation
-	x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
+	%x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
+	x(26)=piecewise($discrete(0,0.0001,0.0001,0.001,0.01,0.1,0.5,1.0,10.0,20.0),name=Irradiation$,time>0);
 % assignmentRule: variable = Akt_pS473_obs
 	x(28)=global_par_scale_Akt_pS473_obs*x(2);
 % assignmentRule: variable = SA_beta_gal_obs
@@ -293,8 +301,8 @@ time = linspace(1,20,100)
 % Reaction: id = reaction_13, name = reaction_13
 	reaction_reaction_13=compartment_Cell*global_par_FoxO3a_pS253_degrad*x(9);
 
-% Reaction: id = reaction_14, name = reaction_14
-    reaction_reaction_14=compartment_Cell*function_2(global_par_FoxO3a_synthesis)
+% Reaction: id = reaction_14, name = reaction_14;
+    reaction_reaction_14=compartment_Cell*function_2(global_par_FoxO3a_synthesis);
     
 % Reaction: id = reaction_15, name = reaction_15
 	reaction_reaction_15=compartment_Cell*function_4_reaction_15_1(global_par_CDKN1A_transcr_by_FoxO3a_n_DNA_damage, x(15), x(8));
@@ -481,7 +489,7 @@ time = linspace(1,20,100)
 % Species:   id = JNK_pT183_obs, name = JNK_pT183_obs, involved in a rule 	xdot(39) = x(39);
 	
 % Species:   id = SA_beta_gal_obs, name = SA_beta_gal_obs, involved in a rule 	xdot(40) = x(40);
-endfunction
+end
 
 function z=function_2(v), z=(v);end
 

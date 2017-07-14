@@ -68,8 +68,8 @@ function main()
 % you should comment / uncomment one of the following blocks.
 % This should also be done for the definition of the function f below.
 % Start Matlab code
-%	tspan=[0:0.01:100];
-%	opts = odeset('AbsTol',1e-3);
+	tspan=[0:0.01:100];
+	opts = odeset('AbsTol',1e-3);
 	[t,x]=ode23tb(@f,tspan,x0,opts);
 % End Matlab code
 
@@ -77,9 +77,32 @@ function main()
 %  	t=linspace(0,100,100);
 %  	x=lsode('f',x0,t);
 % End Octave code
+% try
+% disp(x(end,10))
+% disp(x(end,10))
+% disp(x(end,11))
+% disp(x(end,15))
+try
+    if x(end,10)>10000 || x(end,11)>10000 || x(end,15) > 10000
+        disp('1');
+    else
+        disp('0');
+    end
+catch
+    disp('-1')
+end
 
 
-	plot(t,x);
+
+    plot(t,x(:,[10 11 15 24 25 26]));
+        legend('CDKN1A','CDKN1B','DNA Damage','Insulin','Amino Acid','Irradiation')
+%     plot(t,x(:,[1:22]));
+%        legend('Akt', 'Akt_pS473', 'AMPK', 'AMPK_pT172', 'mTORC1', 'mTORC1_pS2448', ...
+%            'Mitophagy','FoxO3a','FoxO3a_pS253','CDKN1A','CDKN1B','JNK','JNK_pT183', ...
+%            'ROS', 'DNA_damage', 'Sen_a_beta_gal','IKKbeta','Mitomass_new',...
+%            'Mitomass_old','Mitomass_turnover','Mito_membr_pot_new', ...
+%            'Mito_membr_pot_old')
+    
 end
 
 
@@ -95,17 +118,17 @@ function xdot=f(t,x)
 % function xdot=f(x,t)
 % End Octave code
 
-time = linspace(1,20,100)
+time = linspace(1,20,100);
 % Compartment: id = Cell, name = Cell, constant
 	compartment_Cell=1.0;
 % Parameter:   id =  Akt_S473_phos_by_insulin, name = Akt_S473_phos_by_insulin
-	global_par_Akt_S473_phos_by_insulin=$gauss(.6,.4),name=Akt$;
+	global_par_Akt_S473_phos_by_insulin=0.588783148144923;
 % Parameter:   id =  Akt_pS473_dephos_by_mTORC1_pS2448, name = Akt_pS473_dephos_by_mTORC1_pS2448
-	global_par_Akt_pS473_dephos_by_mTORC1_pS2448=$uniform(0,.5),name=Aka_pS473$;
+	global_par_Akt_pS473_dephos_by_mTORC1_pS2448=0.114598191621279;
 % Parameter:   id =  AMPK_T172_phos, name = AMPK_T172_phos
 	global_par_AMPK_T172_phos=0.355183987378767;
 % Parameter:   id =  AMPK_pT172_dephos_by_Mito_membr_pot_new, name = AMPK_pT172_dephos_by_Mito_membr_pot_new
-	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_new=$gauss(.3,.1),name=AMPK_pT172$;
+	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_new=0.117744691539618;
 % Parameter:   id =  AMPK_pT172_dephos_by_Mito_membr_pot_old, name = AMPK_pT172_dephos_by_Mito_membr_pot_old
 	global_par_AMPK_pT172_dephos_by_Mito_membr_pot_old=1.00000000000003E-6;
 % Parameter:   id =  mTORC1_S2448_phos_by_AA, name = mTORC1_S2448_phos_by_AA
@@ -211,11 +234,15 @@ time = linspace(1,20,100)
 % assignmentRule: variable = DNA_damage_gammaH2AX_obs
 	x(27)=global_par_scale_DNA_damage_gammaH2AX_obs*x(15);
 % assignmentRule: variable = Insulin
-	x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+% 	x(24)=piecewise(500, time < (-1), piecewise(1, time < 0, 1));
+    x(24)=piecewise(1,time>0);
 % assignmentRule: variable = Amino_Acids
-	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+% 	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
+    x(25)=piecewise(1,time>0);
 % assignmentRule: variable = Irradiation
-	x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
+% 	x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
+%     x(26)=piecewise(0,time>0);
+    x(26)=1;
 % assignmentRule: variable = Akt_pS473_obs
 	x(28)=global_par_scale_Akt_pS473_obs*x(2);
 % assignmentRule: variable = SA_beta_gal_obs
@@ -285,7 +312,7 @@ time = linspace(1,20,100)
 	reaction_reaction_13=compartment_Cell*global_par_FoxO3a_pS253_degrad*x(9);
 
 % Reaction: id = reaction_14, name = reaction_14
-    reaction_reaction_14=compartment_Cell*function_2(global_par_FoxO3a_synthesis)
+    reaction_reaction_14=compartment_Cell*function_2(global_par_FoxO3a_synthesis);
     
 % Reaction: id = reaction_15, name = reaction_15
 	reaction_reaction_15=compartment_Cell*function_4_reaction_15_1(global_par_CDKN1A_transcr_by_FoxO3a_n_DNA_damage, x(15), x(8));
