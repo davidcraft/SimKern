@@ -1,5 +1,4 @@
 from __future__ import division
-from FileProcessingService import FileProcessingService #TODO - remove this later, just here for testing
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 import os
@@ -17,8 +16,11 @@ class sim1(object):
     def generateSimilarityMatrix(self):
         sim1FileProcessor = Sim1FileProcessingService(self.data_file, self.file_type, self.number_of_genomes, self.trials)
         sim1_file_list = sim1FileProcessor.createTrialFiles()
-        programCaller = ThirdPartyProgramCaller(self.path, "m",sim1_file_list)
-        sim1_response_list = programCaller.getSim1Responses()
+        programCaller = ThirdPartyProgramCaller(self.path, self.file_type, sim1_file_list)
+        if self.file_type == "m":
+            sim1_response_list = programCaller.getOctaveSim1Responses()
+        elif self.file_type == "r":
+            sim1_response_list = programCaller.getRSim1Responses()
         response_matrix  = self.generateResponseMatrix(sim1_response_list)
         similarity_matrix = self.computeSimilarityScores(response_matrix)
         return similarity_matrix

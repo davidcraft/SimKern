@@ -83,13 +83,24 @@ class ThirdPartyProgramCaller(object):
         print(output)
         return int(output)
 
-    def getSim1Responses(self):
+    def getOctaveSim1Responses(self):
         current_directory = os.getcwd()
         directory_of_files = self.files_directory  + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
         outputs = []
         for file in self.file_list:
             result = self.callOctave(directory_of_files, file)
+            outputs.append(result)
+        self.changeWorkingDirectory(current_directory)
+        return outputs
+
+    def getRSim1Responses(self):
+        current_directory = os.getcwd()
+        directory_of_files = self.files_directory  + "/GenomeFiles"
+        self.changeWorkingDirectory(directory_of_files)
+        outputs = []
+        for file in self.file_list:
+            result = self.callR(directory_of_files, file)
             outputs.append(result)
         self.changeWorkingDirectory(current_directory)
         return outputs
