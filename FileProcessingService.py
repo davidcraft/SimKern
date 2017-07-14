@@ -61,7 +61,7 @@ class FileProcessingService(object):
 
         self.writeRGenomesFileToDirectory(genomes, path)
         genomes_matrix = self.createGenomesMatrix(genomes)
-        return [genomes_file_list, genomes_matrix]
+        return (genomes_file_list, genomes_matrix)
 
     def handleOctaveOrMATLABFile(self, file_name_root = "genome"):
         genomes_file_list = []
