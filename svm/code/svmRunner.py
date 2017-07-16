@@ -18,7 +18,7 @@ def splitKernel(responses, data, pct_train):
         test_y = None
         return [responses, data, test_S, test_y]
     elif row_to_split_on == 0:
-        print "Error: no training data specified. Increase pct_train."
+        print("Error: no training data specified. Increase pct_train.")
     else:
         train_y = []
         train_S = []
@@ -45,7 +45,7 @@ def splitData(responses, data, pct_train):
         test_y = None
         return [responses, data, test_X, test_y]
     elif row_to_split_on == 0:
-        print "Error: no training data specified. Increase pct_train."
+        print("Error: no training data specified. Increase pct_train.")
     else:
         train_y = []
         train_X = []

@@ -24,7 +24,7 @@ class FileProcessingService(object):
             return self.handleRFile()
             # Note - fn will need to be able to take in files containing booleans
 
-    def handleRFile(self, file_name_root = "genome"):
+    def handleRFile(self, file_name_root="genome"):
         genomes_file_list = []
 
         path = self.maybeCreateNewFileDirectory()
@@ -69,7 +69,6 @@ class FileProcessingService(object):
         path = self.maybeCreateNewFileDirectory()
 
         genomes = {}
-        #TODO - should we still create call file? OctaveCaller (form ThirdParty... doesn't appear to be working
         for genome in range(1, self.number_of_genomes + 1):
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
 
@@ -77,7 +76,7 @@ class FileProcessingService(object):
             new_m_file = open(path + "/" + genome_name + ".m", "w")
             genomes_file_list.append(genome_name + ".m")
 
-            for line in self.data_file.readlines():
+            for line in self.data_file:
                 if line[0] == '%':
                     new_m_file.write(line)
                     continue
@@ -213,14 +212,14 @@ class FileProcessingService(object):
             new_genome_file.close()
 
     def createGenomesMatrix(self, genomes):
-        genomes_matrix=[]
-        counter=0
+        genomes_matrix = []
+        counter = 0
         for genome in genomes.keys():
             genomes_matrix.append([])
             for value in genomes[genome].keys():
                 if genomes[genome][value] is "":
                     genomes_matrix[counter].append(int(-1))
-                elif(type(genomes[genome][value]) is not float):
+                elif type(genomes[genome][value]) is not float:
                     if genomes[genome][value][0].isalpha():
                         pos = genomes[genome][value].index(")")
                         genomes_matrix[counter].append(int(genomes[genome][value][pos - 1]))
@@ -228,5 +227,5 @@ class FileProcessingService(object):
                         genomes_matrix[counter].append(int(genomes[genome][value]))
                 else:
                     genomes_matrix[counter].append((genomes[genome][value]))
-            counter=counter+1
+            counter = counter + 1
         return genomes_matrix

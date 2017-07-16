@@ -21,6 +21,7 @@
 % isDerivedFrom http://identifiers.org/doi/10.1007/3-540-36481-1_11
 %
 
+global result = -1;
 
 function main()
 %Initial conditions vector
@@ -72,7 +73,8 @@ function main()
 %here I will just print out to the system terminal (stdout) the
 %0/1 result. note could also write a file, but this is easier.
 %could runs this out put into a file by calling this like oc
-    disp(x(end, end) > 0.85);
+    global result;
+    result = x(end, end) > 0.85;
 end
 
 
@@ -434,4 +436,5 @@ function z = piecewise(varargin)
 	z = result;
 end
 
-
+main();
+disp(result);

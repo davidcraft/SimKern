@@ -2,10 +2,10 @@ import unittest
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 from FileProcessingService import FileProcessingService
 from SupportedFileTypes import SupportedFileTypes
-import pkg_resources
 import os
 import shutil
 import logging
+
 
 class ThirdPartyProgramCallerIT(unittest.TestCase):
 
@@ -16,19 +16,24 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     number_of_genomes = 10
 
     def setUp(self):
-        resource_path = '/'.join(('SampleDataFiles', 'WNT_ERK_crosstalk.m'))
-        data_file = pkg_resources.resource_stream(__package__, resource_path)
+        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.m')
 
         file_processing_service = FileProcessingService(data_file, SupportedFileTypes.MATLAB,
                                                         self.number_of_genomes, self.current_working_dir)
         self.generated_folder = self.current_working_dir + file_processing_service.GENERATED_FOLDER_NAME
-        file_processing_service.createGenomes()
+        genomes_created = file_processing_service.createGenomes()
+        file_processing_service.data_file.close()
 
-        self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, SupportedFileTypes.MATLAB)
+        self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, SupportedFileTypes.MATLAB,
+                                                               genomes_created[0])
 
     def tearDown(self):
         if self.generated_folder != "/":
             shutil.rmtree(self.generated_folder)
+
+    def setTargetFile(self, path_name, file_name):
+        resource_path = '/'.join((path_name, file_name))
+        return open(resource_path)
 
     def callOctaveAndReturnSimulationResult(self):
         self.log.info("Testing %s genomes of .m files successfully call Octave and return results.",
@@ -43,5 +48,5 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         created_files = [file for file in os.listdir(self.generated_folder)]
 
         # Check files successfully written
-        assert len(created_files) == (self.number_of_genomes * 2) + 2
+        assert len(created_files) == (self.number_of_genomes * 2) + 1
         assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1

@@ -8,10 +8,10 @@ class Sim1FileProcessingService(FileProcessingService):
 
     GENOMES_KEY_FILE_REGEX = re.compile(r'genome(\d+)?')
 
-    def __init__(self, u_file_instance, file_type, k_genomes, r_trials, path=os.getcwd()):
-        self.number_of_trials = int(r_trials)
+    def __init__(self, u_file_instance, file_type, number_of_genomes, number_of_trials, path=os.getcwd()):
+        self.number_of_trials = int(number_of_trials)
         # Note r_trials is analogous to permutations
-        FileProcessingService.__init__(self, u_file_instance, file_type, k_genomes, path)
+        FileProcessingService.__init__(self, u_file_instance, file_type, number_of_genomes, path)
 
     def createTrialFiles(self):
         if self.file_type == SupportedFileTypes.MATLAB:

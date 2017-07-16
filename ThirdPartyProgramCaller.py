@@ -1,7 +1,6 @@
 import os
 import subprocess
 import csv
-import re
 from SupportedFileTypes import SupportedFileTypes
 
 
@@ -26,9 +25,9 @@ class ThirdPartyProgramCaller(object):
         current_directory = os.getcwd()
         directory_of_files = self.files_directory + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
-        outputs=[]
+        outputs = []
         for file in self.file_list:
-            result= self.callOctave(directory_of_files, file)
+            result = self.callOctave(directory_of_files, file)
             outputs.append(result)
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
@@ -59,8 +58,8 @@ class ThirdPartyProgramCaller(object):
     def changeWorkingDirectory(self, new_directory):
         os.chdir(new_directory)
 
-    def callOctave(self, directory_of_file, callFile):
-        cmd = 'octave -q ' + directory_of_file + "/" + callFile
+    def callOctave(self, directory_of_file, call_file):
+        cmd = 'octave -q ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         print(out)
@@ -69,7 +68,7 @@ class ThirdPartyProgramCaller(object):
         try:
             output = [int(i) for i in output]
         except ValueError as valueError:
-            print(valueError.message)  # TODO: setup logging for this class.
+            print(valueError)  # TODO: setup logging for this class.
             output = [int(-1)]
 
         return output[0]
@@ -85,7 +84,7 @@ class ThirdPartyProgramCaller(object):
 
     def getOctaveSim1Responses(self):
         current_directory = os.getcwd()
-        directory_of_files = self.files_directory  + "/GenomeFiles"
+        directory_of_files = self.files_directory + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
         outputs = []
         for file in self.file_list:
