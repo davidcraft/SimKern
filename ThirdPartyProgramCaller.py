@@ -13,47 +13,30 @@ class ThirdPartyProgramCaller(object):
         self.file_type = file_type
         self.file_list = file_list
 
-    def callThirdPartyProgram(self):
-        if self.file_type == SupportedFileTypes.MATLAB:
-            return self.writeOutputFileForOctave()
-        elif self.file_type == SupportedFileTypes.R:
-            return self.writeOutputFileForR()
-        else:
-            return []
-
-    def writeOutputFileForOctave(self):
+    def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
         directory_of_files = self.files_directory + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
-        outputs = []
+        outputs = {}
         for file in self.file_list:
-            result = self.callOctave(directory_of_files, file)
-            outputs.append(result)
+            file_result = []
+            if self.file_type == SupportedFileTypes.MATLAB:
+                file_result = self.callOctave(directory_of_files, file)
+            elif self.file_type == SupportedFileTypes.R:
+                file_result = self.callR(directory_of_files, file)
+            outputs[file] = file_result
+        if should_write_sim0_output:
+            self.writeOutputFile(outputs)
+        self.changeWorkingDirectory(current_directory)
+        return outputs
+
+    def writeOutputFile(self, outputs):
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 outputs_writer = csv.writer(csv_file)
                 outputs_writer.writerow(outputs)
             finally:
                 csv_file.close()
-        self.changeWorkingDirectory(current_directory)
-        return outputs
-
-    def writeOutputFileForR(self):
-        current_directory = os.getcwd()
-        directory_of_files = self.files_directory + "/GenomeFiles"
-        self.changeWorkingDirectory(directory_of_files)
-        outputs = []
-        for file in self.file_list:
-            result = self.callR(directory_of_files, file)
-            outputs.append(result)
-        with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
-            try:
-                outputs_writer = csv.writer(csv_file)
-                outputs_writer.writerow(outputs)
-            finally:
-                csv_file.close()
-        self.changeWorkingDirectory(current_directory)
-        return outputs
 
     def changeWorkingDirectory(self, new_directory):
         os.chdir(new_directory)
@@ -81,25 +64,3 @@ class ThirdPartyProgramCaller(object):
         output = out[pos + 2]
         print(output)
         return int(output)
-
-    def getOctaveSim1Responses(self):
-        current_directory = os.getcwd()
-        directory_of_files = self.files_directory + "/GenomeFiles"
-        self.changeWorkingDirectory(directory_of_files)
-        outputs = []
-        for file in self.file_list:
-            result = self.callOctave(directory_of_files, file)
-            outputs.append(result)
-        self.changeWorkingDirectory(current_directory)
-        return outputs
-
-    def getRSim1Responses(self):
-        current_directory = os.getcwd()
-        directory_of_files = self.files_directory  + "/GenomeFiles"
-        self.changeWorkingDirectory(directory_of_files)
-        outputs = []
-        for file in self.file_list:
-            result = self.callR(directory_of_files, file)
-            outputs.append(result)
-        self.changeWorkingDirectory(current_directory)
-        return outputs

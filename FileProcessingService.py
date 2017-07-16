@@ -19,51 +19,12 @@ class FileProcessingService(object):
 
     def createGenomes(self):
         if self.file_type == SupportedFileTypes.MATLAB:
-            return self.handleOctaveOrMATLABFile()
+            return self.handleFile("%")
         elif self.file_type == SupportedFileTypes.R:
-            return self.handleRFile()
+            return self.handleFile("#")
             # Note - fn will need to be able to take in files containing booleans
 
-    def handleRFile(self, file_name_root="genome"):
-        genomes_file_list = []
-
-        path = self.maybeCreateNewFileDirectory()
-
-        genomes = {}
-
-        for genome in range(1, self.number_of_genomes + 1):
-            genome_name = file_name_root + str(genome)  # Note - changed this to a parameter for SIM1
-            coefficient_map = {}
-            new_r_file = open(path + "/" + genome_name + ".r", "w")
-            genomes_file_list.append(genome_name + ".r")
-
-            for line in self.data_file.readlines():
-                if line[0] == '#':
-                    new_r_file.write(line)
-                    continue
-                search_result = self.IDENTIFIER_REGEX.search(line)
-                if search_result is not None:
-                    target_sequence = line[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
-                    coefficient_name = self.extractCoefficientName(target_sequence)
-                    distribution = self.extractDistributionName(target_sequence)
-                    params = self.extractRParameters(target_sequence)
-                    coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
-                    # Replace $stuff$ with extracted coefficient value, write to file
-                    new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
-                    new_r_file.write(new_line)
-                    coefficient_map[coefficient_name] = coefficient_value
-                else:
-                    new_r_file.write(line)
-            new_r_file.close()
-
-            self.data_file.seek(0)
-            genomes[genome_name] = coefficient_map
-
-        self.writeRGenomesFileToDirectory(genomes, path)
-        genomes_matrix = self.createGenomesMatrix(genomes)
-        return (genomes_file_list, genomes_matrix)
-
-    def handleOctaveOrMATLABFile(self, file_name_root = "genome"):
+    def handleFile(self, comment_character, file_name_root="genome"):
         genomes_file_list = []
 
         path = self.maybeCreateNewFileDirectory()
@@ -73,11 +34,11 @@ class FileProcessingService(object):
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
 
             coefficient_map = {}
-            new_m_file = open(path + "/" + genome_name + ".m", "w")
-            genomes_file_list.append(genome_name + ".m")
+            new_m_file = open(path + "/" + genome_name + "." + self.file_type, "w")
+            genomes_file_list.append(genome_name + "." + self.file_type)
 
             for line in self.data_file:
-                if line[0] == '%':
+                if line[0] == comment_character:
                     new_m_file.write(line)
                     continue
                 search_result = self.IDENTIFIER_REGEX.search(line)
@@ -98,10 +59,9 @@ class FileProcessingService(object):
             self.data_file.seek(0)
             genomes[genome_name] = coefficient_map
 
-        self.writeGenomesFileToDirectory(genomes, path)
+        self.writeGenomesKeyFilesToDirectory(genomes, path)
         genomes_matrix = self.createGenomesMatrix(genomes)
         return [genomes_file_list, genomes_matrix]
-
 
     def maybeCreateNewFileDirectory(self):
         target_directory = self.path + self.GENERATED_FOLDER_NAME
@@ -112,26 +72,24 @@ class FileProcessingService(object):
             raise ValueError('Provided path must not be root directory.')
         return target_directory
 
-
     def extractCoefficientName(self, target_sequence):
         return target_sequence.split("name=")[1].strip()
 
-    def extractRParameters(self, target_sequence):
-        regex = re.compile(r'\(.+\)')
-        search_result = regex.search(target_sequence)
-        sequence = target_sequence[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
-        return sequence.split(",")
-
     def extractParameters(self, target_sequence):
-        pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?') # now supports scientific notation
-        return [float(substring) for substring in re.findall(pattern, target_sequence.split("name=")[0])]
+        if self.file_type == SupportedFileTypes.R:
+            regex = re.compile(r'\(.+\)')
+            search_result = regex.search(target_sequence)
+            sequence = target_sequence[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
+            return sequence.split(",")
+        elif self.file_type == SupportedFileTypes.MATLAB:
+            pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?') # now supports scientific notation
+            return [float(substring) for substring in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def extractDistributionName(self, target_sequence):
         return re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
 
-    # Selection from a series of both discrete and continuous probability distributions
-
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
+        # Selection from a series of both discrete and continuous probability distributions
         if distribution == SupportedDistributions.UNIFORM:
             return self.generateRandomValueFromUniformDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.GAUSS:  # changed form GAUSSIAN TO GAUSS
@@ -190,25 +148,21 @@ class FileProcessingService(object):
         else:
             return ""
 
-    def writeGenomesFileToDirectory(self, genomes, path):
+    def writeGenomesKeyFilesToDirectory(self, genomes, path):
         for genome in genomes.keys():
-            new_genome_file = open(path + "/" + genome + "_key.m", "w")
+            new_genome_file = open(path + "/" + genome + "_key." + self.file_type, "w")
             for value in genomes[genome].keys():
-                new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
-            new_genome_file.close()
-
-    def writeRGenomesFileToDirectory(self, genomes, path):
-        for genome in genomes.keys():
-            new_genome_file = open(path + "/" + genome + "_key.r", "w")
-            for value in genomes[genome].keys():
-                if value[0]=="s" and value[1]=="s":
-                    new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
-                else:
-                    if genomes[genome][value] is "":
-                        new_genome_file.write(str(value) + "<-" + str(-1) + "\n")
+                if self.file_type == SupportedFileTypes.MATLAB:
+                    new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
+                elif self.file_type == SupportedFileTypes.R:
+                    if value[0] == "s" and value[1] == "s":
+                        new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
                     else:
-                        pos = genomes[genome][value].index(")")
-                        new_genome_file.write(str(value) + "<-" + str(genomes[genome][value][pos-1]) + "\n")
+                        if genomes[genome][value] is "":
+                            new_genome_file.write(str(value) + "<-" + str(-1) + "\n")
+                        else:
+                            pos = genomes[genome][value].index(")")
+                            new_genome_file.write(str(value) + "<-" + str(genomes[genome][value][pos - 1]) + "\n")
             new_genome_file.close()
 
     def createGenomesMatrix(self, genomes):

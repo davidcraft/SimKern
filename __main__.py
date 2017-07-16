@@ -1,5 +1,6 @@
 import logging
 import sys
+import re
 
 from FileProcessingService import FileProcessingService
 from Sim1FileProcessingService import Sim1FileProcessingService
@@ -40,7 +41,6 @@ def main():
 
 
 def promptUserForInput():
-    # TODO: Reprompt if non-sensible answer.
     simulation_to_run = input("-------Main Menu-------\n"
                               "Choose your simulation:\n"
                               "\t0: SIM0 - create and analyze K genomes\n"
@@ -67,6 +67,12 @@ def promptUserForInput():
         print("Invalid command, please type 0, 1, or 'Q'.\n")
         promptUserForInput()
 
+def safeCast(val, to_type, default=None):
+    try:
+        return to_type(val)
+    except (ValueError, TypeError):
+        return default
+
 def recursivelyPromptUser(message, return_type):
     response = input(message)
     cast_response = safeCast(response, return_type)
@@ -76,12 +82,6 @@ def recursivelyPromptUser(message, return_type):
     else:
         return response
 
-def safeCast(val, to_type, default=None):
-    try:
-        return to_type(val)
-    except (ValueError, TypeError):
-        return default
-
 
 def createAndAnalyzeKGenomes(file_extension, input_file, path, number_of_genomes):
     with open(input_file) as data_file:
@@ -89,6 +89,7 @@ def createAndAnalyzeKGenomes(file_extension, input_file, path, number_of_genomes
             genomes = processInputFileAndCreateGenomes(data_file, file_extension,
                                                        path, number_of_genomes)
             third_party_result = callThirdPartyService(file_extension, path, genomes[0])
+            log.info("Result of differential equation analysis %s", third_party_result)
         except ValueError as valueError:
             log.error(valueError)
         finally:
@@ -103,7 +104,7 @@ def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_
 
 def callThirdPartyService(file_extension, path, file_list):
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list)
-    return third_party_caller_service.callThirdPartyProgram()
+    return third_party_caller_service.callThirdPartyProgram(True)
 
 
 def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path,
@@ -111,8 +112,9 @@ def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_fil
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
-            simulations = runAllGenomesAndCreateMatrix(file_extension, trial_files, path)
-            log.debug("Trial Files %s", trial_files)
+            log.debug("Trial Files: %s", trial_files)
+            matrix = runAllGenomesAndCreateMatrix(file_extension, trial_files, path, number_of_genomes, number_of_trials)
+            # TODO: Now call SVM service on matrix.
         except ValueError as valueError:
             log.error(valueError)
         finally:
@@ -127,11 +129,29 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     return process_trial_files.createTrialFiles()
 
 
-def runAllGenomesAndCreateMatrix(file_extension, trial_files, path):
-    output_matrix = []
+def runAllGenomesAndCreateMatrix(file_extension, trial_files, path, number_of_genomes, number_of_trials):
+    output_matrix = generateEmptyMatrix(number_of_genomes, number_of_trials)
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, trial_files)
-    third_party_caller_service.callThirdPartyProgram()
+    result_dictionary = third_party_caller_service.callThirdPartyProgram(False)
+
+    # Assumes file name format of: trialXgenomeY.Z
+    # TODO: We may also want to extract any matrix calculations to another service.
+    for dictionary_key in result_dictionary.keys():
+        trial = int(re.findall(r'\d+', dictionary_key.split("_")[0])[0])
+        genome = int(re.findall(r'\d+', dictionary_key.split("_")[1])[0])
+        output_matrix[genome - 1][trial - 1] = result_dictionary[dictionary_key]
+
     return output_matrix
+
+def generateEmptyMatrix(number_of_genomes, number_of_trials):
+    # TODO: This may be redundant and unnecessary with sim1.py class.
+    empty_matrix = []
+    for genome in range(0, int(number_of_genomes)):
+        empty_row = []
+        for trial in range(0, int(number_of_trials)):
+            empty_row.append(None)
+        empty_matrix.append(empty_row)
+    return empty_matrix
 
 if __name__ == "__main__":
     main()

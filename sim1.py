@@ -1,9 +1,16 @@
 from __future__ import division
+
+from SupportedFileTypes import SupportedFileTypes
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 import os
 
 
+# TODO: This seems a bit broad for a service. Especially considering both a subclass of FileProcessingService and
+# ThirdPartyProgramCaller are used in Sim1 and there's no analogous sim0 service. We might want to consider refactoring
+# this to be something like MatrixService and hooking it up to __main__.py.runAllGenomesAndCreateMatrix(). This way it
+# won't need to know anything about the data_file, file_type, and only care about the dimensions of the matrix and the
+# result of a ThirdPartyProgramCaller.callThirdPartyProgram().
 class sim1(object):
 
     def __init__(self, data_file, file_type, number_of_genomes, number_of_trials, path=os.getcwd()):
@@ -17,11 +24,12 @@ class sim1(object):
         sim1FileProcessor = Sim1FileProcessingService(self.data_file, self.file_type, self.number_of_genomes, self.trials)
         sim1_file_list = sim1FileProcessor.createTrialFiles()
         programCaller = ThirdPartyProgramCaller(self.path, self.file_type, sim1_file_list)
-        if self.file_type == "m":
-            sim1_response_list = programCaller.getOctaveSim1Responses()
-        elif self.file_type == "r":
-            sim1_response_list = programCaller.getRSim1Responses()
-        response_matrix  = self.generateResponseMatrix(sim1_response_list)
+        sim1_response_list = []
+        if self.file_type == SupportedFileTypes.MATLAB:
+            sim1_response_list = programCaller.callThirdPartyProgram(False)
+        elif self.file_type == SupportedFileTypes.R:
+            sim1_response_list = programCaller.callThirdPartyProgram(False)
+        response_matrix = self.generateResponseMatrix(sim1_response_list)
         similarity_matrix = self.computeSimilarityScores(response_matrix)
         return similarity_matrix
 

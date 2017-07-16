@@ -38,9 +38,9 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     def callOctaveAndReturnSimulationResult(self):
         self.log.info("Testing %s genomes of .m files successfully call Octave and return results.",
                       self.number_of_genomes)
-        simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram()
+        simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
         assert len(simulation_result) == self.number_of_genomes
-        for genome_result in simulation_result:
+        for genome_result in simulation_result.values():
             assert (genome_result == 0 or genome_result == 1)
 
         # Check directory successfully set back to original
@@ -50,3 +50,5 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         # Check files successfully written
         assert len(created_files) == (self.number_of_genomes * 2) + 1
         assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1
+
+    # TODO: test using R and MATLAB
