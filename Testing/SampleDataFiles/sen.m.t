@@ -1,4 +1,4 @@
-function sen()
+%function sen()
 
 % This file works with OCTAVE and is automatically generated with 
 % the System Biology Format Converter (http://sbfc.sourceforge.net/)
@@ -578,6 +578,6 @@ function z = piecewise(varargin)
 	z = result;
 end
 
-end
+%end
 
-sen()
+%sen()
