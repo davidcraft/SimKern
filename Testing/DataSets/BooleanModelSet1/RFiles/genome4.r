@@ -5,7 +5,7 @@ network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
 
 
 
-
+fixGenes( network, "NICD", 1)
 
 
 
@@ -14,6 +14,17 @@ network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
 
 
 attr <- getAttractors(network, method = "chosen", startStates = list(c(0,
+1,
+0,
+0,
+1,
+1,
+0,
+1,
+1,
+0,
+1,
+0,
 0,
 0,
 1,
@@ -23,21 +34,13 @@ attr <- getAttractors(network, method = "chosen", startStates = list(c(0,
 1,
 0,
 0,
-1,
-1,
-1,
-0,
-1,
 0,
 1,
 1,
-1,
-1,
-1,
-1,
-1,
+0, 0, 1,
 0,
-0, 0, 0, 0, 0, 0, 1, 0)))
+1,
+0, 1, 1)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 

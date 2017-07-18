@@ -37,7 +37,10 @@ $boolean(0.5), name= B_TWIST1$,
 $boolean(0.5), name= B_VIM$,
 $boolean(0.5), name= B_ZEB1$,
 $boolean(0.5), name= B_ZEB2$,
-0, 0, 0, 0, 0, 0, 1, $boolean(0.5), name= B_ECM$)))
+0, 0, $boolean(0.5), name= B_EMT$,
+$boolean(0.5), name= B_Invasion$,
+$boolean(0.5), name= B_Migration$,
+0, 1, $boolean(0.5), name= B_ECM$)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 

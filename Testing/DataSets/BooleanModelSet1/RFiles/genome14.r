@@ -3,41 +3,44 @@ library(BoolNet)
 network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
 
 
-fixGenes( network, "p53", 0)
-
-fixGenes( network, "NICD", 1)
-
-fixGenes( network, "ERK", 1)
 
 
 
 
 
-attr <- getAttractors(network, method = "chosen", startStates = list(c(0,
+
+
+
+
+
+attr <- getAttractors(network, method = "chosen", startStates = list(c(1,
+0,
 1,
-0,
-0,
 1,
 1,
-0,
-0,
-0,
-0,
-0,
-0,
 1,
 1,
 1,
 0,
 1,
-0,
-1,
 1,
 0,
 0,
 1,
 0,
-0, 0, 0, 0, 0, 0, 1, 0)))
+1,
+0,
+0,
+0,
+1,
+0,
+1,
+1,
+1,
+0, 0, 1,
+1,
+0,
+0, 1, 1)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 
