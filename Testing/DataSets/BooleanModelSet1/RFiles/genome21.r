@@ -2,19 +2,20 @@ library(BoolNet)
 
 network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
 
-fixGenes( network, "CTNNB1", 1)
 
 
 
+fixGenes( network, "NICD", 1)
 
-fixGenes( network, "ERK", 1)
+
 
 
 
 
 
 attr <- getAttractors(network, method = "chosen", startStates = list(c(1,
-1,
+0,
+0,
 1,
 1,
 0,
@@ -22,22 +23,24 @@ attr <- getAttractors(network, method = "chosen", startStates = list(c(1,
 0,
 0,
 1,
-0,
 1,
 0,
 0,
-1,
 0,
-1,
-1,
-1,
-1,
 0,
-1,
+0,
+0,
 1,
 0,
 0,
-0, 0, 0, 0, 0, 0, 1, 0)))
+1,
+1,
+1,
+1,
+0, 0, 0,
+1,
+1,
+0, 1, 0)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 
