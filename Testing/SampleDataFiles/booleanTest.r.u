@@ -1,32 +1,46 @@
 library(BoolNet)
 
-network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
+network <- loadNetwork("~/PycharmProjects/scrap/simplifiedBooleanNetwork.txt")
 
 source("~/PycharmProjects/scrap/GenomeFiles/genome1_key.r")
 
-if (Mp53 == 0) {
-	fixGenes(network, "p53", 0)
-} else if (Mp53 == 1) {
-	fixGenes(network, "p53", 1)
+if (M_CDH1 == 0) {
+	fixGenes(network, "Ecadh", 0)
+} else if (M_CDH1 == 1) {
+	fixGenes(network, "Ecadh", 1)
 }
 
-if (MNICD == 0) {
-	fixGenes(network, "NICD", 0)
-} else if (MNICD == 1) {
-	fixGenes(network, "NICD", 1)
-}
+$mutate(Notch_pthw, .0455 , .136), name=M_Notch_pthw$
 
-$mutate(ZEB2, .1, .43), name= MZEB2$
+$mutate(p53, .136, .0455), name=M_p53$
 
-attr <- getAttractors(network, method = "chosen", startStates = list(c(0, 0, ss3, 0, 0, 0, $boolean(.5), name= ss7$,
- 0, 0, 0, 0, $boolean(.62), name= ss12$,
- 0, ss14, 0, ss16, 0, $boolean(.34), name= ss18$,
- 0, 0, ss21, 0, 0, 0, $boolean(.25), name= ss25$,
- 0, 0, 0, 0, 0, ss31, ss32)))
+$mutate(TGFb_pthw, 0.0909, .0455), name= M_TGFb_pthw$
+
+$mutate(ERK_pthw, .0455, .0455), name= M_ERK_pthw$
+
+$mutate(EMTreg, .0455, .0455), name= M_EMTreg$
+
+$mutate(WNT_pthw, .0455, .0455), name= M_WNT_pthw$
+
+$mutate(AKT1, .0455, .0455), name= M_AKT1$
+
+$mutate(AKT2, .0455, .0455), name= M_AKT2$
+
+$mutate(p63_73, .0455, .0455) name= M_p63_73$
+
+$mutate(miRNA, .0455, .0455) name= M_miRNA$
+
+attr <- getAttractors(network, method = "chosen", startStates = list(c(B_AKT1, B_AKT2, $boolean(0.5), name= B_Ecadh$,
+$boolean(0.5), name=B_WNT_pthw$,
+B_ERK, B_GF, $boolean(0.5), name= B_miRNA$,
+B_NICD, B_p53, $boolean(0.5), name= B_p63_73$,
+$boolean(0.5), name= B_TGFb_pthw$,
+$boolean(0.5), name= B_EMTreg$,
+0, 0, B_EMT, B_Invasion, B_Migration, 0, 1, $boolean(.5), name= B_ECMicroenv$)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 
-if (all(attrSeq[ , 30] == 1)){
+if (all(attrSeq[ , 14] == 1)){
   print(0)
 } else {
   print(1)
