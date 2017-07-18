@@ -29,27 +29,30 @@ class sim1(object):
             sim1_response_list = programCaller.callThirdPartyProgram(False)
         elif self.file_type == SupportedFileTypes.R:
             sim1_response_list = programCaller.callThirdPartyProgram(False)
-        response_matrix = self.generateResponseMatrix(sim1_response_list)
+        response_list=[]
+        for file in sim1_response_list.keys():
+            response_list.append(sim1_response_list[file])
+        response_matrix = self.generateResponseMatrix(response_list)
         similarity_matrix = self.computeSimilarityScores(response_matrix)
         return similarity_matrix
 
 
     def generateResponseMatrix(self, response_list):
         response_matrix = []
-        for genome in range(self.number_of_genomes):
+        for genome in range(0,self.number_of_genomes):
             response_matrix.append([])
         pos = 0
-        for trial in range(self.trials):
-            for genome in range(self.number_of_genomes):
+        for trial in range(0, self.trials):
+            for genome in range(0,self.number_of_genomes):
                 response_matrix[genome].append(response_list[pos])
                 pos += 1
         return response_matrix
 
 
     def computeSimilarityScores(self, response_matrix):
-        kernel = range(self.number_of_genomes)
+        kernel = [None]*self.number_of_genomes
         for i in range(0, self.number_of_genomes):
-            kernel[i] = range(self.number_of_genomes)
+            kernel[i] = [None]*self.number_of_genomes
             kernel[i][i] = 1
 
         for i in range(0, self.number_of_genomes - 1):
@@ -69,4 +72,3 @@ class sim1(object):
                 kernel[j][i] = score
 
         return kernel
-
