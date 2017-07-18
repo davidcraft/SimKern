@@ -2,6 +2,7 @@ import os
 import subprocess
 import csv
 from SupportedFileTypes import SupportedFileTypes
+import collections
 
 
 class ThirdPartyProgramCaller(object):
@@ -17,7 +18,7 @@ class ThirdPartyProgramCaller(object):
         current_directory = os.getcwd()
         directory_of_files = self.files_directory + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
-        outputs = {}
+        outputs = collections.OrderedDict()
         for file in self.file_list:
             file_result = []
             if self.file_type == SupportedFileTypes.MATLAB:
