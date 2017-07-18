@@ -91,7 +91,7 @@ global is_IR_switched_on;
 % Phase 1 (equilibration):
 is_IR_switched_on = 0;
 %[t1,Y1] = ode23tb(@p53_network,tspan1,y0);
-whos y0 tspan1
+
 Y1 = lsode('p53_network',y0,tspan1);
 % Phase 2 (irradiation):
 % 
@@ -114,14 +114,12 @@ Y = [ Y1; Y2; Y3 ];
 %
 %make_plots(T,Y);
 
-try
-	if Y(end,33)>1e3
-		disp('0'); %0 stands for cell dies from apoptosis
-	else
-		disp('1');
-	end
-catch
-	disp('-1');
+if Y(end,33)>1e3
+	disp('0'); %0 stands for cell dies from apoptosis
+else
+	disp('1');
+end
+
 
 end
 
@@ -202,11 +200,11 @@ q2 = 3e-3;       % for genes of Wip1, Mdm2, p21, PTEN, Bax
 %s3 = 0.1;        % Mdm2 mRNA synthesis
 %s4 = 0.03;       % Bax  mRNA synthesis [BMC Syst.Biol.2013: 0.03]
 %s5 = 0.1;        % p21  mRNA synthesis
-s1 =$gauss(.1,.02),name=s1$;        % Wip1 mRNA synthesis  
-s2 = 0.03+$gauss(0,.002),name=s2$;       % PTEN mRNA synthesis
-s3 = $gauss(.1,.02),name=s3$;        % Mdm2 mRNA synthesis
+s1 =$gauss(0.1,0.0002),name=Gs1$;        % Wip1 mRNA synthesis
+s2 = 0.03+$gauss(0,0.00002),name=Gs2$;       % PTEN mRNA synthesis
+s3 = $gauss(0.1,0.0002),name=Gs3$;        % Mdm2 mRNA synthesis
 s4 = 0.03;       % Bax  mRNA synthesis [BMC Syst.Biol.2013: 0.03]
-s5 = $gauss(.1,.015),name=s5$;        % p21  mRNA synthesis
+s5 = $gauss(0.1,0.00015),name=Gs5$;        % p21  mRNA synthesis
     
 % translation
 %
@@ -216,15 +214,15 @@ s5 = $gauss(.1,.015),name=s5$;        % p21  mRNA synthesis
 %t4 = 0.1;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
 %t5 = 0.1;        % p21  translation
 t1 = 0.1;        % Wip1 translation
-t2 = 0.1 +$gauss(0,.01),name=Gt2$;        % PTEN translation
+t2 = 0.1 +$gauss(0,0.0001),name=Gt2$;        % PTEN translation
 t3 = 0.1;        % Mdm2 translation   
-t4 = $gauss(.1,.02),name=t4$;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
+t4 = $gauss(0.1,0.0002),name=Gt4$;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
 t5 = 0.1;        % p21  translation
     
 % protein synthesis    
 %
 %s6 = 300;        % p53 sythesis
-s6 = 300+$gauss(0,30),name=Gs6$;        % p53 sythesis
+s6 = 300+$gauss(0,.3),name=Gs6$;        % p53 sythesis
 s7 =  30;        % proCaspases sythesis [BMC Syst.Biol.2013: 20]
 s8 =  30;        % HIPK2 synthesis    
 s9 =  30;        % Cyclin_E synthesis, induced by E2F1
@@ -236,7 +234,7 @@ p1  = 3e-4;      % ATM phosphorylation due to IR-induced DNA DSBs
 p2  = 1e-8;      % SIAH1 phosphorylation by ATM_p     
 p3  = 3e-8;      % p53 phosphorylation by ATM_p at Ser15 and Ser20
 %p4  = 1e-10;     % p53 arrester phosphorylation by HIPK2 at Ser46    
-p4  = 1e-10+$gauss(0,1e-11),name=p4$;     % p53 arrester phosphorylation by HIPK
+p4  = 1e-10+$gauss(0,1e-13),name=Gp4$;     % p53 arrester phosphorylation by HIPK
 p5  = 1e-8;      % Mdm2_cyt phosphorylation
 p6  = 1e-8;      % Mdm2_nuc_S166S186p phosphorylation by ATM_p at Ser395     
 p7  = 3e-9;      % Bad phosphorylation by AKT_p [BMC Syst.Biol.2013: 3e-10]
@@ -261,9 +259,9 @@ d9  = 3e-5;      % spontaneous Bad_p dephosphorylation [BMC Syst.Biol.2013: 3e-5
 %d11 =  d4;       % p53_S46 dephoshorylation of Ser46 by Wip1 
 %d12 = 1e4;       % Rb1 dephosphorylation  
 
-d10 =  d3+$gauss(0,2e-5),name=d10$;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20  
+d10 =  d3+$gauss(0,2e-7),name=Gd10$;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20
 d11 =  d4;       % p53_S46 dephoshorylation of Ser46 by Wip1 
-d12 = 1e4+$gauss(0,1.5e3),name=Gd12$;       % Rb1 dephosphorylation  
+d12 = 1e4+$gauss(0,1.5),name=Gd12$;       % Rb1 dephosphorylation
     
 % proteins binding    
 %
@@ -271,7 +269,7 @@ b1 = 3e-5;       % Bax and BclXL  [BMC Syst.Biol.2013: 3e-5]
 b2 = 3e-3;       % BclXL and Bad_0 [BMC Syst.Biol.2013: 3e-3]
 b3 = 3e-3;       % Bad_p and 14-3-3 [BMC Syst.Biol.2013: 3e-3]
 %b4 = 1e-5;       % Rb1 and E2F1 
-b4 = 1e-5+$gauss(0,1e-6),name=b4$;       % Rb1 and E2F1 
+b4 = 1e-5+$gauss(0,1e-8),name=Gb4$;       % Rb1 and E2F1
 b5 = 1e-5;       % p21 and Cyclin_E  
 
 % unbinding 
@@ -570,3 +568,5 @@ dy(33)=...
   +a1*y(27)*y(32) ...        % caspases activation by active (i.e., free) Bax
   +a2*((y(33))^2)*y(32);     % caspases autoactivation
 end
+
+rso()
