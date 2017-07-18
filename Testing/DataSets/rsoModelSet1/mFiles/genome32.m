@@ -200,11 +200,11 @@ q2 = 3e-3;       % for genes of Wip1, Mdm2, p21, PTEN, Bax
 %s3 = 0.1;        % Mdm2 mRNA synthesis
 %s4 = 0.03;       % Bax  mRNA synthesis [BMC Syst.Biol.2013: 0.03]
 %s5 = 0.1;        % p21  mRNA synthesis
-s1 =-0.011729410807840332;        % Wip1 mRNA synthesis
-s2 = 0.03+0.0014576012371707637;       % PTEN mRNA synthesis
-s3 = 0.04134469103066103;        % Mdm2 mRNA synthesis
+s1 =0.07815919175813808;        % Wip1 mRNA synthesis
+s2 = 0.03+0.01471042217529105;       % PTEN mRNA synthesis
+s3 = 0.130098602348292;        % Mdm2 mRNA synthesis
 s4 = 0.03;       % Bax  mRNA synthesis [BMC Syst.Biol.2013: 0.03]
-s5 = 0.0751610331705479;        % p21  mRNA synthesis
+s5 = 0.08928169989341288;        % p21  mRNA synthesis
     
 % translation
 %
@@ -214,15 +214,15 @@ s5 = 0.0751610331705479;        % p21  mRNA synthesis
 %t4 = 0.1;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
 %t5 = 0.1;        % p21  translation
 t1 = 0.1;        % Wip1 translation
-t2 = 0.1 +0.010280474073384905;        % PTEN translation
+t2 = 0.1 +-0.016962224075848003;        % PTEN translation
 t3 = 0.1;        % Mdm2 translation   
-t4 = 0.10321623033153916;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
+t4 = 0.11346695367647135;        % Bax  translation [BMC Syst.Biol.2013: 0.2]
 t5 = 0.1;        % p21  translation
     
 % protein synthesis    
 %
 %s6 = 300;        % p53 sythesis
-s6 = 300+19.009546594054786;        % p53 sythesis
+s6 = 300+37.097959906830965;        % p53 sythesis
 s7 =  30;        % proCaspases sythesis [BMC Syst.Biol.2013: 20]
 s8 =  30;        % HIPK2 synthesis    
 s9 =  30;        % Cyclin_E synthesis, induced by E2F1
@@ -234,7 +234,7 @@ p1  = 3e-4;      % ATM phosphorylation due to IR-induced DNA DSBs
 p2  = 1e-8;      % SIAH1 phosphorylation by ATM_p     
 p3  = 3e-8;      % p53 phosphorylation by ATM_p at Ser15 and Ser20
 %p4  = 1e-10;     % p53 arrester phosphorylation by HIPK2 at Ser46    
-p4  = 1e-10+-1.3077324557104417e-12;     % p53 arrester phosphorylation by HIPK
+p4  = 1e-10+-9.60534811443456e-13;     % p53 arrester phosphorylation by HIPK
 p5  = 1e-8;      % Mdm2_cyt phosphorylation
 p6  = 1e-8;      % Mdm2_nuc_S166S186p phosphorylation by ATM_p at Ser395     
 p7  = 3e-9;      % Bad phosphorylation by AKT_p [BMC Syst.Biol.2013: 3e-10]
@@ -259,9 +259,9 @@ d9  = 3e-5;      % spontaneous Bad_p dephosphorylation [BMC Syst.Biol.2013: 3e-5
 %d11 =  d4;       % p53_S46 dephoshorylation of Ser46 by Wip1 
 %d12 = 1e4;       % Rb1 dephosphorylation  
 
-d10 =  d3+2.5341932466109237e-05;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20
+d10 =  d3+2.762605991594064e-05;       % p53_killer spontaneous dephosphorylation of Ser15 and Ser20
 d11 =  d4;       % p53_S46 dephoshorylation of Ser46 by Wip1 
-d12 = 1e4+-109.17359997686437;       % Rb1 dephosphorylation
+d12 = 1e4+90.97109633459397;       % Rb1 dephosphorylation
     
 % proteins binding    
 %
@@ -269,7 +269,7 @@ b1 = 3e-5;       % Bax and BclXL  [BMC Syst.Biol.2013: 3e-5]
 b2 = 3e-3;       % BclXL and Bad_0 [BMC Syst.Biol.2013: 3e-3]
 b3 = 3e-3;       % Bad_p and 14-3-3 [BMC Syst.Biol.2013: 3e-3]
 %b4 = 1e-5;       % Rb1 and E2F1 
-b4 = 1e-5+-1.027491506632648e-06;       % Rb1 and E2F1
+b4 = 1e-5+9.142415322087141e-07;       % Rb1 and E2F1
 b5 = 1e-5;       % p21 and Cyclin_E  
 
 % unbinding 
