@@ -14,6 +14,3 @@ def runSim0WithSVM(file, file_type, num_genomes, path, kernel_type, pct_train):
     por_success = sum(responses.values())/len(responses.values())
     print(str(100*por_success) + " percent 1s \n" + str(100*(1-por_success)) + " percent 0s")
     runSvm(responses.values, genomes_matrix, kernel_type, pct_train)
-
-sim0file = open('/Users/taylorsorenson/Desktop/MGH/DSPP/Testing/SampleDataFiles/sen2.m.t','r')
-runSim0WithSVM(sim0file, 'm', 2, os.getcwd(), 'l',50)
