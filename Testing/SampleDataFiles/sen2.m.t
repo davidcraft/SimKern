@@ -78,14 +78,16 @@ t=linspace(0,100,100);
 x=lsode('f',x0,t);
 % End Octave code
 
+max_ROS = max(x(:,14));
+max_CDKN1A = max(x(:,10));
+max_CDKN1B = max(x(:,11));
+max_DDR = max(x(:,15));
 
-if x(end,10)>10000 || x(end,11)>10000 || x(end,15) > 10000
+if max_ROS > 200 || max_CDKN1A>300 || max_CDKN1B>300 || max_DDR > 300 
 	disp('1');
 else
-        disp('0');
+    	disp('0');
 end
-
-
 
 %	plot(t,x(:,[3 8 10 11 14 15 18 19 21 22]));
 %       legend('AMPK', 'FOXO3A', 'CDKN1A', 'CDKN1B', 'ROS', 'DDR', 'mito.mass.new', ...
@@ -153,11 +155,11 @@ time = linspace(1,20,100);
 % Parameter:   id =  DNA_damaged_by_ROS, name = DNA_damaged_by_ROS
 	global_par_DNA_damaged_by_ROS=0.118873655169353;
 % Parameter:   id =  ROS_prod_by_Mito_membr_pot_new, name = ROS_prod_by_Mito_membr_pot_new
-	global_par_ROS_prod_by_Mito_membr_pot_new=$gauss(4.55464788075885,1.5),name=k22$;
+	global_par_ROS_prod_by_Mito_membr_pot_new=$gauss(4.55464788075885,2),name=k22$;
 % Parameter:   id =  ROS_prod_by_Mito_membr_pot_old, name = ROS_prod_by_Mito_membr_pot_old
 	global_par_ROS_prod_by_Mito_membr_pot_old=$gauss(772.829490967078,100),name=k23$;
 % Parameter:   id =  ROS_turnover, name = ROS_turnover
-	global_par_ROS_turnover=$gauss(3.23082321168464,1.0),name=k24$;
+	global_par_ROS_turnover=$gauss(3.23082321168464,1.6),name=k24$;
 % Parameter:   id =  JNK_activ_by_ROS, name = JNK_activ_by_ROS
 	global_par_JNK_activ_by_ROS=0.00502329152478409;
 % Parameter:   id =  JNK_pT183_inactiv, name = JNK_pT183_inactiv
@@ -179,7 +181,7 @@ time = linspace(1,20,100);
 % Parameter:   id =  mito_biogenesis_by_AMPK_pT172, name = mito_biogenesis_by_AMPK_pT172
 	global_par_mito_biogenesis_by_AMPK_pT172=5.8915457309741E-5;
 % Parameter:   id =  mitophagy_new, name = mitophagy_new
-	global_par_mitophagy_new=$gauss(0.22465992989378,0.08),name=k35$;
+	global_par_mitophagy_new=$uniform(0, 0.5),name=k35$;
 % Parameter:   id =  mitophagy_old, name = mitophagy_old
 	global_par_mitophagy_old=0.00122607614891116;
 % Parameter:   id =  mito_dysfunction, name = mito_dysfunction
@@ -187,7 +189,7 @@ time = linspace(1,20,100);
 % Parameter:   id =  mito_membr_pot_new_inc, name = mito_membr_pot_new_inc
 	global_par_mito_membr_pot_new_inc=9882.02736076158;
 % Parameter:   id =  mito_membr_pot_old_inc, name = mito_membr_pot_old_inc
-	global_par_mito_membr_pot_old_inc=$gauss(0.00586017882122243,1e-4),name=k39$;
+	global_par_mito_membr_pot_old_inc=$uniform(0,0.01),name=k39$;
 % Parameter:   id =  mito_membr_pot_new_dec, name = mito_membr_pot_new_dec
 	global_par_mito_membr_pot_new_dec=1094.58423149719;
 % Parameter:   id =  mito_membr_pot_old_dec, name = mito_membr_pot_old_dec
@@ -223,14 +225,11 @@ time = linspace(1,20,100);
 % assignmentRule: variable = DNA_damage_gammaH2AX_obs
 	x(27)=global_par_scale_DNA_damage_gammaH2AX_obs*x(15);
 % assignmentRule: variable = Insulin
-	%x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
-	x(24)=piecewise($discrete(1,5,10,20,30),name=Insulin$,time>0);
+	x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, $uniform(0,50),name=Insulin$));
 % assignmentRule: variable = Amino_Acids
-	%x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, 1));
-	x(25)=piecewise($discrete(1,5,10,20,30),name=Amino_Acids$,time>0);
+	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, $uniform(0,50),name=Amino_Acids$);
 % assignmentRule: variable = Irradiation
-	%x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
-	x(26)=piecewise($discrete(0,0.0001,0.0001,0.001,0.01,0.1,0.5,1.0,10.0,20.0),name=Irradiation$,time>0);
+	x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
 % assignmentRule: variable = Akt_pS473_obs
 	x(28)=global_par_scale_Akt_pS473_obs*x(2);
 % assignmentRule: variable = SA_beta_gal_obs
