@@ -21,7 +21,7 @@
 
 function main()
 %Instantiate person-specific genomes
-global k5 k6 k22 k23 k24 k29 k31 k33 k35 k39 ROS CDKN1B CDKN1A AMPK_init Fox03A Insulin Amino_Acids
+global x2 k5 k6 k22 k23 k24 k29 k31 k33 k35 k39 ROS CDKN1B CDKN1A AMPK_init Fox03A Insulin Amino_Acids
 %Read in genomex_key file
 genome1_key
 %Initial conditions vector
@@ -33,7 +33,7 @@ genome1_key
 	x0(5) = 10.0;
 	x0(6) = 10.0;
 	x0(7) = 10.0;
-	x0(8) = Fox03A $discrete[10.0,20,30],name=Fox03A$; %FoxO3A 
+	x0(8) = Fox03A + $discrete[10.0,20,30],name=Fox03A$; %FoxO3A 
 	x0(9) = 10.0;
 	x0(10) = CDKN1A + $discrete[10.0,20,30],name=CDKN1A$; %CDKN1A (p27)
 	x0(11) = CDKN1B + $discrete[10.0,20,30],name=CDKN1B$; %CDKN1B (p21)
@@ -111,7 +111,7 @@ end
 % Start Octave code
 function xdot=f(x,t)
 % End Octave code
-global k5 k6 k22 k23 k24 k29 k31 k33 k35 k39 Insulin Amino_Acids ROS CDKN1B CDKN1A
+global x2 k5 k6 k22 k23 k24 k29 k31 k33 k35 k39 Insulin Amino_Acids ROS CDKN1B CDKN1A
 time = linspace(1,20,100);
 % All 'Parameters' represent rate constants
 % Compartment: id = Cell, name = Cell, constant
@@ -229,9 +229,9 @@ time = linspace(1,20,100);
 % assignmentRule: variable = DNA_damage_gammaH2AX_obs
 	x(27)=global_par_scale_DNA_damage_gammaH2AX_obs*x(15);
 % assignmentRule: variable = Insulin
-	x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, Insulin + $uniform(0,100),name=Insulin$);
+	x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, Insulin + $uniform(0,100),name=Insulin$));
 % assignmentRule: variable = Amino_Acids
-	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, Amino_Acids + $uniform(0,100),name=Amino_Acids$);
+	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, Amino_Acids + $uniform(0,100),name=Amino_Acids$));
 % assignmentRule: variable = Irradiation
 	x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, $uniform(0,.01),name=Irradiation$)));
 % assignmentRule: variable = Akt_pS473_obs

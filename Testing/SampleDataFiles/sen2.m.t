@@ -227,7 +227,7 @@ time = linspace(1,20,100);
 % assignmentRule: variable = Insulin
 	x(24)=piecewise(1, time < (-1), piecewise(1, time < 0, $uniform(0,50),name=Insulin$));
 % assignmentRule: variable = Amino_Acids
-	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, $uniform(0,50),name=Amino_Acids$);
+	x(25)=piecewise(1, time < (-1), piecewise(1, time < 0, $uniform(0,50),name=Amino_Acids$));
 % assignmentRule: variable = Irradiation
 	x(26)=piecewise(0, time < (-1), piecewise(0, time < 0, piecewise(1, time < 0.003472, 0)));
 % assignmentRule: variable = Akt_pS473_obs
