@@ -8,8 +8,7 @@ based upon model-specific parameter variation. In order to run machine learning,
 value (0 or 1) based upon specific network dynamics. 
 
 ### REQUIREMENTS
-The SIM0 framework currently supports Octave as a viable simulation engine.  We have extended the framework to consider BooleNet, a Boolean network framework (written in R). We will update this
-document once we are able to support MATLAB, logical, or other qualitative simulation engines.
+The SIM0 framework sucessfully handles Octave and MATLAB as viable simulation engines.  We have extended the framework to consider BooleNet, a Boolean network framework (written in R). We will update this document once we are able to support other simulation engines.
 In the simulation engine, the user must specify which model-specific parameters are to be changed to produce a total number
 of K simulations of the system in question.
 
@@ -28,15 +27,15 @@ values derived from a number of discrete and continuous probability distribution
 
 Example(s) (MATLAB): 
 
-`my_param_1 = 0.757` -> `$my_param_1 = normrnd(0.757,0.12),name=my_param_1$`
+`my_param_1 = 0.757` -> `$my_param_1=gaussian(0.757,0.12),name=my_param_1$`
 
-`my_param_2 = 0.123` -> `$my_param_2 = gamrnd(0.123,0.414),name=my_param_2$`
+`my_param_2 = 0.123` -> `$my_param_2=gaussian(0.123,0.414),name=my_param_2$`
            
 
 ### RUNNING SIM0
 Once the framework is downloaded into an appropriate depository, the user can initiate SIM0 by the following prompt:
 
-`python2.7 "__main__.py"`
+`python "__main__.py"`
 
 A menu will appear in the command window. To immeadiately run the SIM0 enviornment, enter the following three arguments into 
 the command line:

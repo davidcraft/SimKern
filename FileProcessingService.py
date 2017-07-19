@@ -51,6 +51,8 @@ class FileProcessingService(object):
                     # Replace $stuff$ with extracted coefficient value, write to file
                     new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
                     new_m_file.write(new_line)
+                    if type(coefficient_value) is str:
+                        coefficient_value = self.replaceCoefValue(coefficient_value)
                     coefficient_map[coefficient_name] = coefficient_value
                 else:
                     new_m_file.write(line)
@@ -135,9 +137,9 @@ class FileProcessingService(object):
     def pickBoolean(self, probability_of_zero):
         val = random.uniform(0, 1)
         if val < float(probability_of_zero):
-            return "0"
+            return 0
         else:
-            return "1"
+            return 1
 
     def pickMutation(self, node, probability_of_knock_out, probability_of_over_expression):
         val = random.uniform(0, 1)
@@ -155,14 +157,7 @@ class FileProcessingService(object):
                 if self.file_type == SupportedFileTypes.MATLAB:
                     new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
                 elif self.file_type == SupportedFileTypes.R:
-                    if value[0] == "s" and value[1] == "s":
-                        new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
-                    else:
-                        if genomes[genome][value] is "":
-                            new_genome_file.write(str(value) + "<-" + str(-1) + "\n")
-                        else:
-                            pos = genomes[genome][value].index(")")
-                            new_genome_file.write(str(value) + "<-" + str(genomes[genome][value][pos - 1]) + "\n")
+                    new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
             new_genome_file.close()
 
     def createGenomesMatrix(self, genomes):
@@ -171,15 +166,13 @@ class FileProcessingService(object):
         for genome in genomes.keys():
             genomes_matrix.append([])
             for value in genomes[genome].keys():
-                if genomes[genome][value] is "":
-                    genomes_matrix[counter].append(int(-1))
-                elif type(genomes[genome][value]) is not float:
-                    if genomes[genome][value][0].isalpha():
-                        pos = genomes[genome][value].index(")")
-                        genomes_matrix[counter].append(int(genomes[genome][value][pos - 1]))
-                    else:
-                        genomes_matrix[counter].append(int(genomes[genome][value]))
-                else:
-                    genomes_matrix[counter].append((genomes[genome][value]))
+                genomes_matrix[counter].append((genomes[genome][value]))
             counter = counter + 1
         return genomes_matrix
+
+    def replaceCoefValue(self, coefficient_string):
+        if coefficient_string == "":
+            return int(-1)
+        else:
+            pos = coefficient_string.index(")")
+            return int(coefficient_string[pos - 1])

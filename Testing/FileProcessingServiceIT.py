@@ -18,7 +18,8 @@ class FileProcessingServiceIT(unittest.TestCase):
         self.current_working_dir = os.getcwd()  # Should be this package.
 
     def tearDown(self):
-        self.file_processing_service.data_file.close()
+        if self.file_processing_service:
+            self.file_processing_service.data_file.close()
         if self.generated_folder != "/":
             shutil.rmtree(self.generated_folder)
 
@@ -41,7 +42,7 @@ class FileProcessingServiceIT(unittest.TestCase):
 
     def testRGenomeFilesSuccessfullyCreated(self):
         # Note: This is R the program, not R an integer representing permutations.
-        data_file = self.setTargetFile('SampleDataFiles', 'booleanTest.r.t')
+        data_file = self.setTargetFile('SampleDataFiles', 'booleanModel.r.t')
         self.setupFileProcessingService(data_file, SupportedFileTypes.R)
         self.assertFilesCreatedSuccessfully(SupportedFileTypes.R)
 
