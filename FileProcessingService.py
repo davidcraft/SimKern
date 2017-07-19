@@ -152,17 +152,17 @@ class FileProcessingService(object):
         for genome in genomes.keys():
             new_genome_file = open(path + "/" + genome + "_key." + self.file_type, "w")
             for value in genomes[genome].keys():
+                genome_value = genomes[genome][value]
                 if self.file_type == SupportedFileTypes.MATLAB:
-                    new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
+                    new_genome_file.write(str(value) + "=" + str(genome_value) + ";" + "\n")
                 elif self.file_type == SupportedFileTypes.R:
-                    if value[0] == "s" and value[1] == "s":
-                        new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
+                    if genome_value is "":
+                        new_genome_file.write(str(value) + "<-" + str(-1) + "\n")
+                    elif ")" in genome_value:
+                        pos = genome_value.index(")")
+                        new_genome_file.write(str(value) + "<-" + str(genome_value[pos - 1]) + "\n")
                     else:
-                        if genomes[genome][value] is "":
-                            new_genome_file.write(str(value) + "<-" + str(-1) + "\n")
-                        else:
-                            pos = genomes[genome][value].index(")")
-                            new_genome_file.write(str(value) + "<-" + str(genomes[genome][value][pos - 1]) + "\n")
+                        new_genome_file.write(str(value) + "<-" + str(genome_value) + "\n")
             new_genome_file.close()
 
     def createGenomesMatrix(self, genomes):
