@@ -1,13 +1,13 @@
+import logging
+import os
+import re
+import shutil
 import unittest
 
 from FileProcessingService import FileProcessingService
 from Sim1FileProcessingService import Sim1FileProcessingService
 from SupportedFileTypes import SupportedFileTypes
-import unittest
-import os
-import shutil
-import logging
-import re
+
 
 class FileProcessingServiceIT(unittest.TestCase):
 

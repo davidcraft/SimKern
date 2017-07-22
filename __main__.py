@@ -1,14 +1,16 @@
 import logging
 import sys
-import re
 
+from sklearn import svm
 from FileProcessingService import FileProcessingService
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
+from MatrixService import MatrixService
 
 log = logging.getLogger(__name__)
 logging.basicConfig()
 log.setLevel(logging.INFO)
+
 
 def main():
     arguments = sys.argv[1:]
@@ -112,46 +114,44 @@ def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_fil
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
-            log.debug("Trial Files: %s", trial_files)
-            matrix = runAllGenomesAndCreateMatrix(file_extension, trial_files, path, number_of_genomes, number_of_trials)
-            # TODO: Now call SVM service on matrix.
+            third_party_program_output = runGenomeSimulations(file_extension, trial_files, path)
+            matrices = generateMatrices(number_of_genomes, number_of_trials, third_party_program_output)
+            trainSVMClassifier(number_of_genomes, matrices[0])
         except ValueError as valueError:
             log.error(valueError)
         finally:
             log.debug("Closing file %s", input_file)
             data_file.close()
 
-
-#Begin SIM1 using Octave: --> #TODO - Maybe incorporate these into SIM1
 def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path):
     process_trial_files = Sim1FileProcessingService(data_file, file_extension, number_of_genomes,
                                                     number_of_trials, path)
-    return process_trial_files.createTrialFiles()
+    trial_files = process_trial_files.createTrialFiles()
+    log.info("Trial Files: %s\n", trial_files)
+    return trial_files
 
-
-def runAllGenomesAndCreateMatrix(file_extension, trial_files, path, number_of_genomes, number_of_trials):
-    output_matrix = generateEmptyMatrix(number_of_genomes, number_of_trials)
+def runGenomeSimulations(file_extension, trial_files, path):
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, trial_files)
-    result_dictionary = third_party_caller_service.callThirdPartyProgram(False)
+    return third_party_caller_service.callThirdPartyProgram(False)
 
-    # Assumes file name format of: trialXgenomeY.Z
-    # TODO: We may also want to extract any matrix calculations to another service.
-    for dictionary_key in result_dictionary.keys():
-        trial = int(re.findall(r'\d+', dictionary_key.split("_")[0])[0])
-        genome = int(re.findall(r'\d+', dictionary_key.split("_")[1])[0])
-        output_matrix[genome - 1][trial - 1] = result_dictionary[dictionary_key]
+def generateMatrices(number_of_genomes, number_of_trials, third_party_program_output):
+    matrix_service = MatrixService(third_party_program_output, number_of_genomes, number_of_trials)
+    genomes_by_trial_matrix = matrix_service.generateGenomesByTrialMatrix()
+    log.info("Successfully created genomes by trial matrix: %s\n", genomes_by_trial_matrix)
 
-    return output_matrix
+    kernel_matrix = matrix_service.generateSimilarityMatrix()
+    log.info("Successfully created kernel similarity matrix: %s\n", kernel_matrix)
 
-def generateEmptyMatrix(number_of_genomes, number_of_trials):
-    # TODO: This may be redundant and unnecessary with sim1.py class.
-    empty_matrix = []
-    for genome in range(0, int(number_of_genomes)):
-        empty_row = []
-        for trial in range(0, int(number_of_trials)):
-            empty_row.append(None)
-        empty_matrix.append(empty_row)
-    return empty_matrix
+    return genomes_by_trial_matrix, kernel_matrix
+
+def trainSVMClassifier(number_of_genomes, similarity_matrix):
+    # As this grows we may want to consider extracting this to a service.
+    classifier_model = svm.SVC()
+    sample_labels = []
+    for label in range(0, int(number_of_genomes)):
+        sample_labels.append("feature" + str(label))
+    classifier_model.fit(similarity_matrix, sample_labels)
+    log.info("Successful creation of classifier model: %s\n", classifier_model)
 
 if __name__ == "__main__":
     main()

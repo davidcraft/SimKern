@@ -6,5 +6,5 @@ class SupportedDistributions:
     LOGNORMAL = "lognormal"
     BINOMIAL = "binomial"
     POISSON = "poisson"
-    BOOLEAN= "boolean"
+    BOOLEAN = "boolean"
     MUTATE = "mutate"

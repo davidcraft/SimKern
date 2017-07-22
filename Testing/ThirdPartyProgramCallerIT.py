@@ -1,10 +1,11 @@
-import unittest
-from ThirdPartyProgramCaller import ThirdPartyProgramCaller
-from FileProcessingService import FileProcessingService
-from SupportedFileTypes import SupportedFileTypes
+import logging
 import os
 import shutil
-import logging
+import unittest
+
+from FileProcessingService import FileProcessingService
+from SupportedFileTypes import SupportedFileTypes
+from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 
 
 class ThirdPartyProgramCallerIT(unittest.TestCase):
@@ -12,11 +13,10 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
 
-    current_working_dir = os.getcwd()  # Should be this package.
     number_of_genomes = 10
 
     def setUp(self):
-        pass
+        self.current_working_dir = os.getcwd()
 
     def tearDown(self):
         if self.generated_folder != "/":
@@ -56,6 +56,13 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
         self.assertThirdPartyProgramCallerResults(simulation_result)
 
+    # # TODO: Zach
+    # def callMATLABAndReturnSimulationResult(self):
+    #     self.log.info("Testing %s genomes of .m files successfully call MATLAB and return results.",
+    #                   self.number_of_genomes)
+    #     simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
+    #     self.assertThirdPartyProgramCallerResults(simulation_result)
+
     def callRAndReturnSimulationResult(self):
         self.initializeServicesAndCreateGenomes('booleanModel.r.t', SupportedFileTypes.R)
 
@@ -63,10 +70,3 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
                       self.number_of_genomes)
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
         self.assertThirdPartyProgramCallerResults(simulation_result)
-
-    # # TODO: Zach
-    # def callMATLABAndReturnSimulationResult(self):
-    #     self.log.info("Testing %s genomes of .m files successfully call MATLAB and return results.",
-    #                   self.number_of_genomes)
-    #     simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
-    #     self.assertThirdPartyProgramCallerResults(simulation_result)
