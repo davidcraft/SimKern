@@ -46,7 +46,7 @@ class ThirdPartyProgramCaller(object):
         if self.file_type == "matlab":
             cmd = 'matlab -nojvm -nodisplay -nosplash ' + directory_of_file + "/" + call_file
         else:
-            cmd = 'octave -q' + directory_of_file + "/" + call_file
+            cmd = 'octave -q ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         print(out)
@@ -60,8 +60,8 @@ class ThirdPartyProgramCaller(object):
 
         return output[0]
 
-    def callR(self, directory_of_file, callFile):
-        cmd = 'Rscript ' + directory_of_file + "/" + callFile
+    def callR(self, directory_of_file, call_file):
+        cmd = 'Rscript ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         pos = out.index("]")

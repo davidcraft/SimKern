@@ -1,6 +1,12 @@
 library(BoolNet)
 
-network <- loadNetwork("~/PycharmProjects/scrap/booleanTestNetwork.txt")
+original_working_dir <- getwd()
+setwd("..")
+parent <- getwd()
+setwd(original_working_dir)
+
+path_to_boolean_file <- paste(parent, "/SampleDataFiles/booleanModel.txt", sep = "")
+network <- loadNetwork(path_to_boolean_file)
 
 $mutate(CTNNB1, 0, .304), name= M_CTNNB1$
 $mutate(p53, .044, .304), name= M_p53$
