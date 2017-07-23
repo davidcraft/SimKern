@@ -21,7 +21,7 @@ class Sim1FileProcessingService(FileProcessingService):
 
     def handleSim1FileProcessing(self, comment_character):
         '''
-        Creates r_trials .m files with $distribution(a,b),name=x$ replaced with values
+        Creates r_trials of type self.file_type files with $distribution(a,b),name=x$ replaced with values
         Also creates TrialCallFile, which calls each of the R generated .m values
         :return: sim1_file_list --> list of names of all files created
         '''
