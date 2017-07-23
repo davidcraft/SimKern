@@ -19,9 +19,6 @@ class Sim1FileProcessingService(FileProcessingService):
         elif self.file_type == SupportedFileTypes.R:
             return self.SIM1_HandleR()
 
-    def getRValue(self):
-        return self.number_of_genomes
-
     def SIM1_HandleMATLABOrOctave(self):
         '''
         Creates r_trials .m files with $distribution(a,b),name=x$ replaced with values
@@ -97,7 +94,7 @@ class Sim1FileProcessingService(FileProcessingService):
                     target_sequence = line[(search_result_for_distribution.regs[0][0] + 1):
                     (search_result_for_distribution.regs[0][1] - 1)]
                     distribution = self.extractDistributionName(target_sequence)
-                    params = self.extractRParameters(target_sequence)
+                    params = self.extractParameters(target_sequence)
                     coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
                     # Replace $stuff$ with extracted coefficient value, write to file
                     new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)

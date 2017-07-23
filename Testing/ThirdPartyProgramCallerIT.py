@@ -48,7 +48,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         assert len(created_files) == (self.number_of_genomes * 2) + 1
         assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1
 
-    def callOctaveAndReturnSimulationResult(self):
+    def testCallOctaveAndReturnSimulationResult(self):
         self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.m', SupportedFileTypes.MATLAB)
 
         self.log.info("Testing %s genomes of .m files successfully call Octave and return results.",
@@ -63,7 +63,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     #     simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
     #     self.assertThirdPartyProgramCallerResults(simulation_result)
 
-    def callRAndReturnSimulationResult(self):
+    def testCallRAndReturnSimulationResult(self):
         self.initializeServicesAndCreateGenomes('booleanModel.r.t', SupportedFileTypes.R)
 
         self.log.info("Testing %s genomes of .m files successfully call R and return results.",

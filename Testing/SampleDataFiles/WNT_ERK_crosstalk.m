@@ -101,11 +101,11 @@ function xdot=f(x,t)
 % Parameter:   id =  k2, name = k2
 	global_par_k2=0.0182;
 % Parameter:   id =  k3, name = k3
-	global_par_k3=0.05;
+	global_par_k3=$0.05$;
 % Parameter:   id =  k4, name = k4
-	global_par_k4=0.267;
+	global_par_k4=$0.267,name=k4$;
 % Parameter:   id =  k5, name = k5
-	global_par_k5=0.133;
+	global_par_k5=$0.133$;
 % Parameter:   id =  k_plus6, name = k_plus6
 	global_par_k_plus6=0.0909;
 % Parameter:   id =  k_minus6, name = k_minus6
