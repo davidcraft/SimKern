@@ -7,7 +7,7 @@ import collections
 
 class ThirdPartyProgramCaller(object):
 
-    OUTPUT_FILE_NAME = 'Sim0Output.csv'
+    OUTPUT_FILE_NAME = 'Sim0Responses.csv'
 
     def __init__(self, files_directory, file_type, file_list):
         self.files_directory = files_directory
@@ -33,9 +33,12 @@ class ThirdPartyProgramCaller(object):
 
     def writeOutputFile(self, outputs):
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
+            output_list=[]
+            for file in outputs:
+                output_list.append(outputs[file])
             try:
                 outputs_writer = csv.writer(csv_file)
-                outputs_writer.writerow(outputs)
+                outputs_writer.writerow(output_list)
             finally:
                 csv_file.close()
 
