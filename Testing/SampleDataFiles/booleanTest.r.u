@@ -1,46 +1,109 @@
 library(BoolNet)
 
-network <- loadNetwork("~/PycharmProjects/scrap/simplifiedBooleanNetwork.txt")
+original_working_dir <- getwd()
+setwd("..")
+parent <- getwd()
+setwd(original_working_dir)
 
-source("~/PycharmProjects/scrap/GenomeFiles/genome1_key.r")
+path_to_boolean_file <- paste(parent, "/Testing/SampleDataFiles/booleanModel.txt", sep = "")
+network <- loadNetwork(path_to_boolean_file)
 
-if (M_CDH1 == 0) {
-	fixGenes(network, "Ecadh", 0)
-} else if (M_CDH1 == 1) {
-	fixGenes(network, "Ecadh", 1)
+path_to_key_files <- paste(parent, "/GenomeFiles/genome1_key.r", sep="")
+source(path_to_key_files)
+
+if (M_CTNNB1!=-1){
+    fixGenes(network, "CTNNB1", M_CTNNB1)
+}
+if (M_p53!=-1){
+    fixGenes(network, "p53", M_p53)
+}
+if (M_CDH1!=-1){
+    fixGenes(network, "CDH1", M_CDH1)
+}
+if (M_NICD!=-1){
+    fixGenes(network, "NICD", M_NICD)
+}
+if (M_TGFbeta!=-1){
+    fixGenes(network, "TGFbeta", M_TGFbeta)
+}
+if (M_ERK!=-1){
+    fixGenes(network, "ERK", M_ERK)
+}
+if (M_SNAI2!=-1){
+    fixGenes(network, "SNAI2", M_SNAI2)
+}
+if (M_TWIST1!=-1){
+    fixGenes(network, "TWIST1", M_TWIST1)
+}
+if (M_AKT2!=-1){
+    fixGenes(network, "AKT2", M_AKT2)
+}
+if (M_AKT1!=-1){
+    fixGenes(network, "AKT1", M_AKT1)
 }
 
-$mutate(Notch_pthw, .0455 , .136), name=M_Notch_pthw$
+$mutate(CDH2, .1, .1), name= M_CDH2$
 
-$mutate(p53, .136, .0455), name=M_p53$
+$mutate(DKK1, .1, .1), name= M_DKK1$
 
-$mutate(TGFb_pthw, 0.0909, .0455), name= M_TGFb_pthw$
+$mutate(GF, .1, .1), name= M_GF$
 
-$mutate(ERK_pthw, .0455, .0455), name= M_ERK_pthw$
+$mutate(miR200, .1, .1), name= M_miR200$
 
-$mutate(EMTreg, .0455, .0455), name= M_EMTreg$
+$mutate(miR203, .1, .1), name= M_miR203$
 
-$mutate(WNT_pthw, .0455, .0455), name= M_WNT_pthw$
+$mutate(miR34, .1, .1), name= M_miR34$
 
-$mutate(AKT1, .0455, .0455), name= M_AKT1$
+$mutate(p21, .1, .1), name= M_p21$
 
-$mutate(AKT2, .0455, .0455), name= M_AKT2$
+$mutate(p63, .1, .1), name= M_p63$
 
-$mutate(p63_73, .0455, .0455) name= M_p63_73$
+$mutate(p73, .1, .1), name= M_p73$
 
-$mutate(miRNA, .0455, .0455) name= M_miRNA$
+$mutate(SMAD, .1, .1), name= M_SMAD$
 
-attr <- getAttractors(network, method = "chosen", startStates = list(c(B_AKT1, B_AKT2, $boolean(0.5), name= B_Ecadh$,
-$boolean(0.5), name=B_WNT_pthw$,
-B_ERK, B_GF, $boolean(0.5), name= B_miRNA$,
-B_NICD, B_p53, $boolean(0.5), name= B_p63_73$,
-$boolean(0.5), name= B_TGFb_pthw$,
-$boolean(0.5), name= B_EMTreg$,
-0, 0, B_EMT, B_Invasion, B_Migration, 0, 1, $boolean(.5), name= B_ECMicroenv$)))
+$mutate(SNAI1, .1, .1), name= M_SNAI1$
+
+$mutate(VIM, .1, .1), name= M_VIM$
+
+$mutate(ZEB1, .1, .1), name= M_ZEB1$
+
+$mutate(ZEB2, .1, .1), name= M_ZEB2$
+
+
+
+attr <- getAttractors(network, method = "chosen", startStates = list(c(B_AKT1,
+B_AKT2,
+B_CDH1,
+B_CDH2,
+B_CTNNB1,
+B_DKK1,
+B_ERK,
+B_GF,
+B_miR200,
+B_miR203,
+B_miR34,
+B_NICD,
+B_p21,
+B_p53,
+B_p63,
+B_p73,
+B_SMAD,
+B_SNAI1,
+B_SNAI2,
+B_TGFbeta,
+B_TWIST1,
+B_VIM,
+B_ZEB1,
+B_ZEB2,
+0, 0, B_EMT,
+B_Invasion,
+B_Migration,
+0, 1, B_ECM)))
 
 attrSeq <- getAttractorSequence(attr, 1)
 
-if (all(attrSeq[ , 14] == 1)){
+if (all(attrSeq[ , 26] == 1)){
   print(0)
 } else {
   print(1)

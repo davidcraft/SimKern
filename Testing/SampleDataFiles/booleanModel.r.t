@@ -5,11 +5,8 @@ setwd("..")
 parent <- getwd()
 setwd(original_working_dir)
 
-path_to_boolean_file <- paste(parent, "/SampleDataFiles/booleanModel.txt", sep = "")
+path_to_boolean_file <- paste(parent, "/Testing/SampleDataFiles/booleanModel.txt", sep = "")
 network <- loadNetwork(path_to_boolean_file)
-
-bogus_syntax_check_2 <- $5,name=bogus$
-bogus_syntax_check_1 <- $5$
 
 $mutate(CTNNB1, 0, .304), name= M_CTNNB1$
 $mutate(p53, .044, .304), name= M_p53$
