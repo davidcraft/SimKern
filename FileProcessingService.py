@@ -209,7 +209,7 @@ class FileProcessingService(object):
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 data_writer = csv.writer(csv_file)
-                for i in range(0,self.number_of_genomes):
+                for i in range(0, self.number_of_genomes):
                     data_writer.writerow(genomes_matrix[i])
             finally:
                 csv_file.close()
