@@ -1,6 +1,6 @@
 from __future__ import division
-import kernelSvm
-import typicalSvm
+import svm.code.kernelSvm
+import svm.code.typicalSvm
 
 def runSvm(responses, data, svm_type, pct_train):
 
@@ -11,13 +11,13 @@ def runSvm(responses, data, svm_type, pct_train):
     print(str(100 * por_success) + " percent 1s \n" + str(100 * (1 - por_success)) + " percent 0s")
 
     if svm_type == "c":
-        [train_y, train_S, test_S, test_y] = splitKernel(response_list, data, pct_train)
-        kernelSvm.kernelSVM(train_y, train_S, test_S, test_y)
+        [train_y, train_S, test_S, test_y] = splitMatrix(response_list, data, pct_train)
+        svm.code.kernelSvm.kernelSVM(train_y, train_S, test_S, test_y)
     else:
         [train_y, train_X, test_X, test_y] = splitData(response_list, data, pct_train)
-        typicalSvm.typicalSVM(train_y, train_X, svm_type, test_X, test_y)
+        svm.code.typicalSvm.typicalSVM(train_y, train_X, svm_type, test_X, test_y)
 
-def splitKernel(responses, data, pct_train):
+def splitMatrix(responses, data, pct_train):
     tot_data_length = data.__len__()
     row_to_split_on = int(round(pct_train*tot_data_length))
     if row_to_split_on == tot_data_length:

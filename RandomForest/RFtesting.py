@@ -71,3 +71,4 @@ def stats(trPr, train_y, tePr, test_y):
     totAc=(count1+count2)/(trLen+teLen)
 
     return[trAc, teAc, totAc]
+
