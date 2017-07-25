@@ -1,21 +1,34 @@
 from __future__ import division
-import svm.code.kernelSvm
-import svm.code.typicalSvm
+from sklearn.svm import SVC
 
-def runSvm(responses, data, svm_type, pct_train):
+def runSvm(responses, data, kernel_type, pct_train):
 
-    response_list=[]
-    for file in responses.keys():
-        response_list.append(responses[file])
+# Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"
+    if type(responses)!= list:
+        response_list=[]
+        for file in responses.keys():
+            response_list.append(responses[file])
+    else:
+        response_list=responses
     por_success = sum(response_list) / response_list.__len__()
     print(str(100 * por_success) + " percent 1s \n" + str(100 * (1 - por_success)) + " percent 0s")
 
-    if svm_type == "c":
-        [train_y, train_S, test_S, test_y] = splitMatrix(response_list, data, pct_train)
-        svm.code.kernelSvm.kernelSVM(train_y, train_S, test_S, test_y)
+    if kernel_type == "precomputed":
+        [train_y, train_X, test_X, test_y] = splitMatrix(response_list, data, pct_train)
+        mod=runKernelSVM()
     else:
         [train_y, train_X, test_X, test_y] = splitData(response_list, data, pct_train)
-        svm.code.typicalSvm.typicalSVM(train_y, train_X, svm_type, test_X, test_y)
+        mod=runTypicalSVM(kernel_type)
+
+    mod.fit(train_X, train_y)
+    trPr = mod.predict(train_X)
+    tePr = mod.predict(test_X)
+    [trAc, teAc, totAc] = getAccuracies(trPr, train_y, tePr, test_y)
+    print("Training predictions: " + str(trPr))
+    print("Training accuracy: " + str(trAc))
+    print("Testing predictions: " + str(tePr))
+    print("Testing accuracy: " + str(teAc))
+    print("Overall accuracy: " + str(totAc))
 
 def splitMatrix(responses, data, pct_train):
     tot_data_length = data.__len__()
@@ -23,6 +36,7 @@ def splitMatrix(responses, data, pct_train):
     if row_to_split_on == tot_data_length:
         test_S = None
         test_y = None
+        print("Warning: no testing data specified. Decrease pct_train to fix.")
         return [responses, data, test_S, test_y]
     elif row_to_split_on == 0:
         print("Error: no training data specified. Increase pct_train.")
@@ -39,7 +53,7 @@ def splitMatrix(responses, data, pct_train):
         for i in range(row_to_split_on, tot_data_length):
             test_y.append(responses[i])
             test_S.append([])
-            for j in range(0, tot_data_length):
+            for j in range(0, train_S.__len__()):
                 test_S[i-row_to_split_on].append(data[i][j])
         return [train_y, train_S, test_S, test_y]
 
@@ -69,3 +83,31 @@ def splitData(responses, data, pct_train):
             for j in range(0, num_characteristics):
                 test_X[i - row_to_split_on].append(data[i][j])
         return [train_y, train_X, test_X, test_y]
+
+def runKernelSVM():
+    mod=SVC(kernel="precomputed")
+    return mod
+
+def runTypicalSVM(kernel_type):
+    mod=SVC(kernel=kernel_type)
+    return mod
+
+def getAccuracies(trPr, train_y, tePr, test_y):
+    trLen = train_y.__len__()
+    count1 = 0
+    for i in range(0, trLen):
+        if trPr[i] == train_y[i]:
+            count1 = count1 + 1
+
+    trAc = count1 / trLen
+
+    teLen = test_y.__len__()
+    count2 = 0
+    for i in range(0, teLen):
+        if tePr[i] == test_y[i]:
+            count2 = count2 + 1
+    teAc = count2 / teLen
+
+    totAc = (count1 + count2) / (trLen + teLen)
+
+    return [trAc, teAc, totAc]
