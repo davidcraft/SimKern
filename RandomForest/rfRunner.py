@@ -15,7 +15,7 @@ def runRF(responses, data, pct_train):
     mod.fit(train_X, train_y)
     trPr=mod.predict(train_X)
     tePr=mod.predict(test_X)
-    [trAc, teAc, totAc]=stats(trPr, train_y, tePr, test_y)
+    [trAc, teAc, totAc]=getAccuracies(trPr, train_y, tePr, test_y)
     print("Training predictions: " + str(trPr))
     print("Training accuracy: " + str(trAc))
     print("Testing predictions: " + str(tePr))
@@ -51,7 +51,7 @@ def splitData(responses, data, pct_train):
                 test_X[i - row_to_split_on].append(data[i][j])
         return [train_y, train_X, test_X, test_y]
 
-def stats(trPr, train_y, tePr, test_y):
+def getAccuracies(trPr, train_y, tePr, test_y):
 
     trLen=train_y.__len__()
     count1=0
