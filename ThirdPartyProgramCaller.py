@@ -7,7 +7,7 @@ import collections
 
 class ThirdPartyProgramCaller(object):
 
-    OUTPUT_FILE_NAME = 'Sim0Responses.csv'
+    OUTPUT_FILE_NAME = 'Sim0Output.csv'
 
     def __init__(self, files_directory, file_type, file_list):
         self.files_directory = files_directory
@@ -33,12 +33,9 @@ class ThirdPartyProgramCaller(object):
 
     def writeOutputFile(self, outputs):
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
-            output_list=[]
-            for file in outputs:
-                output_list.append(outputs[file])
             try:
                 outputs_writer = csv.writer(csv_file)
-                outputs_writer.writerow(output_list)
+                outputs_writer.writerow(outputs)
             finally:
                 csv_file.close()
 
@@ -47,7 +44,7 @@ class ThirdPartyProgramCaller(object):
 
     def callMATLABorOctave(self, directory_of_file, call_file):
         if self.file_type == "matlab":
-            cmd = 'matlab -nojvm -nodisplay -nosplash ' + directory_of_file + "/" + call_file
+            cmd = 'matlab -nojvm -nodisplay -nosplash' + directory_of_file + "/" + call_file
         else:
             cmd = 'octave -q ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
@@ -71,3 +68,5 @@ class ThirdPartyProgramCaller(object):
         output = out[pos + 2]
         print(output)
         return int(output)
+
+
