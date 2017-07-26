@@ -15,11 +15,10 @@ def runSvm(responses, data, kernel_type, pct_train):
 
     if kernel_type == "precomputed":
         [train_y, train_X, test_X, test_y] = splitMatrix(response_list, data, pct_train)
-        mod=runKernelSVM()
     else:
         [train_y, train_X, test_X, test_y] = splitData(response_list, data, pct_train)
-        mod=runTypicalSVM(kernel_type)
 
+    mod=SVC(kernel=kernel_type)
     mod.fit(train_X, train_y)
     trPr = mod.predict(train_X)
     tePr = mod.predict(test_X)
@@ -83,14 +82,6 @@ def splitData(responses, data, pct_train):
             for j in range(0, num_characteristics):
                 test_X[i - row_to_split_on].append(data[i][j])
         return [train_y, train_X, test_X, test_y]
-
-def runKernelSVM():
-    mod=SVC(kernel="precomputed")
-    return mod
-
-def runTypicalSVM(kernel_type):
-    mod=SVC(kernel=kernel_type)
-    return mod
 
 def getAccuracies(trPr, train_y, tePr, test_y):
     trLen = train_y.__len__()
