@@ -22,9 +22,11 @@ class ThirdPartyProgramCaller(object):
         for file in self.file_list:
             file_result = []
             if self.file_type == SupportedFileTypes.MATLAB:
-                file_result = self.callMATLABorOctave(directory_of_files, file)
+                file_result = self.callMATLAB(directory_of_files, file)
             elif self.file_type == SupportedFileTypes.R:
                 file_result = self.callR(directory_of_files, file)
+            elif self.file_type == SupportedFileTypes.OCTAVE:
+                file_result = self.callOctave(directory_of_files, file)
             outputs[file] = file_result
         if should_write_sim0_output:
             self.writeOutputFile(outputs)
@@ -42,11 +44,23 @@ class ThirdPartyProgramCaller(object):
     def changeWorkingDirectory(self, new_directory):
         os.chdir(new_directory)
 
-    def callMATLABorOctave(self, directory_of_file, call_file):
-        if self.file_type == "matlab":
-            cmd = 'matlab -nojvm -nodisplay -nosplash' + directory_of_file + "/" + call_file
-        else:
-            cmd = 'octave -q ' + directory_of_file + "/" + call_file
+    def callOctave(self, directory_of_file, call_file):
+        cmd = 'octave -q ' + directory_of_file + "/" + call_file
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
+        (out, err) = proc.communicate()
+        print(out)
+
+        output = out.strip().split("\n")
+        try:
+            output = [int(i) for i in output]
+        except ValueError as valueError:
+            print(valueError)  # TODO: setup logging for this class.
+            output = [int(-1)]
+
+        return output[0]
+
+    def callMATLAB(self, directory_of_file, call_file):
+        cmd = 'matlab -nojvm -nodisplay -nosplash ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
         print(out)
