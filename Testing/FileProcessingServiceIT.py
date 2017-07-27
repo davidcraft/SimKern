@@ -36,10 +36,12 @@ class FileProcessingServiceIT(unittest.TestCase):
         return open(resource_path)
 
 
-    def testMATLABGenomeFilesSuccessfullyCreated(self):
-        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.m')
-        self.setupFileProcessingService(data_file, SupportedFileTypes.MATLAB)
-        self.assertGenomeFilesCreatedSuccessfully(SupportedFileTypes.MATLAB)
+    def testOctaveGenomeFilesSuccessfullyCreated(self):
+        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
+        self.setupFileProcessingService(data_file, SupportedFileTypes.OCTAVE)
+        self.assertGenomeFilesCreatedSuccessfully(SupportedFileTypes.OCTAVE)
+
+    # TODO: test for MATLAB
 
     def testRGenomeFilesSuccessfullyCreated(self):
         # Note: This is R the program, not R an integer representing permutations.
@@ -60,20 +62,22 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert len([file for file in created_files if re.findall(r'.*_key.*', file)]) == number_of_genomes
         assert len([file for file in created_files if re.findall(r'' + file_type + '', file)]) == (2 * number_of_genomes)
 
-    def testSim1FileProcessingServiceForMATLAB(self):
-        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.m')
+    def testSim1FileProcessingServiceForOctave(self):
+        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
         self.setupFileProcessingService(data_file, SupportedFileTypes.MATLAB)
 
-        data_file_for_sim1 = self.setTargetFile('SampleDataFiles', 'run_simulation_readGenome.m.u')
-        self.setupFileProcessingServiceForSim1(data_file_for_sim1, SupportedFileTypes.MATLAB)
+        data_file_for_sim1 = self.setTargetFile('SampleDataFiles', 'run_simulation_readGenome.octave.u')
+        self.setupFileProcessingServiceForSim1(data_file_for_sim1, SupportedFileTypes.OCTAVE)
 
         number_of_genomes = self.sim1FileProcessingService.number_of_genomes
         number_of_trials = self.sim1FileProcessingService.number_of_trials
 
-        self.log.info("Testing %s genomes are successfully created as MATLAB files.", number_of_genomes)
+        self.log.info("Testing %s genomes are successfully created as Octave files.", number_of_genomes)
         self.file_processing_service.createGenomes()
 
         self.assertSim1TrialFilesSuccessfullyCreated(number_of_genomes, number_of_trials)
+
+    # TODO: Test for MATLAB
 
     def testSim1FileProcessingServiceForR(self):
         data_file = self.setTargetFile('SampleDataFiles', 'booleanModel.r.t')
@@ -142,7 +146,7 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert fp_service.extractParameters(target_sequence_mutate_default) == ['CTNNB1', '0', '.304']
 
     def testDollarSignSyntaxValuesCorrectlyExtractedForMATLAB(self):
-        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.m')
+        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
         self.setupFileProcessingService(data_file, SupportedFileTypes.MATLAB)
         fp_service = self.file_processing_service
 

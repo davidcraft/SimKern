@@ -49,7 +49,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1
 
     def testCallOctaveAndReturnSimulationResult(self):
-        self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.m', SupportedFileTypes.MATLAB)
+        self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE)
 
         self.log.info("Testing %s genomes of .m files successfully call Octave and return results.",
                       self.number_of_genomes)

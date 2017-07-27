@@ -14,7 +14,7 @@ class Sim1FileProcessingService(FileProcessingService):
         FileProcessingService.__init__(self, u_file_instance, file_type, number_of_genomes, path)
 
     def createTrialFiles(self):
-        if self.file_type == SupportedFileTypes.MATLAB:
+        if self.file_type == SupportedFileTypes.MATLAB or self.file_type == SupportedFileTypes.OCTAVE:
             return self.handleSim1FileProcessing("%")
         elif self.file_type == SupportedFileTypes.R:
             return self.handleSim1FileProcessing("#")

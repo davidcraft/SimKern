@@ -104,7 +104,7 @@ class FileProcessingService(object):
             else:
                 regex = re.compile(r'\d+')
                 return [substring for substring in re.findall(regex, target_sequence.split("name=")[0])]
-        elif self.file_type == SupportedFileTypes.MATLAB:
+        elif self.file_type == SupportedFileTypes.MATLAB or SupportedFileTypes.OCTAVE:
             pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
             return [param.strip() for param in re.findall(pattern, target_sequence.split("name=")[0])]
 
@@ -178,7 +178,7 @@ class FileProcessingService(object):
         for genome in genomes.keys():
             new_genome_file = open(path + "/" + genome + "_key." + self.file_type, "w")
             for value in genomes[genome].keys():
-                if self.file_type == SupportedFileTypes.MATLAB:
+                if self.file_type == SupportedFileTypes.MATLAB or SupportedFileTypes.OCTAVE:
                     new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")
                 elif self.file_type == SupportedFileTypes.R:
                     new_genome_file.write(str(value) + "<-" + str(genomes[genome][value]) + "\n")
