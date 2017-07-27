@@ -45,7 +45,7 @@ class FileProcessingServiceIT(unittest.TestCase):
 
     def testRGenomeFilesSuccessfullyCreated(self):
         # Note: This is R the program, not R an integer representing permutations.
-        data_file = self.setTargetFile('SampleDataFiles', 'booleanModel.r.t')
+        data_file = self.setTargetFile('SampleDataFiles', 'booleanModelTest.r.t')
         self.setupFileProcessingService(data_file, SupportedFileTypes.R)
         self.assertGenomeFilesCreatedSuccessfully(SupportedFileTypes.R)
 
@@ -80,7 +80,7 @@ class FileProcessingServiceIT(unittest.TestCase):
     # TODO: Test for MATLAB
 
     def testSim1FileProcessingServiceForR(self):
-        data_file = self.setTargetFile('SampleDataFiles', 'booleanModel.r.t')
+        data_file = self.setTargetFile('SampleDataFiles', 'booleanModelTest.r.t')
         self.setupFileProcessingService(data_file, SupportedFileTypes.R)
 
         data_file_for_sim1 = self.setTargetFile('SampleDataFiles', 'booleanTest.r.u')
@@ -105,7 +105,7 @@ class FileProcessingServiceIT(unittest.TestCase):
             trial_files_created)
 
     def testDollarSignSyntaxValuesCorrectlyExtractedForR(self):
-        data_file = self.setTargetFile('SampleDataFiles', 'booleanModel.r.t')
+        data_file = self.setTargetFile('SampleDataFiles', 'booleanModelTest.r.t')
         self.setupFileProcessingService(data_file, SupportedFileTypes.R)
         fp_service = self.file_processing_service
 

@@ -64,7 +64,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     #     self.assertThirdPartyProgramCallerResults(simulation_result)
 
     def testCallRAndReturnSimulationResult(self):
-        self.initializeServicesAndCreateGenomes('booleanModel.r.t', SupportedFileTypes.R)
+        self.initializeServicesAndCreateGenomes('booleanModelTest.r.t', SupportedFileTypes.R)
 
         self.log.info("Testing %s genomes of .m files successfully call R and return results.",
                       self.number_of_genomes)
