@@ -169,7 +169,7 @@ class FileProcessingService(object):
         val = random.uniform(0, 1)
         if val < float(probability_of_knock_out):
             return "fixGenes( network, " + '"' + str(node) + '"' + ", 0)"
-        elif val > float(probability_of_knock_out) and val < (float(probability_of_over_expression) + float(probability_of_knock_out)):
+        elif float(probability_of_knock_out) < val < (float(probability_of_over_expression) + float(probability_of_knock_out)):
             return "fixGenes( network, " + '"' + str(node) + '"' + ", 1)"
         else:
             return ""

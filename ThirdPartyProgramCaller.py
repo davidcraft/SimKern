@@ -27,7 +27,7 @@ class ThirdPartyProgramCaller(object):
                 file_result = self.callR(directory_of_files, file)
             elif self.file_type == SupportedFileTypes.OCTAVE:
                 file_result = self.callOctave(directory_of_files, file)
-            outputs[file] = file_result
+            outputs[file.split(".")[0]] = file_result
         if should_write_sim0_output:
             self.writeOutputFile(outputs)
         self.changeWorkingDirectory(current_directory)

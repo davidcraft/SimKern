@@ -3,6 +3,7 @@ import sys
 
 from sklearn import svm
 from FileProcessingService import FileProcessingService
+from RandomForest.RandomForestTrainer import RandomForestTrainer
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 from MatrixService import MatrixService
@@ -23,7 +24,7 @@ def main():
         number_of_genomes = arguments[1]
         path = arguments[2]
         file_extension = input_file.split(".")[1]
-        createAndAnalyzeKGenomes(file_extension, input_file, path, number_of_genomes)
+        createAndAnalyzeGenomes(file_extension, input_file, path, number_of_genomes)
     elif len(arguments) == 4:
         # Sim1
         input_file = arguments[0]
@@ -55,7 +56,7 @@ def promptUserForInput():
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
         file_extension = input_file.split(".")[1]
-        createAndAnalyzeKGenomes(file_extension, input_file, path, permutations)
+        createAndAnalyzeGenomes(file_extension, input_file, path, permutations)
     elif simulation_as_int == 1:
         input_file = recursivelyPromptUser("Enter path of input file:\n", str)
         file_extension = input_file.split(".")[1]  # TODO: prompt if MATLAB or Octave
@@ -85,19 +86,21 @@ def recursivelyPromptUser(message, return_type):
         return response
 
 
-def createAndAnalyzeKGenomes(file_extension, input_file, path, number_of_genomes):
+def createAndAnalyzeGenomes(file_extension, input_file, path, number_of_genomes):
     with open(input_file) as data_file:
         try:
             genomes = processInputFileAndCreateGenomes(data_file, file_extension,
                                                        path, number_of_genomes)
             third_party_result = callThirdPartyService(file_extension, path, genomes[0])
             log.info("Result of differential equation analysis %s", third_party_result)
+
+            random_forest_model = trainRandomForestClassifier(genomes, third_party_result, 0.7)
+            log.info("Random Forest Model successfully created based off of %s features", random_forest_model.n_features_)
         except ValueError as valueError:
             log.error(valueError)
         finally:
             log.debug("Closing file %s", input_file)
             data_file.close()
-
 
 def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_genomes):
     file_parsing_service = FileProcessingService(data_file, file_extension, number_of_genomes, path)
@@ -107,6 +110,10 @@ def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_
 def callThirdPartyService(file_extension, path, file_list):
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list)
     return third_party_caller_service.callThirdPartyProgram(True)
+
+def trainRandomForestClassifier(genomes, third_party_result, percent_train):
+    random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
+    return random_forest_trainer.trainRandomForest(percent_train)
 
 
 def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path,
@@ -123,6 +130,7 @@ def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_fil
             log.debug("Closing file %s", input_file)
             data_file.close()
 
+
 def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path):
     process_trial_files = Sim1FileProcessingService(data_file, file_extension, number_of_genomes,
                                                     number_of_trials, path)
@@ -130,9 +138,11 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     log.info("Trial Files: %s\n", trial_files)
     return trial_files
 
+
 def runGenomeSimulations(file_extension, trial_files, path):
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, trial_files)
     return third_party_caller_service.callThirdPartyProgram(False)
+
 
 def generateMatrices(number_of_genomes, number_of_trials, third_party_program_output):
     matrix_service = MatrixService(third_party_program_output, number_of_genomes, number_of_trials)
@@ -143,6 +153,7 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
     log.info("Successfully created kernel similarity matrix: %s\n", kernel_matrix)
 
     return genomes_by_trial_matrix, kernel_matrix
+
 
 def trainSVMClassifier(number_of_genomes, similarity_matrix):
     # As this grows we may want to consider extracting this to a service.
