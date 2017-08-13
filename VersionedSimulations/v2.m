@@ -29,8 +29,8 @@ function v2()
 
 	%Just using these default values. They seem fine for now, we might find it useful to adjust later. I'm also using the
 	%low order solver ode23. We may need to change this later too.
-	opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
-	[t,x]=ode23(@f,tspan,x0,opts);
+	opts = odeset('AbsTol', 1e-3, 'RelTol', 1e-5, 'MaxStep', 6, 'InitialStep', .1);
+	[t,x]=ode23(@f, tspan, x0, opts);
 
 	subplot(3,1,1)
 	varsToPlot = [2 5 6];
@@ -49,9 +49,12 @@ function v2()
 
 	%here plot p53-Mdm2 complex from Huzinker et al.
 	subplot(3,1,3)
-	varsToPlot = [P_P53_MDM2_Comp];
+	varsToPlot = [P_P53_MDM2_Comp P_P53NucNeg M_MDM2NucNeg P_MDM2NucNeg];
 	h=plot(t,x(:,varsToPlot));
 	set(h(1),'color', 'r');
+	set(h(1),'color', 'g');
+	set(h(1),'color', 'b');
+	set(h(1),'color', 'k');
 	legend(N(varsToPlot));
 
 	function xd=f(t,x)
@@ -202,12 +205,11 @@ function v2()
 		xd(M_WIP1Cyto)=barpwrna*x(P_WIP1Nuc)-barktw*x(M_WIP1Cyto)-bardeltawrna*x(M_WIP1Cyto);
 
 		%Equations from Huzinker et al (https://www.ncbi.nlm.nih.gov/pubmed/20624280):
-		%These first three contradict what has already been modeled. Commented out until we know what to do with them.
-		%Nuclear-p53
-		%xd(P_P53Nuc)=sigma_p-alpha_mdm2*P_P53Nuc-k_f_pm*P_P53Nuc*M_MDM2Nuc+k_b_pm*P_P53_MDM2_Comp+P_P53_MDM2_Comp*gammma_mdm2_deg;
-		%Nuclear-Mdm2-mRNA. Note: I'm honestly not sure whether these should be instead measuring cytoplasmic concentration
-		%xd(M_MDM2Nuc)=k_t_mdm2*(P_P53Nuc^2)-beta_mdm2*M_MDM2Nuc;
-		%Nuclear-Mdm2
-		%xd(P_MDM2Nuc)=k_tl_mdm2*M_MDM2Nuc-k_f_pm*P_P53Nuc*M_MDM2Nuc+M_MDM2Nuc+k_b_pm*P_P53_MDM2_Comp+delta_mdm2*P_P53_MDM2_Comp-gammma_mdm2_deg*P_MDM2Nuc
-		%p53-MDM2 complex (This one is purely linear, I don't think it makes biological sense and may need revision).
-		xd(P_P53_MDM2_Comp) = (k_f_pm * P_P53Nuc * M_MDM2Nuc) - (k_b_pm * P_P53_MDM2_Comp) - (delta_mdm2 * P_P53_MDM2_Comp) - (gammma_mdm2_deg * P_P53_MDM2_Comp);
+		%Nuclear-p53 in negative feedback loop
+		xd(P_P53NucNeg) = sigma_p - (alpha_mdm2 * x(P_P53NucNeg)) - (k_f_pm * x(P_P53NucNeg) * x(M_MDM2NucNeg)) + (k_b_pm * x(P_P53_MDM2_Comp)) + (x(P_P53_MDM2_Comp) * gammma_mdm2_deg);
+		%Nuclear-Mdm2-mRNA in negative feedback loop. Note: I'm honestly not sure whether these should be instead measuring cytoplasmic concentration
+		xd(M_MDM2NucNeg) = (k_t_mdm2 * (x(P_P53NucNeg)^2)) - (beta_mdm2 * x(M_MDM2NucNeg));
+		%Nuclear-Mdm2 in negative feeback loop
+		xd(P_MDM2NucNeg) = (k_tl_mdm2 * x(M_MDM2NucNeg)) - (k_f_pm * x(P_P53NucNeg) * x(M_MDM2NucNeg)) + (x(M_MDM2NucNeg)) + (k_b_pm * x(P_P53_MDM2_Comp)) + (delta_mdm2 * x(P_P53_MDM2_Comp)) - (gammma_mdm2_deg * x(P_MDM2NucNeg));
+		%p53-MDM2 complex
+		xd(P_P53_MDM2_Comp) = (k_f_pm * x(P_P53NucNeg) * x(M_MDM2NucNeg)) - (k_b_pm * x(P_P53_MDM2_Comp)) - (delta_mdm2 * x(P_P53_MDM2_Comp)) - (gammma_mdm2_deg * x(P_P53_MDM2_Comp));

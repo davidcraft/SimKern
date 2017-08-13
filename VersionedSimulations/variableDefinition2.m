@@ -36,9 +36,9 @@ M_WIP1Cyto = i; N{i} = 'WIP1 mRNA cytoplasm'; i=i+1;
 %Stress-specific response of the p53-Mdm2 feedback loop from Hunziker et al:
 %https://www.ncbi.nlm.nih.gov/pubmed/20624280
 %
-%P_P53Nuc is already defined above, no need to redefine it.
-%M_MDM2Nuc is already defined above, no need to redefine it.
-%P_MDM2Nuc is already defined above, no need to redefine it.
+P_P53NucNeg = i; N{i} = 'p53 nucleus in negative feedback loop'; i=i+1;
+P_MDM2NucNeg = i; N{i} = 'MDM2 nucleus in negative feedback loop'; i=i+1;
+M_MDM2NucNeg = i; N{i} = 'MDM2 mRNA nucleus in negative feedback loop'; i=i+1;
 P_P53_MDM2_Comp = i; N{i} = 'p53-MDM2 complex'; i=i+1;
 
 %Apoptosis module 2
