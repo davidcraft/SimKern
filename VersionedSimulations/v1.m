@@ -24,7 +24,8 @@ function v1()
 
 	%Simulation time span. We will take the units of time to be MINUTES since that is what Elias paper uses. 
 
-	Tend_minutes = 24*60; %one day 
+        numDays=1;
+	Tend_minutes = 24*60*numDays; %minutes 
 	tspan=[0,Tend_minutes];
 
 	%Just using these default values. They seem fine for now, we might find it useful to adjust later. I'm also using the
@@ -105,9 +106,9 @@ function v1()
 		pwrna=0.083;
 		deltawrna=0.001; 
 		ktw=1;
-		kph2=15;
 		% this next one to modify the radiation impact:
-		Kph2=.01;
+		kph2=15;
+		Kph2=1;
 		
 		kdph2=96; 
 		Kdph2=26;
@@ -151,25 +152,25 @@ function v1()
 		%Elias paper https://hal.inria.fr/hal-00822308/document
 		% equations for the nucleus (B.1)
 		% p53
-		xd(P_P53Nuc)=barkdph1*x(P_ATMNucPhos)*(x(P_P53NucPhos)/(barKdph1+x(P_P53NucPhos)))-bark1*x(P_MDM2Nuc)*(x(P_P53Nuc)/(barK1+x(P_P53Nuc))) ...
-					-bark3*x(M_WIP1Nuc)*(x(P_P53Nuc)/(barKatm+x(P_P53Nuc)))-barpp*Vr*(x(P_P53Nuc)-x(P_P53Cyto));
+		xd(P_P53Nuc)=barkdph1*x(P_WIP1Nuc)*(x(P_P53NucPhos)/(barKdph1+x(P_P53NucPhos)))-bark1*x(P_MDM2Nuc)*(x(P_P53Nuc)/(barK1+x(P_P53Nuc))) ...
+					-bark3*x(P_ATMNucPhos)*(x(P_P53Nuc)/(barKatm+x(P_P53Nuc)))-barpp*Vr*(x(P_P53Nuc)-x(P_P53Cyto));
 		% Mdm2
 		xd(P_MDM2Nuc)=-barpm*Vr*(x(P_MDM2Nuc)-x(P_MDM2Cyto))-bardeltam*x(P_MDM2Nuc);
 		% Mdm2 mRNA
 		xd(M_MDM2Nuc)=barkSm+barkSpm*(x(P_P53NucPhos)^4/(barKSpm^4+x(P_P53NucPhos)^4))-barpmrna*Vr*x(M_MDM2Nuc) ...
 					-bardeltamrna*x(M_MDM2Nuc);
 		% p53_p
-		xd(P_P53NucPhos)=bark3*x(M_WIP1Nuc)*(x(P_P53Nuc)/(barKatm+x(P_P53Nuc)))-barkdph1*x(P_ATMNucPhos)*(x(P_P53NucPhos)/(barKdph1+x(P_P53NucPhos)));
+		xd(P_P53NucPhos)=bark3*x(P_ATMNucPhos)*(x(P_P53Nuc)/(barKatm+x(P_P53Nuc)))-barkdph1*x(P_WIP1Nuc)*(x(P_P53NucPhos)/(barKdph1+x(P_P53NucPhos)));
 		%Wip1
-		xd(P_ATMNucPhos)=barpw*Vr*x(P_WIP1Cyto)-bardeltaw*x(P_ATMNucPhos);
+		xd(P_WIP1Nuc)=barpw*Vr*x(P_WIP1Cyto)-bardeltaw*x(P_WIP1Nuc); 
 		%Wip1 mRNA
-		xd(P_WIP1Nuc)=barkSw+barkSpw*(x(P_P53NucPhos)^4/(barKSpw^4+x(P_P53NucPhos)^4))-barpwrna*Vr*x(P_WIP1Nuc) ...
-					-bardeltawrna*x(P_WIP1Nuc);
+		xd(M_WIP1Nuc)=barkSw+barkSpw*(x(P_P53NucPhos)^4/(barKSpw^4+x(P_P53NucPhos)^4))-barpwrna*Vr*x(M_WIP1Nuc) ...
+					-bardeltawrna*x(M_WIP1Nuc);
 		% Atm_p
 		%here we are replacing their E with "broken ends": assuming
 		%"danger signal" is proportional to number of broken ends:
-		%xd(M_WIP1Nuc)=2*barE*( ((ATMtot-x(M_WIP1Nuc))/2)/(1+((ATMtot-x(M_WIP1Nuc))/2) )) -2*barkdph2*x(P_ATMNucPhos)*(x(M_WIP1Nuc)^2/(barKdph2+x(M_WIP1Nuc)^2));
-		xd(M_WIP1Nuc)=2*Kph2*x(O_BROKEN_ENDS)*( ((ATMtot-x(M_WIP1Nuc))/2)/(1+((ATMtot-x(M_WIP1Nuc))/2) )) -2*barkdph2*x(P_ATMNucPhos)*(x(M_WIP1Nuc)^2/(barKdph2+x(M_WIP1Nuc)^2));
+		%xd(P_ATMNucPhos)=2*Kph2*0.1*( ((ATMtot-x(P_ATMNucPhos))/2)/(1+((ATMtot-x(P_ATMNucPhos))/2) )) -2*barkdph2*x(P_WIP1Nuc)*(x(P_ATMNucPhos)^2/(barKdph2+x(P_ATMNucPhos)^2));
+		xd(P_ATMNucPhos)=2*Kph2*x(O_BROKEN_ENDS)*( ((ATMtot-x(P_ATMNucPhos))/2)/(1+((ATMtot-x(P_ATMNucPhos))/2) )) -2*barkdph2*x(P_WIP1Nuc)*(x(P_ATMNucPhos)^2/(barKdph2+x(P_ATMNucPhos)^2));
 		
 		% equations for the cytoplasm (B.2)
 		% p53
@@ -181,6 +182,6 @@ function v1()
 		% Wip1
 		xd(P_WIP1Cyto)=barktw*x(M_WIP1Cyto)-barpw*x(P_WIP1Cyto)-bardeltaw*x(P_WIP1Cyto);
 		% Wip1 mRNA
-		xd(M_WIP1Cyto)=barpwrna*x(P_WIP1Nuc)-barktw*x(M_WIP1Cyto)-bardeltawrna*x(M_WIP1Cyto);
+		xd(M_WIP1Cyto)=barpwrna*x(M_WIP1Nuc)-barktw*x(M_WIP1Cyto)-bardeltawrna*x(M_WIP1Cyto);
 
 		
