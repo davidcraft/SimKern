@@ -1,4 +1,6 @@
 function v3()
+% set plt = true to plot the graph
+plt = true;
 	%this is the master sim0 version 1.0
 
 	%note for octave compatibility, must install odepkg for octave and also execute the following line
@@ -32,22 +34,24 @@ function v3()
 	%low order solver ode23. We may need to change this later too.
 	opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
 	[t,x]=ode23(@f,tspan,x0,opts);
+    if plt == true
+        subplot(1,2,1)
+        varsToPlot = [2 5 6];
+        plot(t,x(:,varsToPlot));
+        legend(N(varsToPlot));
 
-	subplot(1,2,1)
-	varsToPlot = [2 5 6];
-	plot(t,x(:,varsToPlot));
-	legend(N(varsToPlot));
-
-	%here replicate stuff plotted in Elias figure 4.8
-	subplot(1,2,2)
-	varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
-	h=plot(t,x(:,varsToPlot));
-	set(h(1),'color', 'r');
-	set(h(2),'color', 'g');
-	set(h(3),'color', 'b');
-	set(h(4),'color', 'k');
-	legend(N(varsToPlot));
-
+        %here replicate stuff plotted in Elias figure 4.8
+        subplot(1,2,2)
+%       varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
+        varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc ...
+            O_ARRESTSIGNAL P_ECDK2 P_p21cip];
+        h=plot(t,x(:,varsToPlot));
+        set(h(1),'color', 'r');
+        set(h(2),'color', 'g');
+        set(h(3),'color', 'b');
+        set(h(4),'color', 'k');
+        legend(N(varsToPlot));
+    end
 	
 	function xd=f(t,x)
 
@@ -241,10 +245,12 @@ function v3()
         %ECDK2
         xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KE * x(P_ECDK2);
         %Cell Cycle Arrest, Note: kRb should either be on or off (represents gene)
-        xd(O_ARREST) = -KRb*c_Ka1*xd(P_ECDK2)*exp(-c_Ka1*(x(P_ECDK2)- c_Ka2))/ ...
-            (1+ exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))^2
+        %Note: Krb should have negative sign in front but will produce negative graphs, thus made positive
+        %Double check this later
+        xd(O_ARRESTSIGNAL) = (-KRb*c_Ka1*xd(P_ECDK2)*exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))/ ...
+            (1+ exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))^2;
         %Cell Cycling, Note: Kg represents growth constant
-        xd(O_CELLCYCLE) = Kg*(1 - xd(O_ARREST))
+        xd(O_CELLCYCLING) = Kg*(1 - xd(O_ARRESTSIGNAL)); %Note - Increases indefinitely
         
         
         
