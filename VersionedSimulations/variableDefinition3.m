@@ -42,7 +42,11 @@ P_Bax = i; N{i} = 'Bax'; i=i+1;
 P_CytC = i; N{i} = 'Cytochrome c'; i=i+1;
 P_Apoptosome = i; N{i} = 'Apoptosome'; i=i+1;
 P_Apoptosis = i; N{i} = 'Apoptosis'; i=i+1;
-
+P_p21cip = i; N{i} = 'p21 cip'; i=i+1;
+P_ECDK2 = i; N{i} = 'ECDK2'; i=i+1;
+O_ARREST = i; N{i} = 'Cell Cycle Arrest'; i=i+1;
+O_CELLCYCLE = i; N{i} = 'Cell Cycle'; i=i+1;
+        
         
 
 %Cell cycle arrest module

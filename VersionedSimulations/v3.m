@@ -157,8 +157,17 @@ function v3()
         c_KApop = 1;
         c_KApop2 = 1;
         c_KApop3 = 1;
-        
-
+        c_Kpp1 = 1;
+        c_Kpp2 = 1;
+        c_Kpp3 = 1;
+        c_KpE1 = 1;
+        c_KpE2 = 1;
+        c_KpE3 = 1;
+        c_KE = 1;
+        KRb = 1; 
+        c_Ka1 = 1;
+        c_Ka2 = 1;
+        Kg = 1;
 		
 		xd = zeros(numEntities,1);
 		
@@ -225,6 +234,18 @@ function v3()
         xd(P_Apoptosome) = c_KAA*x(P_Apoptosome)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
         %Apoptosis
         xd(P_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(P_Apoptosis);
+        
+        %Apoptosis --> p53 to pRb via ECDK2
+        %p21cip
+        xd(P_p21cip) = c_Kpp1*(x(P_P53NucPhos)^4)/(c_Kpp2 + x(P_P53NucPhos)^4) - c_Kpp3 * x(P_p21cip);
+        %ECDK2
+        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KE * x(P_ECDK2);
+        %Cell Cycle Arrest, Note: kRb should either be on or off (represents gene)
+        xd(O_ARREST) = -KRb*c_Ka1*xd(P_ECDK2)*exp(-c_Ka1*(x(P_ECDK2)- c_Ka2))/ ...
+            (1+ exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))^2
+        %Cell Cycling, Note: Kg represents growth constant
+        xd(O_CELLCYCLE) = Kg*(1 - xd(O_ARREST))
+        
         
         
 
