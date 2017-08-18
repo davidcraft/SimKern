@@ -33,15 +33,20 @@ P_WIP1Cyto = i; N{i} = 'WIP1 cytoplasm'; i=i+1;
 M_WIP1Cyto = i; N{i} = 'WIP1 mRNA cytoplasm'; i=i+1;
 
 %Apoptosis module 1
-%Stress-specific response of the p53-Mdm2 feedback loop from Hunziker et al:
-%https://www.ncbi.nlm.nih.gov/pubmed/20624280
-%
-P_P53NucNeg = i; N{i} = 'p53 nucleus in negative feedback loop'; i=i+1;
-P_MDM2NucNeg = i; N{i} = 'MDM2 nucleus in negative feedback loop'; i=i+1;
-M_MDM2NucNeg = i; N{i} = 'MDM2 mRNA nucleus in negative feedback loop'; i=i+1;
-P_P53_MDM2_Comp = i; N{i} = 'p53-MDM2 complex'; i=i+1;
 
 %Apoptosis module 2
+P_Bcl2 = i; N{i} = 'Bcl-2'; i=i+1;
+P_BclXl = i; N{i} = 'Bcl-Xl'; i=i+1;
+P_FasL = i; N{i} = 'FasL'; i=i+1;
+P_Bax = i; N{i} = 'Bax'; i=i+1;
+P_CytC = i; N{i} = 'Cytochrome c'; i=i+1;
+P_Apoptosome = i; N{i} = 'Apoptosome'; i=i+1;
+P_Apoptosis = i; N{i} = 'Apoptosis'; i=i+1;
+P_p21cip = i; N{i} = 'p21 cip'; i=i+1;
+P_ECDK2 = i; N{i} = 'ECDK2'; i=i+1;
+O_ARRESTSIGNAL = i; N{i} = 'Cell Cycle Arrest'; i=i+1;
+O_CELLCYCLING = i; N{i} = 'Cell Cycle'; i=i+1;
+       
 
 %Cell cycle arrest module
 
