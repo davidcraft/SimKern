@@ -1,6 +1,6 @@
 function v3()
 % set plt = true to plot the graph
-plt = true;
+    plt = false;
 	%this is the master sim0 version 1.0
 
 	%note for octave compatibility, must install odepkg for octave and also execute the following line
@@ -21,13 +21,16 @@ plt = true;
 	%here any non-zero initial conditions
 	%for now, we we are modeling our radiation blast as an exponetially decaying level, we just initialize
 	%the radiation compartment.
-	x0(O_RADIATION) = 1;
+	x0(O_CELLCYCLING) = 1;
+        x0(P_ECDK2) = 1;
+        x0(O_RADIATION) = 1;
 
 
 	%Simulation time span. We will take the units of time to be MINUTES since that is what Elias paper uses. 
 
         numDays=1;
-	Tend_minutes = 24*60*numDays; %minutes 
+	Tend_minutes = 24*60*numDays; %currently set for ___
+                                      %simulation time.
 	tspan=[0,Tend_minutes];
 
 	%Just using these default values. They seem fine for now, we might find it useful to adjust later. I'm also using the
@@ -35,24 +38,37 @@ plt = true;
 	opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
 	[t,x]=ode23(@f,tspan,x0,opts);
     if plt == true
-        subplot(1,2,1)
+        subplot(1,3,1)
         varsToPlot = [2 5 6];
-        plot(t,x(:,varsToPlot));
+        plot(t/60,x(:,varsToPlot));
+        xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
         %here replicate stuff plotted in Elias figure 4.8
-        subplot(1,2,2)
+        subplot(1,3,2)
 %       varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
-        varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc ...
-            O_ARRESTSIGNAL P_ECDK2 P_p21cip];
-        h=plot(t,x(:,varsToPlot));
+        varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc]; 
+        h=plot(t/60,x(:,varsToPlot));
         set(h(1),'color', 'r');
         set(h(2),'color', 'g');
         set(h(3),'color', 'b');
         set(h(4),'color', 'k');
+        xlabel('Time [hrs]');
         legend(N(varsToPlot));
+
+        subplot(1,3,3)
+%       varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
+        varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL P_ECDK2 P_p21cip];
+        h=plot(t/60,x(:,varsToPlot));
+        xlabel('Time [hrs]');
+        legend(N(varsToPlot));
+    else
+        %here display the output value we will do machine learning on. for
+        %now I'll just use the final value of cell cycling. this will not
+        %be what we use eventually, just a placeholder for now. put
+        %plt to false to see this printed out.
+        x(end,O_CELLCYCLING)
     end
-	
 	function xd=f(t,x)
 
 		%In this function we have the differential equations.
@@ -68,7 +84,7 @@ plt = true;
 		%So for now we will go with this but we might come up with a more refined standard.
 		c_Kiri = .03;
 		c_Kbe = .03;
-		c_Kbec = .01;
+		c_Kbec = .004; %decreasinging this to slow down repair process
 		c_Kc = .02;
 		c_Kcc = .01; %caps clearance rate/halflife term
 		c_Mc = .01;
@@ -86,8 +102,10 @@ plt = true;
 		
 		k3=3; 
 		Katm=0.1;
-		kdph1=78; 
-		Kdph1=25;
+		kdph1=7800; %craft: changing this to see if i can get
+                          %p53nucphos to taper out faster. orig
+                          %value: 78  
+		Kdph1=250; %try this one too
 		k1=10; 
 		K1=1.01;
 		pp=0.083; 
@@ -165,11 +183,11 @@ plt = true;
         c_Kpp2 = 1;
         c_Kpp3 = 1;
         c_KpE1 = 1;
-        c_KpE2 = 1;
+        c_KpE2 = 2;
         c_KpE3 = 1;
         c_KE = 1;
-        KRb = 1; 
-        c_Ka1 = 1;
+        KRb = 2; 
+        c_Ka1 = 5;
         c_Ka2 = 1;
         Kg = 1;
 		
@@ -239,7 +257,7 @@ plt = true;
         %Apoptosis
         xd(P_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(P_Apoptosis);
         
-        %Apoptosis --> p53 to pRb via ECDK2
+        %Cell cycle arrest module --> p53 -- p21cip -- ECDK2 --pRb
         %p21cip
         xd(P_p21cip) = c_Kpp1*(x(P_P53NucPhos)^4)/(c_Kpp2 + x(P_P53NucPhos)^4) - c_Kpp3 * x(P_p21cip);
         %ECDK2
@@ -250,7 +268,7 @@ plt = true;
         xd(O_ARRESTSIGNAL) = (-KRb*c_Ka1*xd(P_ECDK2)*exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))/ ...
             (1+ exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))^2;
         %Cell Cycling, Note: Kg represents growth constant
-        xd(O_CELLCYCLING) = Kg*(1 - xd(O_ARRESTSIGNAL)); %Note - Increases indefinitely
+        xd(O_CELLCYCLING) = -Kg*xd(O_ARRESTSIGNAL);
         
         
         
