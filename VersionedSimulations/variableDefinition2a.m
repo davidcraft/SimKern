@@ -17,14 +17,14 @@ O_FIXED = i; N{i} = 'Fixed DNA ends'; i=i+1;
 
 %P53-MDM2 model from Elias et al:
 %https://hal.inria.fr/hal-00822308/document
-%in nucleus
-P_P53 = i; N{i} = 'p53 nucleus'; i=i+1;
-P_MDM2 = i; N{i} = 'MDM2 nucleus'; i=i+1;
-M_MDM2 = i; N{i} = 'MDM2 mRNA nucleus'; i=i+1;
-P_P53Phos = i; N{i} = 'p53 nucleus phosphorylated'; i=i+1;
-P_ATMPhos = i; N{i} = 'ATM nucleus phosphorylated'; i=i+1;
-P_WIP1 = i; N{i} = 'WIP1 nucleus'; i=i+1;
-M_WIP1 = i; N{i} = 'WIP1 mRNA nucleus'; i=i+1;
+%Single Compartment
+P_P53 = i; N{i} = 'p53'; i=i+1;
+P_MDM2 = i; N{i} = 'MDM2'; i=i+1;
+M_MDM2 = i; N{i} = 'MDM2 mRNA'; i=i+1;
+P_P53Phos = i; N{i} = 'p53 phosphorylated'; i=i+1;
+P_ATMPhos = i; N{i} = 'ATM phosphorylated'; i=i+1;
+P_WIP1 = i; N{i} = 'WIP1'; i=i+1;
+M_WIP1 = i; N{i} = 'WIP1 mRNA'; i=i+1;
 
 %Apoptosis module 1
 

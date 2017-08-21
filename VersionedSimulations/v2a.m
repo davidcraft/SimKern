@@ -188,7 +188,7 @@ plt = true;
 		xd(O_FIXED) = c_Kf * x(O_CAPPED_ENDS_READY);
 
 		%Elias paper https://hal.inria.fr/hal-00822308/document
-		% equations for the nucleus (B.1)
+		% equations for single compartment model (C.1)
 		% p53
 		xd(P_P53) = barkS + barkdph1 * x(P_WIP1) * ((x(P_P53Phos)/(barKdph1+x(P_P53Phos)))) ...
             - bark1 * x(P_MDM2) * (x(P_P53)/(barK1+x(P_P53))) ...
