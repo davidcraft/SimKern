@@ -1,4 +1,4 @@
-function v3()
+function v2a()
 % set plt = true to plot the graph
 plt = true;
 	%this is the master sim0 version 1.0
