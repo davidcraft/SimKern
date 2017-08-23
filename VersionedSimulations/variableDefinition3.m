@@ -48,6 +48,8 @@ O_ARRESTSIGNAL = i; N{i} = 'Arrest signal'; i=i+1;
 O_CELLCYCLING = i; N{i} = 'Cell Cycling'; i=i+1;
 P_E2F = i; N{i} = 'E2F'; i=i+1;
 P_ARF = i; N{i} = 'ARF'; i=i+1;
+P_Siah = i; N{i} = 'Siah'; i=i+1;
+P_Reprimo = i; N{i} = 'Reprimo'; i=i+1;
 
 
 %Cell cycle arrest module
