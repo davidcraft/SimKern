@@ -1,7 +1,3 @@
-%    the units we?ve decided to use are the same as in the Elias paper.
-%Concentrations will be in micromolar (10^-6 mol/L. 1 mol = Avogadro?s # or 6.022*10^23 molecules) 
-%and rate constants will likely be in min^-1. I say likely because they can take on different units,
-%like M/min or M^-1*min^-1 depending on their order.
 function v3()
     % set plt = true to plot the graph
     plt = true;
@@ -25,15 +21,16 @@ function v3()
     %here any non-zero initial conditions
     %for now, we we are modeling our radiation blast as an exponetially decaying level, we just initialize
     %the radiation compartment.
-    x0(P_Apoptosome) = 0;
-    x0(O_BROKEN_ENDS) = 0;
-    x0(O_CAPS) = 0;
-    x0(O_CAPPED_ENDS) = 0;
-    x0(O_CAPPED_ENDS_READY) = 0;
-    x0(O_FIXED) = 0;
-    x0(O_ARRESTSIGNAL) = 0; 
-    x0(P_Apoptosis)= 0;  
+    x0(O_CELLCYCLING) = 1;
+        x0(O_BROKEN_ENDS) = 0;
+        x0(O_CAPS) = 0;
+        x0(O_CAPPED_ENDS) = 0;
+        x0(O_CAPPED_ENDS_READY) = 0;
+        xd(O_FIXED) = 0;
 
+        x0(P_ECDK2) = 1;
+        x0(O_RADIATION) = 1;
+        x0(P_E2F) = 1;
 
 
     %Simulation time span. We will take the units of time to be MINUTES since that is what Elias paper uses.
@@ -56,9 +53,9 @@ function v3()
 
         %here replicate stuff plotted in Elias figure 4.8
         subplot(1,3,2)
-        varsToPlot = [];
+        varsToPlot = [P_ATMNucPhos P_CytC P_Apoptosome];
         %varsToPlot = [P_Siah P_Reprimo];
-        h=plot(t/60,x(:,1:end));
+        h=plot(t/60,x(:,varsToPlot));
   
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
@@ -172,11 +169,11 @@ function v3()
         c_KpB3 = 0.5;
         c_KpBX1 = 8;
         c_KpBX2 = 3;
-        c_KpBX3 = 1;
+        c_KpBX3 = 4;
         c_KpF1 = 3;
         c_KpF2 = 3;
         c_KpF3 = 2;
-        c_KpBa1 = 2;
+        c_KpBa1 = 5;
         c_KpBa2 = 2;
         c_KpBa3 = 1;
         c_KBaxC = 1;
