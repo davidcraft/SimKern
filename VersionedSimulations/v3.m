@@ -21,19 +21,21 @@ function v3()
     variableDefinition3
 
     %Initial conditions
-    x0 = ones(numEntities,1);
+    x0 = zeros(numEntities,1);
     %here any non-zero initial conditions
     %for now, we we are modeling our radiation blast as an exponetially decaying level, we just initialize
     %the radiation compartment.
-    x0(P_Apoptosome) = 0;
-    x0(O_BROKEN_ENDS) = 0;
-    x0(O_CAPS) = 0;
-    x0(O_CAPPED_ENDS) = 0;
-    x0(O_CAPPED_ENDS_READY) = 0;
-    x0(O_FIXED) = 0;
-    x0(O_ARRESTSIGNAL) = 0; 
-    x0(P_Apoptosis)= 0;  
-
+%     x0(P_Apoptosome) = 0;
+%     x0(O_BROKEN_ENDS) = 0;
+%     x0(O_CAPS) = 0;
+%     x0(O_CAPPED_ENDS) = 0;
+%     x0(O_CAPPED_ENDS_READY) = 0;
+%     x0(O_FIXED) = 0;
+%     x0(O_ARRESTSIGNAL) = 0; 
+%     x0(P_Apoptosis)= 0;  
+    x0(O_CELLCYCLING) = 1;
+	x0(P_ECDK2) = 1;
+	x0(O_RADIATION) = 1;
 
 
     %Simulation time span. We will take the units of time to be MINUTES since that is what Elias paper uses.
@@ -56,9 +58,9 @@ function v3()
 
         %here replicate stuff plotted in Elias figure 4.8
         subplot(1,3,2)
-        varsToPlot = [];
+        varsToPlot = [P_E2F P_ARF];
         %varsToPlot = [P_Siah P_Reprimo];
-        h=plot(t/60,x(:,1:end));
+        h=plot(t/60,x(:,varsToPlot));
   
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
@@ -167,8 +169,8 @@ function v3()
         ATMtot=ATMtot/alphav1;
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
-        c_KpB1 = 5;
-        c_KpB2 = 2;%positive affect on cellcycling
+        c_KpB1 = 5;%$
+        c_KpB2 = 2;%$positive affect on cellcycling
         c_KpB3 = 0.5;
         c_KpBX1 = 8;
         c_KpBX2 = 3;
@@ -179,32 +181,41 @@ function v3()
         c_KpBa1 = 2;
         c_KpBa2 = 2;
         c_KpBa3 = 1;
-        c_KBaxC = 1;
-        c_KBcl2C = 5;
-        c_KBclXC = 1;
+        c_KBaxC1 = 4;
+        c_KBaxC2 = 1;
+        c_KBaxC3 = 1;
+        c_KBcl2C1 = 2;
+        c_KBcl2C2 = 1;
+        c_KBcl2C3 = 0.9;
+        c_KBclXC1 = 1.1;%$
+        c_KBclXC2 = 1;
+        c_KBclXC3 = 1;
+        c_Kapa1 = 2.3;%$
+        c_Kapa2 = 1;
+        c_Kapa3 = 1;
         c_KCyt = 1;
         c_KAA = 5;
         c_KAA2 = 2;
-        c_KApop = 2;% maybe set this less than 1 to make it resonalable 
-        c_KApop2 = 2;
+        c_KApop = 1;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop2 = 1.2;%increase Apoptosis maybe set this around 1 to make it resonalable
         c_KApop3 = 0.3;
-        c_Kpp1 = 1;
-        c_Kpp2 = 1;
-        c_Kpp3 = 1;
-        c_KpE1 = 1;
-        c_KpE2 = 2;
-        c_KpE3 = 1;
-        c_KE = 1;
+        c_Kpp1 = 3.5;
+        c_Kpp2 = 09;
+        c_Kpp3 = 0.7;
+        c_KpE1 = 0.9;
+        c_KpE2 = 3;%$
+        c_KpE3 = 0.8;%$
+        c_KpE4 = 0.9;%$
         K_Rb = 1;
-        c_Ka1 = 5;
-        c_Ka2 = 1;
-        Kg = 1;
-        K_MYC = 2;
+        c_Ka1 = 10;%$
+        c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 
+        Kg = 0.8;
+        K_MYC = 3;
         c_E2F1 = 1;
-        c_ARF1 = 10;
-        c_ARF2 = 3;
+        c_ARF1 = 8;
+        c_ARF2 = 4;
         c_ARF3 = 3;
-        c_MDM2Nuc1 = 1;%increase apop
+        c_MDM2Nuc1 = 1;
         c_MDM2Nuc2 = 1;
         c_Kps = 15;
         c_Kps2 = .1;
@@ -303,16 +314,22 @@ function v3()
         xd(P_FasL) = c_KpF1*(x(P_P53NucPhos)^4)/(c_KpF2 + x(P_P53NucPhos)^4) - c_KpF3 * x(P_FasL);
         %BAX
         xd(P_Bax) = c_KpBa1*(x(P_P53NucPhos)^4)/(c_KpBa2 + x(P_P53NucPhos)^4) - c_KpBa3 * x(P_Bax);
+        %Apaf1
+        xd(P_Apaf1) = c_Kapa1*(x(P_P53NucPhos)^4)/(c_Kapa2 + x(P_P53NucPhos)^4) - c_Kapa3 * x(P_Apaf1);
         %Cytochrome c
-        xd(P_CytC) = c_KBaxC*(x(P_Bax)) - c_KBcl2C*(x(P_Bcl2)) - c_KBclXC*(x(P_BclXl)) - c_KCyt*(x(P_CytC)) ...
-            - c_KAA*x(P_Apoptosome)*x(P_CytC)^7;
+        xd(P_CytC) = (c_KBaxC1/(1+ exp(-c_KBaxC2*(x(P_Bax)- c_KBaxC3)))) * ...
+            c_KBcl2C1 * (1 - 1/(1+ exp(-c_KBcl2C2*(x(P_Bcl2)- c_KBcl2C3)))) * ...
+            c_KBclXC1 * (1 - 1/(1+ exp(-c_KBclXC2*(x(P_BclXl)- c_KBclXC3)))) - c_KCyt*(x(P_CytC)) ...
+           - c_KAA*x(P_Apaf1)*x(P_CytC)^7;
         %Apoptosome
-        xd(P_Apoptosome) = c_KAA*x(P_Apoptosome)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
+        xd(P_Apoptosome) = c_KAA*x(P_Apaf1)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
         %Apoptosis
         xd(P_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(P_Apoptosis);
 
         %MYC --> p53
-        %E2F
+        %E2F later on we might model E2F from  
+        %Dong,P. et al. Division of labour between Myc and G1 cyclins in cell cycle commitment and pace control. Nat. Commun. 5:4750 doi: 10.1038/ncomms5750 (2014). 
+        %website: https://www.nature.com/articles/ncomms5750
         xd(P_E2F) = K_Rb*K_MYC - c_E2F1*x(P_E2F);
         %ARF
         xd(P_ARF) = c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF);
@@ -322,7 +339,7 @@ function v3()
         %p21cip
         xd(P_p21cip) = c_Kpp1*(x(P_P53NucPhos)^4)/(c_Kpp2 + x(P_P53NucPhos)^4) - c_Kpp3 * x(P_p21cip);
         %ECDK2
-        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KE * x(P_ECDK2);
+        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KpE4 * x(P_ECDK2);
         %Cell Cycle Arrest, Note: kRb should either be on or off (represents gene)
         %Note: Krb should have negative sign in front but will produce negative graphs, thus made positive
         %Double check this later
