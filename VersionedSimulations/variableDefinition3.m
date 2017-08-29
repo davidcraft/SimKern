@@ -27,7 +27,7 @@ P_FasL = i; N{i} = 'FasL'; i=i+1;
 P_Bax = i; N{i} = 'Bax'; i=i+1;
 P_CytC = i; N{i} = 'Cytochrome c'; i=i+1;
 P_Apoptosome = i; N{i} = 'Apoptosome'; i=i+1;
-P_Apoptosis = i; N{i} = 'Apoptosis'; i=i+1;
+O_Apoptosis = i; N{i} = 'Apoptosis'; i=i+1;
 
 %Cell cycle arrest module
 P_p21cip = i; N{i} = 'p21 cip'; i=i+1;

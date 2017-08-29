@@ -303,7 +303,7 @@ function v3()
         %Apoptosome
         xd(P_Apoptosome) = c_KAA*x(P_Apoptosome)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
         %Apoptosis
-        xd(P_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(P_Apoptosis);
+        xd(O_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(O_Apoptosis);
 
         %MYC --> p53
         %E2F
