@@ -189,7 +189,7 @@ function v3()
         c_KAA2 = 1;
         c_KApop = 1; %apop changes reasonably if .1 < k < 10
         c_KApop2 = 1;
-        c_KApop3 = 1; %reasonable changes in apop if  .08 < k < 5
+        c_KApop3 = .2; %reasonable changes if 5 > k
         c_Kpp1 = 1;
         c_Kpp2 = 1;
         c_Kpp3 = 1;

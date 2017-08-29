@@ -25,7 +25,7 @@ P_Bcl2 = i; N{i} = 'Bcl-2'; i=i+1;
 P_BclXl = i; N{i} = 'Bcl-Xl'; i=i+1;
 P_FasL = i; N{i} = 'FasL'; i=i+1;
 P_Bax = i; N{i} = 'Bax'; i=i+1;
-P_CytC = i; N{i} = 'Cytochrome c'; i=i+1;
+P_CytC = i; N{i} = 'Cyt c'; i=i+1;
 P_Apoptosome = i; N{i} = 'Apoptosome'; i=i+1;
 O_Apoptosis = i; N{i} = 'Apoptosis'; i=i+1;
 
@@ -43,11 +43,11 @@ P_Reprimo = i; N{i} = 'Reprimo'; i=i+1;
 %https://hal.inria.fr/hal-00822308/document
 %in nucleus
 P_P53Nuc = i; N{i} = 'p53 nucleus'; i=i+1;
-P_MDM2Nuc = i; N{i} = 'MDM2 nucleus'; i=i+1;
-M_MDM2Nuc = i; N{i} = 'MDM2 mRNA nucleus'; i=i+1;
-P_P53NucPhos = i; N{i} = 'p53 nucleus phosphorylated'; i=i+1;
-P_ATMNucPhos = i; N{i} = 'ATM nucleus phosphorylated'; i=i+1;
-P_WIP1Nuc = i; N{i} = 'WIP1 nucleus'; i=i+1;
+P_MDM2Nuc = i; N{i} = 'MDM2nuc'; i=i+1;
+M_MDM2Nuc = i; N{i} = 'MDM2 mRNAnuc'; i=i+1;
+P_P53NucPhos = i; N{i} = 'p53nucPhos'; i=i+1;
+P_ATMNucPhos = i; N{i} = 'ATMnucPhos'; i=i+1;
+P_WIP1Nuc = i; N{i} = 'WIP1 nuc'; i=i+1;
 M_WIP1Nuc = i; N{i} = 'WIP1 mRNA nucleus'; i=i+1;
 
 
