@@ -39,7 +39,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     def assertThirdPartyProgramCallerResults(self, simulation_result):
         assert len(simulation_result) == self.number_of_genomes
         for genome_result in simulation_result.values():
-            assert (genome_result == 0 or genome_result == 1)
+            assert (type(genome_result) is int and genome_result >= 0)
 
         # Check directory successfully set back to original
         assert os.path.isdir(self.current_working_dir)
@@ -51,7 +51,15 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     def testCallOctaveAndReturnSimulationResult(self):
         self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE)
 
-        self.log.info("Testing %s genomes of .m files successfully call Octave and return results.",
+        self.log.info("Testing %s genomes of .octave files successfully call Octave and return results.",
+                      self.number_of_genomes)
+        simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
+        self.assertThirdPartyProgramCallerResults(simulation_result)
+
+    def testCallOctaveAndReturnSimulationResultForLinearProgramming(self):
+        self.initializeServicesAndCreateGenomes('linearProgrammingModel.octave', SupportedFileTypes.OCTAVE)
+
+        self.log.info("Testing %s genomes of .octave files successfully call Octave and return results.",
                       self.number_of_genomes)
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
         self.assertThirdPartyProgramCallerResults(simulation_result)
