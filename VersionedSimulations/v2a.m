@@ -243,10 +243,6 @@ plt = true;
             (1+ exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))^2;
         %Cell Cycling, Note: Kg represents growth constant
         xd(O_CELLCYCLING) = Kg*(1 - xd(O_ARRESTSIGNAL)); %Note - Increases indefinitely
-        
-        
-        
-
-
+       
 
 		

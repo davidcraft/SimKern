@@ -57,20 +57,25 @@ function v3()
         legend(N(varsToPlot));
 
         %here replicate stuff plotted in Elias figure 4.8
+
         subplot(1,3,2)
         varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
+        % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
+
         %varsToPlot = [P_Siah P_Reprimo];
-        h=plot(t/60,x(:,varsToPlot));
-  
+        h=plot(t/60,x(:,varsToPlot));  
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
         subplot(1,3,3)
         %varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
-        varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL P_Apoptosis];
+        varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
         h=plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
+        
+
+        
     else
         %here display the output value we will do machine learning on. for
         %now I'll just use the final value of cell cycling. this will not
@@ -183,18 +188,19 @@ function v3()
         ATMtot=ATMtot/alphav1;
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
+
         c_KpB1 = 2;%$
         c_KpB2 = 2;%$positive affect on cellcycling
         c_KpB3 = 0.5;
         c_KpBX1 = 2.5;
         c_KpBX2 = 1.7;
-        c_KpBX3 = 0.4;
-        c_KpF1 = 1.5;
-        c_KpF2 = 2;
-        c_KpF3 = 0.2;
+        c_KpBX3 = 0.4; %clearance term - slows if k > 2
+        c_KpF1 = 1.5; %affects apop reasonably if .1 < k < 10
+        c_KpF2 = 2; %affects apop reasonably if .01 < k < 5
+        c_KpF3 = 0.2; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
         c_KpBa1 = 2;
         c_KpBa2 = 2;
-        c_KpBa3 = 0.3;
+        c_KpBa3 = 0.3;%clearance term - slows if k > 1
         c_KBaxC1 = 1.3;
         c_KBaxC2 = 0.9;
         c_KBaxC3 = 1;
@@ -209,35 +215,35 @@ function v3()
         c_Kapa2 = 1;
         c_Kapa3 = 0.3;
         c_KAA = 0.7;
-        c_KAA2 = 0.3;
-        c_KApop = 0.12;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KAA2 = 0.3;%clearance term - DOES NOT slow, does not affect cell fate
+        c_KApop = 0.12;%increase Apoptosis - apop changes reasonably if .1 < k < 10
         c_KApop2 = 0.11;%increase Apoptosis maybe set this around 1 to make it resonalable
-        c_KApop3 = 0.2;
-        c_Kpp1 = 0.3;
-        c_Kpp2 = 0.6;
-        c_Kpp3 = 0.2;
-        c_KpE1 = 0.6;%$
-        c_KpE2 = 1.3;%$
-        c_KpE3 = 1;%$
+        c_KApop3 = 0.2;%reasonable changes in apop if  .08 < k < 5
+        c_Kpp1 = 0.3;%sig changes in cc and arrest if 1 < k < 100
+        c_Kpp2 = 0.6;%sig changes in cc & arrest if .1 < k < 2
+        c_Kpp3 = 0.2;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
+        c_KpE1 = 0.6;%$ %changes cc & arrest. .1 < k < 1
+        c_KpE2 = 1.3;%$ %changes cc & arrest 1 < k < 20 
+        c_KpE3 = 1;%$ %changes cc & arrest .1 < k < 1
         c_KpE4 = 0.4;%$
-        K_Rb = 1.5;
-        c_Ka1 = 4;%$
-        c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 
-        Kg = 0.8;
+        K_Rb = 1.5;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
+        c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
+        Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
         K_MYC = 3;
-        c_E2F1 = 1;
+        c_E2F1 = 1; %clearance term - increases run time if k > 1
         c_ARF1 = 1.5;
         c_ARF2 = 2;
-        c_ARF3 = 0.4;
+        c_ARF3 = 0.4; %clearance term - increases run time if k > 1
         c_MDM2Nuc1 = 1;
         c_MDM2Nuc2 = 1;
-        c_Kps = 15;
+        c_Kps = 1;
         c_Kps2 = .1;
-        c_si = 0.4;
+        c_si = 0.4; %clearance term -slows down run time if k > 1 
         c_Kpr = 1.8;
         c_Kpr2 = 3;
-        c_re = 0.2;
-
+        c_re = 0.2;  %clearance term - slow if k > 1, no significant effect
+        
 
         xd = zeros(numEntities,1);
 
@@ -338,7 +344,7 @@ function v3()
         %Apoptosome
         xd(P_Apoptosome) = c_KAA*x(P_Apaf1)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
         %Apoptosis
-        xd(P_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(P_Apoptosis);
+        xd(O_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(O_Apoptosis);
 
         %MYC --> p53
         %E2F later on we might model E2F from  
