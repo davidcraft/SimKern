@@ -50,35 +50,31 @@ function v3()
     opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
     [t,x]=ode23(@f,tspan,x0,opts);
     if plt == true
-        subplot(2,2,1)
-        varsToPlot = [2 5 6];
+        subplot(1,3,1)
+        varsToPlot = [2 5 P_Apaf1];
         plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
         %here replicate stuff plotted in Elias figure 4.8
-        subplot(2,2,3)
-        varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc P_Bcl2 P_BclXl P_FasL P_Bax P_CytC ...
-            P_Apoptosome];
+
+        subplot(1,3,2)
+        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
         % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
+
         %varsToPlot = [P_Siah P_Reprimo];
-        h=plot(t/60,x(:,varsToPlot));
-  
+        h=plot(t/60,x(:,varsToPlot));  
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
-        subplot(2,2,2)
+        subplot(1,3,3)
         %varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
         varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
         h=plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
         
-        subplot(2,2,4)
-        varsToPlot = [P_ARF P_E2F P_p21cip P_ECDK2 P_Siah P_Reprimo];
-        h=plot(t/60,x(:,varsToPlot));
-        xlabel('Time [hrs]');
-        legend(N(varsToPlot));
+
         
     else
         %here display the output value we will do machine learning on. for
@@ -90,7 +86,7 @@ function v3()
         if max(x(:,P_Apoptosis)) >= 0.7%Apoptosis occurs
             output = 3;
         else
-            if max(x(:,O_ARRESTSIGNAL))>= 1.0%cell arrest occurs
+            if max(x(:,O_ARRESTSIGNAL))>= 0.7%cell arrest occurs
              output = 1;
             elseif  x(end,O_CELLCYCLING)>= 0.7% cell cycling 
                output = 2;
@@ -204,36 +200,36 @@ function v3()
         c_KpF3 = 0.2; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
         c_KpBa1 = 2;
         c_KpBa2 = 2;
-        c_KpBa3 = 0.3;  %clearance term - slows if k > 1
-        c_KBaxC1 = 4;
-        c_KBaxC2 = 1;
+        c_KpBa3 = 0.3;%clearance term - slows if k > 1
+        c_KBaxC1 = 1.3;
+        c_KBaxC2 = 0.9;
         c_KBaxC3 = 1;
-        c_KBcl2C1 = 2;
-        c_KBcl2C2 = 1;
-        c_KBcl2C3 = 0.9;
-        c_KBclXC1 = 1.1;%$
+        c_KBcl2C1 = 1.3;
+        c_KBcl2C2 = 1.1;
+        c_KBcl2C3 = 1;
+        c_KBclXC1 = 1.3;%$
         c_KBclXC2 = 1;
         c_KBclXC3 = 1;
-        c_Kapa1 = 2.1;%$
+        c_KCyt = 0.3;%clearence term
+        c_Kapa1 = 2;%$
         c_Kapa2 = 1;
         c_Kapa3 = 0.3;
-        c_KCyt = 1; %clearance term - slows if k > 1 or if k < .1
-        c_KAA = 0.5;
-        c_KAA2 = 0.3; %clearance term - DOES NOT slow, does not affect cell fate
-        c_KApop = 0.1;%increase Apoptosis - apop changes reasonably if .1 < k < 10
-        c_KApop2 = 0.1;%increase Apoptosis maybe set this around 1 to make it resonalable
-        c_KApop3 = 0.2; %reasonable changes in apop if  .08 < k < 5
-        c_Kpp1 = 0.3; %sig changes in cc and arrest if 1 < k < 100
-        c_Kpp2 = 0.6; %sig changes in cc & arrest if .1 < k < 2
-        c_Kpp3 = 0.2; %slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
-        c_KpE1 = 0.5; %$ %changes cc & arrest. .1 < k < 1
-        c_KpE2 = 0.6; %$ %changes cc & arrest 1 < k < 20 
-        c_KpE3 = 1; %$ %changes cc & arrest .1 < k < 1
-        c_KpE4 = 0.4; %$ %clearance term - increases run time significantly if k > 1; doesn't change cc, arrest, or apop much
-        K_Rb = 1; %1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
-        c_Ka1 = 10; %$ %Cellcycling stops if >70; changes cc and arrest symmetrically; 
-        c_Ka2 = 0.8; %$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
-        Kg = 0.8; %Significant changes in cell cycling if 1 < Kg < 28
+        c_KAA = 0.7;
+        c_KAA2 = 0.3;%clearance term - DOES NOT slow, does not affect cell fate
+        c_KApop = 0.12;%increase Apoptosis - apop changes reasonably if .1 < k < 10
+        c_KApop2 = 0.11;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop3 = 0.2;%reasonable changes in apop if  .08 < k < 5
+        c_Kpp1 = 0.3;%sig changes in cc and arrest if 1 < k < 100
+        c_Kpp2 = 0.6;%sig changes in cc & arrest if .1 < k < 2
+        c_Kpp3 = 0.2;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
+        c_KpE1 = 0.6;%$ %changes cc & arrest. .1 < k < 1
+        c_KpE2 = 1.3;%$ %changes cc & arrest 1 < k < 20 
+        c_KpE3 = 1;%$ %changes cc & arrest .1 < k < 1
+        c_KpE4 = 0.4;%$
+        K_Rb = 1.5;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
+        c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
+        Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
         K_MYC = 3;
         c_E2F1 = 1; %clearance term - increases run time if k > 1
         c_ARF1 = 1.5;
