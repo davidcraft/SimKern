@@ -58,7 +58,7 @@ function v3()
 
         %here replicate stuff plotted in Elias figure 4.8
         subplot(1,3,2)
-        varsToPlot = [P_E2F P_ARF];
+        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
         %varsToPlot = [P_Siah P_Reprimo];
         h=plot(t/60,x(:,varsToPlot));
   
@@ -76,7 +76,21 @@ function v3()
         %now I'll just use the final value of cell cycling. this will not
         %be what we use eventually, just a placeholder for now. put
         %plt to false to see this printed out.
-        x(end,O_CELLCYCLING)
+        x(end,O_CELLCYCLING);
+        output = 0;% if output is 0 then it mean we did not cover all the cases which it should not happen. 
+        if max(x(:,P_Apoptosis)) >= 0.7%Apoptosis occurs
+            output = 3;
+        else
+            if max(x(:,O_ARRESTSIGNAL))>= 1.0%cell arrest occurs
+             output = 1;
+            elseif  x(end,O_CELLCYCLING)>= 0.7% cell cycling 
+               output = 2;
+            else
+                output = 4;%other
+            end
+        end
+      disp(output);     
+        
     end
 
     function xd=f(t,x)
@@ -95,7 +109,7 @@ function v3()
         %So for now we will go with this but we might come up with a more refined standard.
         c_Kiri = .03;
         c_Kbe = .03;
-        c_Kbec = .004; %decreasinging this to slow down repair process
+        c_Kbec = .003; %decreasinging this to slow down repair process
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
@@ -169,60 +183,60 @@ function v3()
         ATMtot=ATMtot/alphav1;
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
-        c_KpB1 = 5;
-        c_KpB2 = 2;%positive affect on cellcycling
+        c_KpB1 = 2;%$
+        c_KpB2 = 2;%$positive affect on cellcycling
         c_KpB3 = 0.5;
-        c_KpBX1 = 8;
-        c_KpBX2 = 3;
-        c_KpBX3 = 1;
-        c_KpF1 = 3;
-        c_KpF2 = 3;
-        c_KpF3 = 2;
+        c_KpBX1 = 2.5;
+        c_KpBX2 = 1.7;
+        c_KpBX3 = 0.4;
+        c_KpF1 = 1.5;
+        c_KpF2 = 2;
+        c_KpF3 = 0.2;
         c_KpBa1 = 2;
         c_KpBa2 = 2;
-        c_KpBa3 = 1;
-        c_KBaxC1 = 4;
+        c_KpBa3 = 0.3;
+        c_KBaxC1 = 1.3;
         c_KBaxC2 = 1;
         c_KBaxC3 = 1;
-        c_KBcl2C1 = 2;
+        c_KBcl2C1 = 1.1;
         c_KBcl2C2 = 1;
-        c_KBcl2C3 = 1;
-        c_KBclXC1 = 1;
+        c_KBcl2C3 = 0.9;
+        c_KBclXC1 = 1.1;%$
         c_KBclXC2 = 1;
         c_KBclXC3 = 1;
-        c_Kapa1 = 3;
+        c_KCyt = 0.3;%clearence term
+        c_Kapa1 = 2.1;%$
         c_Kapa2 = 1;
-        c_Kapa3 = 1;
-        c_KCyt = 1;
-        c_KAA = 5;
-        c_KAA2 = 2;
-        c_KApop = 1;%increase Apoptosis maybe set this around 1 to make it resonalable
-        c_KApop2 = 1.2;%increase Apoptosis maybe set this around 1 to make it resonalable
-        c_KApop3 = 0.3;
-        c_Kpp1 = 1;
-        c_Kpp2 = 1;
-        c_Kpp3 = 1;
-        c_KpE1 = 1;
-        c_KpE2 = 2;
-        c_KpE3 = 1;
-        c_KE = 1;
-        K_Rb = 1;
-        c_Ka1 = 7;
-        c_Ka2 = 0.95;%supress arrest signaling max 0.9
-        Kg = 1.1;
-        K_MYC = 2;
+        c_Kapa3 = 0.3;
+        c_KAA = 0.5;
+        c_KAA2 = 0.3;
+        c_KApop = 0.1;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop2 = 0.1;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop3 = 0.2;
+        c_Kpp1 = 0.3;
+        c_Kpp2 = 0.6;
+        c_Kpp3 = 0.2;
+        c_KpE1 = 0.6;%$
+        c_KpE2 = 1.3;%$
+        c_KpE3 = 1;%$
+        c_KpE4 = 0.4;%$
+        K_Rb = 1.5;
+        c_Ka1 = 4;%$
+        c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 
+        Kg = 0.8;
+        K_MYC = 3;
         c_E2F1 = 1;
-        c_ARF1 = 10;
-        c_ARF2 = 3;
-        c_ARF3 = 3;
-        c_MDM2Nuc1 = 1;%increase apop
+        c_ARF1 = 1.5;
+        c_ARF2 = 2;
+        c_ARF3 = 0.4;
+        c_MDM2Nuc1 = 1;
         c_MDM2Nuc2 = 1;
         c_Kps = 15;
         c_Kps2 = .1;
-        c_si = 2;
+        c_si = 0.4;
         c_Kpr = 1.8;
         c_Kpr2 = 3;
-        c_re = 1;
+        c_re = 0.2;
 
 
         xd = zeros(numEntities,1);
@@ -339,7 +353,7 @@ function v3()
         %p21cip
         xd(P_p21cip) = c_Kpp1*(x(P_P53NucPhos)^4)/(c_Kpp2 + x(P_P53NucPhos)^4) - c_Kpp3 * x(P_p21cip);
         %ECDK2
-        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KE * x(P_ECDK2);
+        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KpE4 * x(P_ECDK2);
         %Cell Cycle Arrest, Note: kRb should either be on or off (represents gene)
         %Note: Krb should have negative sign in front but will produce negative graphs, thus made positive
         %Double check this later
