@@ -34,7 +34,7 @@ function v3()
 %     x0(O_ARRESTSIGNAL) = 0; 
 %     x0(P_Apoptosis)= 0;  
     x0(O_CELLCYCLING) = 1;
-	x0(P_ECDK2) = 1;
+	x0(P_ECDK2) = 1.5;
 	x0(O_RADIATION) = 1;
 
 
@@ -360,9 +360,9 @@ function v3()
         xd(P_p21cip) = c_Kpp1*(x(P_P53NucPhos)^4)/(c_Kpp2 + x(P_P53NucPhos)^4) - c_Kpp3 * x(P_p21cip);
         %ECDK2
         xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KpE4 * x(P_ECDK2);
-        %Cell Cycle Arrest, Note: kRb should either be on or off (represents gene)
-        %Note: Krb should have negative sign in front but will produce negative graphs, thus made positive
-        %Double check this later
+        %Cell Cycle Arrest Important Note: Arrest Signal equation found by taking 
+        %the derivative of the inverse sigmoid function.
+        %Other note: kRb should either be on or off (represents gene)
         xd(O_ARRESTSIGNAL) = (-K_Rb*c_Ka1*xd(P_ECDK2)*exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))/ ...
             (1+ exp(-c_Ka1*(x(P_ECDK2)- c_Ka2)))^2;
         %Cell Cycling, Note: Kg represents growth constant
