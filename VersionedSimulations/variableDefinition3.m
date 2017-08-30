@@ -25,6 +25,7 @@ P_Bcl2 = i; N{i} = 'Bcl-2'; i=i+1;
 P_BclXl = i; N{i} = 'Bcl-Xl'; i=i+1;
 P_FasL = i; N{i} = 'FasL'; i=i+1;
 P_Bax = i; N{i} = 'Bax'; i=i+1;
+P_Apaf1 = i; N{i} = 'Apaf1'; i=i+1;
 P_CytC = i; N{i} = 'Cyt c'; i=i+1;
 P_Apoptosome = i; N{i} = 'Apoptosome'; i=i+1;
 O_Apoptosis = i; N{i} = 'Apoptosis'; i=i+1;

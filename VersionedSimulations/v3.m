@@ -1,3 +1,7 @@
+%    the units we?ve decided to use are the same as in the Elias paper.
+%Concentrations will be in micromolar (10^-6 mol/L. 1 mol = Avogadro?s # or 6.022*10^23 molecules) 
+%and rate constants will likely be in min^-1. I say likely because they can take on different units,
+%like M/min or M^-1*min^-1 depending on their order.
 function v3()
     % set plt = true to plot the graph
     plt = true;
@@ -21,10 +25,17 @@ function v3()
     %here any non-zero initial conditions
     %for now, we we are modeling our radiation blast as an exponetially decaying level, we just initialize
     %the radiation compartment.
+%     x0(P_Apoptosome) = 0;
+%     x0(O_BROKEN_ENDS) = 0;
+%     x0(O_CAPS) = 0;
+%     x0(O_CAPPED_ENDS) = 0;
+%     x0(O_CAPPED_ENDS_READY) = 0;
+%     x0(O_FIXED) = 0;
+%     x0(O_ARRESTSIGNAL) = 0; 
+%     x0(P_Apoptosis)= 0;  
     x0(O_CELLCYCLING) = 1;
-        x0(P_ECDK2) = 1;
-        x0(O_RADIATION) = 1;
-        x0(P_E2F) = 1;
+	x0(P_ECDK2) = 1;
+	x0(O_RADIATION) = 1;
 
 
     %Simulation time span. We will take the units of time to be MINUTES since that is what Elias paper uses.
@@ -49,12 +60,10 @@ function v3()
         subplot(2,2,3)
         varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc P_Bcl2 P_BclXl P_FasL P_Bax P_CytC ...
             P_Apoptosome];
+        % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
         %varsToPlot = [P_Siah P_Reprimo];
         h=plot(t/60,x(:,varsToPlot));
-        set(h(1),'color', 'r');
-        set(h(2),'color', 'g');
-        set(h(3),'color', 'b');
-        set(h(4),'color', 'k');
+  
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
@@ -76,7 +85,21 @@ function v3()
         %now I'll just use the final value of cell cycling. this will not
         %be what we use eventually, just a placeholder for now. put
         %plt to false to see this printed out.
-        x(end,O_CELLCYCLING)
+        x(end,O_CELLCYCLING);
+        output = 0;% if output is 0 then it mean we did not cover all the cases which it should not happen. 
+        if max(x(:,P_Apoptosis)) >= 0.7%Apoptosis occurs
+            output = 3;
+        else
+            if max(x(:,O_ARRESTSIGNAL))>= 1.0%cell arrest occurs
+             output = 1;
+            elseif  x(end,O_CELLCYCLING)>= 0.7% cell cycling 
+               output = 2;
+            else
+                output = 4;%other
+            end
+        end
+      disp(output);     
+        
     end
 
     function xd=f(t,x)
@@ -95,7 +118,7 @@ function v3()
         %So for now we will go with this but we might come up with a more refined standard.
         c_Kiri = .03;
         c_Kbe = .03;
-        c_Kbec = .004; %decreasinging this to slow down repair process
+        c_Kbec = .003; %decreasinging this to slow down repair process
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
@@ -169,52 +192,62 @@ function v3()
         ATMtot=ATMtot/alphav1;
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
-        c_KpB1 = 1; 
-        c_KpB2 = 1; 
-        c_KpB3 = 1; 
-        c_KpBX1 = 1; 
-        c_KpBX2 = 1;
-        c_KpBX3 = .51; %clearance term - slows if k > 2
-        c_KpF1 = 1; %affects apop reasonably if .1 < k < 10
-        c_KpF2 = 1; %affects apop reasonably if .01 < k < 5
-        c_KpF3 = .51; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
-        c_KpBa1 = 1;
-        c_KpBa2 = 1;
-        c_KpBa3 = .51; %clearance term - slows if k > 1
-        c_KBaxC = 1;
-        c_KBcl2C = 1;
-        c_KBclXC = 1;
-        c_KCyt = .5; %clearance term - slows if k > 1 or if k < .1
-        c_KAA = 1;
-        c_KAA2 = 1; %clearance term - DOES NOT slow, does not affect cell fate
-        c_KApop = 1; %apop changes reasonably if .1 < k < 10
-        c_KApop2 = 1;
-        c_KApop3 = 1; %reasonable changes in apop if  .08 < k < 5
-        c_Kpp1 = 1; %sig changes in cc and arrest if 1 < k < 100
-        c_Kpp2 = 1; %sig changes in cc & arrest if .1 < k < 2
-        c_Kpp3 = .51; %slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
-        c_KpE1 = 1; %changes cc & arrest. .1 < k < 1
-        c_KpE2 = 1; %changes cc & arrest 1 < k < 20 
-        c_KpE3 = 1; %changes cc & arrest .1 < k < 1
-        c_KE = .51; %clearance term - increases run time significantly if k > 1; doesn't change cc, arrest, or apop much
-        K_Rb = 2; %1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
-        c_Ka1 = 1; %Cellcycling stops if >70; changes cc and arrest symmetrically; 
-        c_Ka2 = .7; %Sig. changes in cc and arrest if 1 < k < 3
-        Kg = 1; %Significant changes in cell cycling if 1 < Kg < 28
-        K_MYC = 1;
-        c_E2F1 = .51; %clearance term - increases run time if k > 1
-        c_ARF1 = 1; 
-        c_ARF2 = 1;
-        c_ARF3 = .51; %clearance term - increases run time if k > 1
+
+        c_KpB1 = 2;%$
+        c_KpB2 = 2;%$positive affect on cellcycling
+        c_KpB3 = 0.5;
+        c_KpBX1 = 2.5;
+        c_KpBX2 = 1.7;
+        c_KpBX3 = 0.4; %clearance term - slows if k > 2
+        c_KpF1 = 1.5; %affects apop reasonably if .1 < k < 10
+        c_KpF2 = 2; %affects apop reasonably if .01 < k < 5
+        c_KpF3 = 0.2; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
+        c_KpBa1 = 2;
+        c_KpBa2 = 2;
+        c_KpBa3 = 0.3;  %clearance term - slows if k > 1
+        c_KBaxC1 = 4;
+        c_KBaxC2 = 1;
+        c_KBaxC3 = 1;
+        c_KBcl2C1 = 2;
+        c_KBcl2C2 = 1;
+        c_KBcl2C3 = 0.9;
+        c_KBclXC1 = 1.1;%$
+        c_KBclXC2 = 1;
+        c_KBclXC3 = 1;
+        c_Kapa1 = 2.1;%$
+        c_Kapa2 = 1;
+        c_Kapa3 = 0.3;
+        c_KCyt = 1; %clearance term - slows if k > 1 or if k < .1
+        c_KAA = 0.5;
+        c_KAA2 = 0.3; %clearance term - DOES NOT slow, does not affect cell fate
+        c_KApop = 0.1;%increase Apoptosis - apop changes reasonably if .1 < k < 10
+        c_KApop2 = 0.1;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop3 = 0.2; %reasonable changes in apop if  .08 < k < 5
+        c_Kpp1 = 0.3; %sig changes in cc and arrest if 1 < k < 100
+        c_Kpp2 = 0.6; %sig changes in cc & arrest if .1 < k < 2
+        c_Kpp3 = 0.2; %slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
+        c_KpE1 = 0.5; %$ %changes cc & arrest. .1 < k < 1
+        c_KpE2 = 0.6; %$ %changes cc & arrest 1 < k < 20 
+        c_KpE3 = 1; %$ %changes cc & arrest .1 < k < 1
+        c_KpE4 = 0.4; %$ %clearance term - increases run time significantly if k > 1; doesn't change cc, arrest, or apop much
+        K_Rb = 1; %1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        c_Ka1 = 10; %$ %Cellcycling stops if >70; changes cc and arrest symmetrically; 
+        c_Ka2 = 0.8; %$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
+        Kg = 0.8; %Significant changes in cell cycling if 1 < Kg < 28
+        K_MYC = 3;
+        c_E2F1 = 1; %clearance term - increases run time if k > 1
+        c_ARF1 = 1.5;
+        c_ARF2 = 2;
+        c_ARF3 = 0.4; %clearance term - increases run time if k > 1
         c_MDM2Nuc1 = 1;
         c_MDM2Nuc2 = 1;
         c_Kps = 1;
         c_Kps2 = .1;
-        c_si = .51; %clearance term -slows down run time if k > 1 
-        c_Kpr = 1;
-        c_Kpr2 = 1;
-        c_re = .51; %clearance term - slow if k > 1, no significant effect
-
+        c_si = 0.4; %clearance term -slows down run time if k > 1 
+        c_Kpr = 1.8;
+        c_Kpr2 = 3;
+        c_re = 0.2;  %clearance term - slow if k > 1, no significant effect
+        
 
         xd = zeros(numEntities,1);
 
@@ -305,16 +338,22 @@ function v3()
         xd(P_FasL) = c_KpF1*(x(P_P53NucPhos)^4)/(c_KpF2 + x(P_P53NucPhos)^4) - c_KpF3 * x(P_FasL);
         %BAX
         xd(P_Bax) = c_KpBa1*(x(P_P53NucPhos)^4)/(c_KpBa2 + x(P_P53NucPhos)^4) - c_KpBa3 * x(P_Bax);
+        %Apaf1
+        xd(P_Apaf1) = c_Kapa1*(x(P_P53NucPhos)^4)/(c_Kapa2 + x(P_P53NucPhos)^4) - c_Kapa3 * x(P_Apaf1);
         %Cytochrome c
-        xd(P_CytC) = c_KBaxC*(x(P_Bax)) - c_KBcl2C*(x(P_Bcl2)) - c_KBclXC*(x(P_BclXl)) - c_KCyt*(x(P_CytC)) ...
-            - c_KAA*x(P_Apoptosome)*x(P_CytC)^7;
+        xd(P_CytC) = (c_KBaxC1/(1+ exp(-c_KBaxC2*(x(P_Bax)- c_KBaxC3)))) * ...
+            c_KBcl2C1 * (1 - 1/(1+ exp(-c_KBcl2C2*(x(P_Bcl2)- c_KBcl2C3)))) * ...
+            c_KBclXC1 * (1 - 1/(1+ exp(-c_KBclXC2*(x(P_BclXl)- c_KBclXC3)))) - c_KCyt*(x(P_CytC)) ...
+           - c_KAA*x(P_Apaf1)*x(P_CytC)^7;
         %Apoptosome
-        xd(P_Apoptosome) = c_KAA*x(P_Apoptosome)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
+        xd(P_Apoptosome) = c_KAA*x(P_Apaf1)*x(P_CytC)^7 - c_KAA2 *x(P_Apoptosome);
         %Apoptosis
         xd(O_Apoptosis) = c_KApop*x(P_FasL) + c_KApop2 * x(P_Apoptosome) - c_KApop3 * x(O_Apoptosis);
 
         %MYC --> p53
-        %E2F
+        %E2F later on we might model E2F from  
+        %Dong,P. et al. Division of labour between Myc and G1 cyclins in cell cycle commitment and pace control. Nat. Commun. 5:4750 doi: 10.1038/ncomms5750 (2014). 
+        %website: https://www.nature.com/articles/ncomms5750
         xd(P_E2F) = K_Rb*K_MYC - c_E2F1*x(P_E2F);
         %ARF
         xd(P_ARF) = c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF);
@@ -324,7 +363,7 @@ function v3()
         %p21cip
         xd(P_p21cip) = c_Kpp1*(x(P_P53NucPhos)^4)/(c_Kpp2 + x(P_P53NucPhos)^4) - c_Kpp3 * x(P_p21cip);
         %ECDK2
-        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KE * x(P_ECDK2);
+        xd(P_ECDK2) = c_KpE1 - c_KpE2*x(P_p21cip)/(c_KpE3 + x(P_p21cip)) - c_KpE4 * x(P_ECDK2);
         %Cell Cycle Arrest, Note: kRb should either be on or off (represents gene)
         %Note: Krb should have negative sign in front but will produce negative graphs, thus made positive
         %Double check this later
