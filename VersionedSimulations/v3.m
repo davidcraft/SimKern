@@ -49,17 +49,17 @@ function v3()
     %low order solver ode23. We may need to change this later too.
     opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
     [t,x]=ode23(@f,tspan,x0,opts);
-    if plt == true
-        subplot(1,3,1)
-        varsToPlot = [2 5 P_Apaf1];
+    if plt == true        
+        subplot(2,2,1)
+        varsToPlot = [O_BROKEN_ENDS O_CAPPED_ENDS_READY P_Apaf1 O_FIXED];
         plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
         %here replicate stuff plotted in Elias figure 4.8
 
-        subplot(1,3,2)
-        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
+        subplot(2,2,2)
+        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome P_E2F];
         % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
 
         %varsToPlot = [P_Siah P_Reprimo];
@@ -67,9 +67,15 @@ function v3()
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
-        subplot(1,3,3)
+        subplot(2,2,3)
         %varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
         varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
+        h=plot(t/60,x(:,varsToPlot));
+        xlabel('Time [hrs]');
+        legend(N(varsToPlot));
+        
+        subplot(2,2,4)
+        varsToPlot = [1:numEntities];
         h=plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
@@ -118,20 +124,19 @@ function v3()
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
-        c_Kcer = .01;
-        c_Kf = .01;
+        c_Kcer = .002;
+        c_Kf = .002; %decreasing to slow down dna repair process. Keep < .02
 
         %next come constants from the Elias paper https://hal.inria.fr/hal-00822308/document
         ATMtot = 1.3; % total concentration of ATM proteins (monomers and dimers)
         %E = 2.5e-5; % signal produced by DNA damage [orig Elias model, I
         %their E in the paper was anything from  2.5e-5 to 10. can use the parameter Kph2 to do this scaling.
-
         %do it differently]
-        % the system's constants, for the full description see Table B.1
+        %the system's constants, for the full description see Table B.1
 
 
         k3=3;
-        Katm=0.1;
+        Katm=.1; %$$ keep .01 < Katm < .1
         kdph1=7800; %craft: changing this to see if i can get
                           %p53nucphos to taper out faster. orig
                           %value: 78
@@ -159,7 +164,7 @@ function v3()
         deltawrna=0.001;
         ktw=1;
         % this next one to modify the radiation impact:
-        kph2=15;
+        kph2=120; %$$ keep uniform 150 > kph2 > 10
         Kph2=1;
 
         kdph2=96;
@@ -226,11 +231,11 @@ function v3()
         c_KpE2 = 1.3;%$ %changes cc & arrest 1 < k < 20 
         c_KpE3 = 1;%$ %changes cc & arrest .1 < k < 1
         c_KpE4 = 0.4;%$
-        K_Rb = 1.5;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        K_Rb = 1.5;%discrete([0,1]) 1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
         c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
         c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
         Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
-        K_MYC = 3;
+        K_MYC = .5; % ($$ ?) Does not change cell fate much, if at all
         c_E2F1 = 1; %clearance term - increases run time if k > 1
         c_ARF1 = 1.5;
         c_ARF2 = 2;
