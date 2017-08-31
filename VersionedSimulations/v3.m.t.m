@@ -6,7 +6,8 @@ function v3()
     % set plt = true to plot the graph
     plt = true;
         global single; single = true;
-        global ARF_muta; ARF_muta = 1;% 1 if ARF is not mutated otherwise 0
+    %mutations
+    global ARF_muta; ARF_muta = false;
     %this is the master sim0 version 2.0
 
     %note for octave compatibility, must install odepkg for octave and also execute the following line
@@ -34,7 +35,7 @@ function v3()
 %     x0(O_FIXED) = 0;
 %     x0(O_ARRESTSIGNAL) = 0; 
 %     x0(P_Apoptosis)= 0;
-if ARF_muta == 0
+if ARF_muta = true
     x0(P_ARF) = 0.1;
 end
     x0(O_CELLCYCLING) = 1;
@@ -55,7 +56,7 @@ end
     [t,x]=ode23(@f,tspan,x0,opts);
     if plt == true
         subplot(1,3,1)
-        varsToPlot = [2 P_ARF P_Apaf1];
+        varsToPlot = [2 5 P_Apaf1];
         plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
@@ -110,7 +111,6 @@ end
         %down too much. I don't think it will. If it does we might consider using globals or something like that.
 
         global single;
-        global ARF_muta
         variableDefinition3;
 
         %We start with all the parameters of those equations. We might want to think a little more
@@ -119,7 +119,7 @@ end
         %So for now we will go with this but we might come up with a more refined standard.
         c_Kiri = .03;
         c_Kbe = .03;
-        c_Kbec = .003; %decreasinging this to slow down repair process
+        c_Kbec = $.003$; %decreasinging this to slow down repair process
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
@@ -140,7 +140,7 @@ end
         kdph1=7800; %craft: changing this to see if i can get
                           %p53nucphos to taper out faster. orig
                           %value: 78
-        Kdph1=250; %try this one too
+        Kdph1=$250$; %try this one too
         k1=10;
         K1=1.01;
         pp=0.083;
@@ -150,7 +150,7 @@ end
         kSm=0.005;
         kSpm=1;
         KSpm=0.1;
-        pmrna=0.083;
+        pmrna=$0.083$;
         deltamrna=0.0001;
         ktm=1;
         kS=0.015;
@@ -164,7 +164,7 @@ end
         deltawrna=0.001;
         ktw=1;
         % this next one to modify the radiation impact:
-        kph2=15;
+        kph2=$15$;
         Kph2=1;
 
         kdph2=96;
@@ -194,43 +194,43 @@ end
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
 
-        c_KpB1 = 2;%$
-        c_KpB2 = 2;%$positive affect on cellcycling
+        c_KpB1 = $2$;%$
+        c_KpB2 = $2$;%$positive affect on cellcycling
         c_KpB3 = 0.5;
-        c_KpBX1 = 2.5;
-        c_KpBX2 = 1.7;
+        c_KpBX1 = $2.5$;
+        c_KpBX2 = $1.7$;
         c_KpBX3 = 0.4; %clearance term - slows if k > 2
-        c_KpF1 = 1.5; %affects apop reasonably if .1 < k < 10
-        c_KpF2 = 2; %affects apop reasonably if .01 < k < 5
-        c_KpF3 = 0.2; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
-        c_KpBa1 = 2;
+        c_KpF1 = $1.5$; %affects apop reasonably if .1 < k < 10
+        c_KpF2 = $2$; %affects apop reasonably if .01 < k < 5
+        c_KpF3 = $0.2$; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
+        c_KpBa1 = $2$;
         c_KpBa2 = 2;
-        c_KpBa3 = 0.3;%clearance term - slows if k > 1
+        c_KpBa3 = $0.3$;%clearance term - slows if k > 1
         c_KBaxC1 = 1.3;
         c_KBaxC2 = 0.9;
         c_KBaxC3 = 1;
-        c_KBcl2C1 = 1.3;
-        c_KBcl2C2 = 1.1;
+        c_KBcl2C1 = $1.3$;
+        c_KBcl2C2 = $1.1$;
         c_KBcl2C3 = 1;
-        c_KBclXC1 = 1.3;%$
-        c_KBclXC2 = 1;
+        c_KBclXC1 = $1.3$;%$
+        c_KBclXC2 = $1$;
         c_KBclXC3 = 1;
         c_KCyt = 0.3;%clearence term
-        c_Kapa1 = 2;%$
+        c_Kapa1 = $2$;%$
         c_Kapa2 = 1;
         c_Kapa3 = 0.3;
         c_KAA = 0.7;
         c_KAA2 = 0.3;%clearance term - DOES NOT slow, does not affect cell fate
-        c_KApop = 0.12;%increase Apoptosis - apop changes reasonably if .1 < k < 10
-        c_KApop2 = 0.11;%increase Apoptosis maybe set this around 1 to make it resonalable
-        c_KApop3 = 0.2;%reasonable changes in apop if  .08 < k < 5
-        c_Kpp1 = 0.3;%sig changes in cc and arrest if 1 < k < 100
-        c_Kpp2 = 0.6;%sig changes in cc & arrest if .1 < k < 2
-        c_Kpp3 = 0.2;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
-        c_KpE1 = 0.6;%$ %changes cc & arrest. .1 < k < 1
-        c_KpE2 = 1.3;%$ %changes cc & arrest 1 < k < 20 
-        c_KpE3 = 1;%$ %changes cc & arrest .1 < k < 1
-        c_KpE4 = 0.4;%$
+        c_KApop = $0.12$;%increase Apoptosis - apop changes reasonably if .1 < k < 10
+        c_KApop2 = $0.11$;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop3 = $0.2$;%reasonable changes in apop if  .08 < k < 5
+        c_Kpp1 = $0.3$;%sig changes in cc and arrest if 1 < k < 100
+        c_Kpp2 = $0.6$;%sig changes in cc & arrest if .1 < k < 2
+        c_Kpp3 = $0.2$;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
+        c_KpE1 = $0.6$;%$ %changes cc & arrest. .1 < k < 1
+        c_KpE2 = $1.3$;%$ %changes cc & arrest 1 < k < 20 
+        c_KpE3 = $1$;%$ %changes cc & arrest .1 < k < 1
+        c_KpE4 = $0.4$;%$
         K_Rb = 1.5;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
         c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
         c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
@@ -357,8 +357,9 @@ end
         %website: https://www.nature.com/articles/ncomms5750
         xd(P_E2F) = K_Rb*K_MYC - c_E2F1*x(P_E2F);
         %ARF
-        xd(P_ARF) = ARF_muta * (c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF));
-       
+        if ARF_muta = false
+            xd(P_ARF) = c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF);
+        end
 
 
         %Cell cycle arrest modules --> p53 -- p21cip -- ECDK2 --pRb
