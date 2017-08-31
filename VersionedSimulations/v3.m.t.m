@@ -1,13 +1,13 @@
-%    the units we?ve decided to use are the same as in the Elias paper.
+%    the units we've decided to use are the same as in the Elias paper.
 %Concentrations will be in micromolar (10^-6 mol/L. 1 mol = Avogadro?s # or 6.022*10^23 molecules) 
 %and rate constants will likely be in min^-1. I say likely because they can take on different units,
 %like M/min or M^-1*min^-1 depending on their order.
 function v3()
     % set plt = true to plot the graph
-    plt = true;
-        global single; single = true;
+    plt = false;
+    global single; single = true;
     %mutations
-    global ARF_muta; ARF_muta = false;
+    global ARF_muta; ARF_muta = $discrete([0,1],name=ARF_muta$;% 1 if ARF is not mutated otherwise 0
     %this is the master sim0 version 2.0
 
     %note for octave compatibility, must install odepkg for octave and also execute the following line
@@ -35,7 +35,7 @@ function v3()
 %     x0(O_FIXED) = 0;
 %     x0(O_ARRESTSIGNAL) = 0; 
 %     x0(P_Apoptosis)= 0;
-if ARF_muta = true
+if ARF_muta == 0
     x0(P_ARF) = 0.1;
 end
     x0(O_CELLCYCLING) = 1;
@@ -123,8 +123,8 @@ end
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
-        c_Kcer = .01;
-        c_Kf = .01;
+        c_Kcer = $uniform(.002,0.5),name=c_Kcer$;
+        c_Kf = $uniform(0.001,0.02),name=c_Kf$;
 
         %next come constants from the Elias paper https://hal.inria.fr/hal-00822308/document
         ATMtot = 1.3; % total concentration of ATM proteins (monomers and dimers)
@@ -136,7 +136,7 @@ end
 
 
         k3=3;
-        Katm=0.1;
+        Katm=$uniform(0.01,0.1),name=Katm$;
         kdph1=7800; %craft: changing this to see if i can get
                           %p53nucphos to taper out faster. orig
                           %value: 78
@@ -164,7 +164,7 @@ end
         deltawrna=0.001;
         ktw=1;
         % this next one to modify the radiation impact:
-        kph2=$15$;
+        kph2=$uniform(15,150),name=kph2$;
         Kph2=1;
 
         kdph2=96;
@@ -231,11 +231,11 @@ end
         c_KpE2 = $1.3$;%$ %changes cc & arrest 1 < k < 20 
         c_KpE3 = $1$;%$ %changes cc & arrest .1 < k < 1
         c_KpE4 = $0.4$;%$
-        K_Rb = 1.5;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        K_Rb = $discrete([0,1]),name=K_Rb$;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
         c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
         c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
         Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
-        K_MYC = 3;
+        K_MYC = $uniform(0.5,3),name=K_MYC$;
         c_E2F1 = 1; %clearance term - increases run time if k > 1
         c_ARF1 = 1.5;
         c_ARF2 = 2;
@@ -357,9 +357,9 @@ end
         %website: https://www.nature.com/articles/ncomms5750
         xd(P_E2F) = K_Rb*K_MYC - c_E2F1*x(P_E2F);
         %ARF
-        if ARF_muta = false
-            xd(P_ARF) = c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF);
-        end
+        
+        xd(P_ARF) =ARF_muta*( c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF));
+        
 
 
         %Cell cycle arrest modules --> p53 -- p21cip -- ECDK2 --pRb

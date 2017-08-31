@@ -129,7 +129,7 @@ end
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
-        c_Kcer = .002;
+        c_Kcer = .002; %$ keep .002 < k < .5
         c_Kf = .002; %decreasing to slow down dna repair process. Keep < .02
 
         %next come constants from the Elias paper https://hal.inria.fr/hal-00822308/document
@@ -236,7 +236,7 @@ end
         c_KpE2 = 1.3;%$ %changes cc & arrest 1 < k < 20 
         c_KpE3 = 1;%$ %changes cc & arrest .1 < k < 1
         c_KpE4 = 0.4;%$
-        K_Rb = 1.5;%discrete([0,1]) 1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        K_Rb = ;%discrete([0,1]) 1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
         c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
         c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
         Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
