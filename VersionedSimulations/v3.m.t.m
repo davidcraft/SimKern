@@ -6,7 +6,8 @@ function v3()
     % set plt = true to plot the graph
     plt = true;
         global single; single = true;
-        global ARF_muta; ARF_muta = 1;% 1 if ARF is not mutated otherwise 0
+    %mutations
+    global ARF_muta; ARF_muta = false;
     %this is the master sim0 version 2.0
 
     %note for octave compatibility, must install odepkg for octave and also execute the following line
@@ -34,7 +35,7 @@ function v3()
 %     x0(O_FIXED) = 0;
 %     x0(O_ARRESTSIGNAL) = 0; 
 %     x0(P_Apoptosis)= 0;
-if ARF_muta == 0
+if ARF_muta = true
     x0(P_ARF) = 0.1;
 end
     x0(O_CELLCYCLING) = 1;
@@ -53,17 +54,17 @@ end
     %low order solver ode23. We may need to change this later too.
     opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
     [t,x]=ode23(@f,tspan,x0,opts);
-    if plt == true        
-        subplot(2,2,1)
-        varsToPlot = [O_BROKEN_ENDS O_CAPPED_ENDS_READY P_Apaf1 O_FIXED];
+    if plt == true
+        subplot(1,3,1)
+        varsToPlot = [2 5 P_Apaf1];
         plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
         %here replicate stuff plotted in Elias figure 4.8
 
-        subplot(2,2,2)
-        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome P_E2F];
+        subplot(1,3,2)
+        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
         % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
 
         %varsToPlot = [P_Siah P_Reprimo];
@@ -71,15 +72,9 @@ end
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
 
-        subplot(2,2,3)
+        subplot(1,3,3)
         %varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
         varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
-        h=plot(t/60,x(:,varsToPlot));
-        xlabel('Time [hrs]');
-        legend(N(varsToPlot));
-        
-        subplot(2,2,4)
-        varsToPlot = [1:numEntities];
         h=plot(t/60,x(:,varsToPlot));
         xlabel('Time [hrs]');
         legend(N(varsToPlot));
@@ -116,7 +111,6 @@ end
         %down too much. I don't think it will. If it does we might consider using globals or something like that.
 
         global single;
-        global ARF_muta
         variableDefinition3;
 
         %We start with all the parameters of those equations. We might want to think a little more
@@ -125,27 +119,28 @@ end
         %So for now we will go with this but we might come up with a more refined standard.
         c_Kiri = .03;
         c_Kbe = .03;
-        c_Kbec = .003; %decreasinging this to slow down repair process
+        c_Kbec = $.003$; %decreasinging this to slow down repair process
         c_Kc = .02;
         c_Kcc = .01; %caps clearance rate/halflife term
         c_Mc = .01;
-        c_Kcer = .002;
-        c_Kf = .002; %decreasing to slow down dna repair process. Keep < .02
+        c_Kcer = .01;
+        c_Kf = .01;
 
         %next come constants from the Elias paper https://hal.inria.fr/hal-00822308/document
         ATMtot = 1.3; % total concentration of ATM proteins (monomers and dimers)
         %E = 2.5e-5; % signal produced by DNA damage [orig Elias model, I
         %their E in the paper was anything from  2.5e-5 to 10. can use the parameter Kph2 to do this scaling.
+
         %do it differently]
-        %the system's constants, for the full description see Table B.1
+        % the system's constants, for the full description see Table B.1
 
 
         k3=3;
-        Katm=.1; %$$ keep .01 < Katm < .1
+        Katm=0.1;
         kdph1=7800; %craft: changing this to see if i can get
                           %p53nucphos to taper out faster. orig
                           %value: 78
-        Kdph1=250; %try this one too
+        Kdph1=$250$; %try this one too
         k1=10;
         K1=1.01;
         pp=0.083;
@@ -155,7 +150,7 @@ end
         kSm=0.005;
         kSpm=1;
         KSpm=0.1;
-        pmrna=0.083;
+        pmrna=$0.083$;
         deltamrna=0.0001;
         ktm=1;
         kS=0.015;
@@ -169,7 +164,7 @@ end
         deltawrna=0.001;
         ktw=1;
         % this next one to modify the radiation impact:
-        kph2=120; %$$ keep uniform 150 > kph2 > 10
+        kph2=$15$;
         Kph2=1;
 
         kdph2=96;
@@ -199,48 +194,48 @@ end
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
 
-        c_KpB1 = 2;%$
-        c_KpB2 = 2;%$positive affect on cellcycling
+        c_KpB1 = $2$;%$
+        c_KpB2 = $2$;%$positive affect on cellcycling
         c_KpB3 = 0.5;
-        c_KpBX1 = 2.5;
-        c_KpBX2 = 1.7;
+        c_KpBX1 = $2.5$;
+        c_KpBX2 = $1.7$;
         c_KpBX3 = 0.4; %clearance term - slows if k > 2
-        c_KpF1 = 1.5; %affects apop reasonably if .1 < k < 10
-        c_KpF2 = 2; %affects apop reasonably if .01 < k < 5
-        c_KpF3 = 0.2; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
-        c_KpBa1 = 2;
+        c_KpF1 = $1.5$; %affects apop reasonably if .1 < k < 10
+        c_KpF2 = $2$; %affects apop reasonably if .01 < k < 5
+        c_KpF3 = $0.2$; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
+        c_KpBa1 = $2$;
         c_KpBa2 = 2;
-        c_KpBa3 = 0.3;%clearance term - slows if k > 1
+        c_KpBa3 = $0.3$;%clearance term - slows if k > 1
         c_KBaxC1 = 1.3;
         c_KBaxC2 = 0.9;
         c_KBaxC3 = 1;
-        c_KBcl2C1 = 1.3;
-        c_KBcl2C2 = 1.1;
+        c_KBcl2C1 = $1.3$;
+        c_KBcl2C2 = $1.1$;
         c_KBcl2C3 = 1;
-        c_KBclXC1 = 1.3;%$
-        c_KBclXC2 = 1;
+        c_KBclXC1 = $1.3$;%$
+        c_KBclXC2 = $1$;
         c_KBclXC3 = 1;
         c_KCyt = 0.3;%clearence term
-        c_Kapa1 = 2;%$
+        c_Kapa1 = $2$;%$
         c_Kapa2 = 1;
         c_Kapa3 = 0.3;
         c_KAA = 0.7;
         c_KAA2 = 0.3;%clearance term - DOES NOT slow, does not affect cell fate
-        c_KApop = 0.12;%increase Apoptosis - apop changes reasonably if .1 < k < 10
-        c_KApop2 = 0.11;%increase Apoptosis maybe set this around 1 to make it resonalable
-        c_KApop3 = 0.2;%reasonable changes in apop if  .08 < k < 5
-        c_Kpp1 = 0.3;%sig changes in cc and arrest if 1 < k < 100
-        c_Kpp2 = 0.6;%sig changes in cc & arrest if .1 < k < 2
-        c_Kpp3 = 0.2;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
-        c_KpE1 = 0.6;%$ %changes cc & arrest. .1 < k < 1
-        c_KpE2 = 1.3;%$ %changes cc & arrest 1 < k < 20 
-        c_KpE3 = 1;%$ %changes cc & arrest .1 < k < 1
-        c_KpE4 = 0.4;%$
-        K_Rb = 1.5;%discrete([0,1]) 1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+        c_KApop = $0.12$;%increase Apoptosis - apop changes reasonably if .1 < k < 10
+        c_KApop2 = $0.11$;%increase Apoptosis maybe set this around 1 to make it resonalable
+        c_KApop3 = $0.2$;%reasonable changes in apop if  .08 < k < 5
+        c_Kpp1 = $0.3$;%sig changes in cc and arrest if 1 < k < 100
+        c_Kpp2 = $0.6$;%sig changes in cc & arrest if .1 < k < 2
+        c_Kpp3 = $0.2$;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
+        c_KpE1 = $0.6$;%$ %changes cc & arrest. .1 < k < 1
+        c_KpE2 = $1.3$;%$ %changes cc & arrest 1 < k < 20 
+        c_KpE3 = $1$;%$ %changes cc & arrest .1 < k < 1
+        c_KpE4 = $0.4$;%$
+        K_Rb = 1.5;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
         c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
         c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
         Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
-        K_MYC = .5; % ($$ ?) Does not change cell fate much, if at all
+        K_MYC = 3;
         c_E2F1 = 1; %clearance term - increases run time if k > 1
         c_ARF1 = 1.5;
         c_ARF2 = 2;
@@ -362,8 +357,9 @@ end
         %website: https://www.nature.com/articles/ncomms5750
         xd(P_E2F) = K_Rb*K_MYC - c_E2F1*x(P_E2F);
         %ARF
-        xd(P_ARF) = ARF_muta * (c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF));
-       
+        if ARF_muta = false
+            xd(P_ARF) = c_ARF1 * (x(P_E2F)/(c_ARF2+x(P_E2F))) - c_ARF3 * x(P_ARF);
+        end
 
 
         %Cell cycle arrest modules --> p53 -- p21cip -- ECDK2 --pRb
