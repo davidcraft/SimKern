@@ -36,12 +36,14 @@ class MatrixService(object):
         for i in range(0, self.number_of_genomes):
             kernel[i] = [None]*self.number_of_genomes
             kernel[i][i] = 1
-
+        
+        valid_trial_list = self.getValidTrials(response_matrix)
+        
         for i in range(0, self.number_of_genomes - 1):
             for j in range(i + 1, self.number_of_genomes):
                 num_valid = 0
                 count = 0
-                for k in range(0, self.number_of_trials):
+                for k in valid_trial_list:
                     if response_matrix[i][k] is not int(-1) and response_matrix[j][k] is not int(-1):
                         num_valid = num_valid+1
                         if response_matrix[i][k] == response_matrix[j][k]:
@@ -54,3 +56,12 @@ class MatrixService(object):
                 kernel[j][i] = score
 
         return kernel
+    
+    def getValidTrials(self, response_matrix):
+        valid_trial_list=[]
+        for i in range(0, self.number_of_trials):
+            for j in range(1, self.number_of_genomes):
+                if response_matrix[j][i] != response_matrix[0][i]:
+                    valid_trial_list.append(i)
+                    break
+        return valid_trial_list
