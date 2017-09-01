@@ -1,7 +1,10 @@
 from __future__ import division
-
+import os
+import csv
 
 class MatrixService(object):
+    
+    OUTPUT_FILE_NAME = "Sim1SimilarityMatrix.csv"
 
     def __init__(self, simulation_result, number_of_genomes, number_of_trials):
         self.simulation_result = simulation_result
@@ -11,6 +14,7 @@ class MatrixService(object):
     def generateSimilarityMatrix(self):
         response_matrix = self.generateGenomesByTrialMatrix()
         similarity_matrix = self.computeSimilarityScores(response_matrix)
+        self.writeDataFile(similarity_matrix)
         return similarity_matrix
 
     def generateGenomesByTrialMatrix(self):
@@ -65,3 +69,17 @@ class MatrixService(object):
                     valid_trial_list.append(i)
                     break
         return valid_trial_list
+    
+    def writeDataFile(self, similarity_matrix):
+        path=os.getcwd()
+        self.changeWorkingDirectory(path + "/GenomeFiles")
+        with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
+            try:
+                data_writer = csv.writer(csv_file)
+                for i in range(0, self.number_of_genomes):
+                    data_writer.writerow(similarity_matrix[i])
+            finally:
+                csv_file.close()
+                
+     def changeWorkingDirectory(self, new_directory):
+         os.chdir(new_directory)
