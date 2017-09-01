@@ -13,6 +13,7 @@ class ThirdPartyProgramCaller(object):
         self.files_directory = files_directory
         self.file_type = file_type
         self.file_list = file_list
+        self.counter = 1
 
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
@@ -59,7 +60,7 @@ class ThirdPartyProgramCaller(object):
         except ValueError as valueError:
             print(valueError)  # TODO: setup logging for this class.
             output = [int(-1)]
-
+        
         return output[0]
 
     def callMATLAB(self, directory_of_file, call_file):
@@ -70,8 +71,8 @@ class ThirdPartyProgramCaller(object):
         first=out.index("[")
         second=out.index("]")
         output=out[first+1:second]
-        print(output)
-
+        print(output+": "+str(100*self.counter/self.file_list.__len__())+"% complete")
+        self.counter=self.counter+1
         return int(output)
 
     def callR(self, directory_of_file, call_file):
@@ -80,7 +81,8 @@ class ThirdPartyProgramCaller(object):
         (out, err) = proc.communicate()
         pos = out.index("]")
         output = out[pos + 2]
-        print(output)
+        print(output+": "+str(100*self.counter/self.file_list.__len__())+"% complete")
+        self.counter=self.counter+1
         return int(output)
 
 
