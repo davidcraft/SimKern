@@ -12,21 +12,7 @@ def runRF(responses, data, pct_train):
 
 
     print("RANDOM FOREST output")
-    num0 = 0
-    num1 = 0
-    num2 = 0
-    for i in range(0, response_list.__len__()):
-        if response_list[i] == 0:
-            num0 = num0 + 1
-        elif response_list[i] == 1:
-            num1 = num1 + 1
-        else:
-            num2 = num2 + 1
-
-    por0 = num0 / response_list.__len__()
-    por1 = num1 / response_list.__len__()
-    por2 = num2 / response_list.__len__()
-    print(str(100 * por0) + " percent 0s \n" + str(100 * por1) + " percent 1s \n" + str(100 * por2) + " percent 2s")
+    
     [train_y, train_X, test_X, test_y] = splitData(response_list, data, pct_train)
     mod=RandomForestClassifier(n_estimators=50)
     mod.fit(train_X, train_y)
