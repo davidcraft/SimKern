@@ -139,10 +139,10 @@ class FileProcessingService(object):
             raise ValueError('Unsupported distribution: ' + distribution)
 
     def generateRandomValueFromUniformDistribution(self, mini, maxi):
-        return "%.3f" % random.uniform(float(mini), float(maxi))
+        return random.uniform(float(mini), float(maxi))
 
     def generateRandomValueFromGaussianDistribution(self, mu, sigma):
-        return "%.3f" % random.gauss(float(mu), float(sigma))
+        return random.gauss(float(mu), float(sigma))
 
     def generateRandomValueFromDiscreteDistribution(self, values):
         return random.choice(values)

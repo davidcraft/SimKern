@@ -51,62 +51,10 @@ end
                                       %simulation time.
     tspan=[0,Tend_minutes];
 
-    %Just using these default values. They seem fine for now, we might find it useful to adjust later. I'm also using the
-    %low order solver ode23. We may need to change this later too.
-    opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
-    [t,x]=ode23(@f4,tspan,x0,opts, RP);
-    if plt == true
-        subplot(1,3,1)
-        varsToPlot = [2 5 P_Apaf1];
-        plot(t/60,x(:,varsToPlot));
-        xlabel('Time [hrs]');
-        legend(N(varsToPlot));
+ %We start with all the parameters of those equations. We might want to think a little more
+ %about an organized nomenclature for these. For example it would be nice to be able to tell from the name
+ %basically what it is doing. But we also don't want to be cumbersome and have really long names (I think..).      %So for now we will go with this but we might come up with a more refined standard.
 
-        %here replicate stuff plotted in Elias figure 4.8
-
-        subplot(1,3,2)
-        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
-        % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
-
-        %varsToPlot = [P_Siah P_Reprimo];
-        h=plot(t/60,x(:,varsToPlot));  
-        xlabel('Time [hrs]');
-        legend(N(varsToPlot));
-
-        subplot(1,3,3)
-        %varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
-        varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
-        h=plot(t/60,x(:,varsToPlot));
-        xlabel('Time [hrs]');
-        legend(N(varsToPlot));
-        
-
-        
-    else
-        %here display the output value we will do machine learning on. for
-        %now I'll just use the final value of cell cycling. this will not
-        %be what we use eventually, just a placeholder for now. put
-        %plt to false to see this printed out.
-        x(end,O_CELLCYCLING);
-        output = 0;% if output is 0 then it mean we did not cover all the cases which it should not happen. 
-        if max(x(:,O_Apoptosis)) >= 0.7%Apoptosis occurs
-            output = 3;
-        else
-            if max(x(:,O_ARRESTSIGNAL))>= 0.7%cell arrest occurs
-             output = 1;
-            elseif  x(end,O_CELLCYCLING)>= 0.7% cell cycling 
-               output = 2;
-            else
-                output = 4;%other
-            end
-        end
-      disp(strcat('[',int2str(output),']'));     
-        
-    end
-     %We start with all the parameters of those equations. We might want to think a little more
-     %about an organized nomenclature for these. For example it would be nice to be able to tell from the name
-     %basically what it is doing. But we also don't want to be cumbersome and have really long names (I think..).      %So for now we will go with this but we might come up with a more refined standard.
-       
  %NOTE: RP is structure defining the values of the Rate Parameters
     RP.c_Kiri = .03;
     RP.c_Kbe = .03;
@@ -119,7 +67,7 @@ end
     RP.ATMtot = 1.3;
 
     RP.k3=3;
-    RP.Katm=$uniform(0.01,0.1),name=Katm$;
+    RP.Katm=$0.1$;
     RP.kdph1=7800; %craft: changing this to see if i can get
                       %p53nucphos to taper out faster. orig
                       %value: 78
@@ -232,4 +180,57 @@ end
     RP.c_Kpr2 = 3;
     RP.c_re = 0.2;  %clearance term - slow if k > 1, no significant effect
 
+
+    %Just using these default values. They seem fine for now, we might find it useful to adjust later. I'm also using the
+    %low order solver ode23. We may need to change this later too.
+    opts = odeset('AbsTol',1e-3,'RelTol',1e-5,'MaxStep',6,'InitialStep',.1);
+    [t,x]=ode23(@f4,tspan,x0,opts, RP);
+    if plt == true
+        subplot(1,3,1)
+        varsToPlot = [2 5 P_Apaf1];
+        plot(t/60,x(:,varsToPlot));
+        xlabel('Time [hrs]');
+        legend(N(varsToPlot));
+
+        %here replicate stuff plotted in Elias figure 4.8
+
+        subplot(1,3,2)
+        varsToPlot = [P_CytC P_ECDK2 P_Apoptosome ];
+        % varsToPlot = [P_CytC P_Apaf1 P_Apoptosome P_ECDK2 P_FasL];
+
+        %varsToPlot = [P_Siah P_Reprimo];
+        h=plot(t/60,x(:,varsToPlot));  
+        xlabel('Time [hrs]');
+        legend(N(varsToPlot));
+
+        subplot(1,3,3)
+        %varsToPlot = [P_ATMNucPhos P_P53NucPhos P_MDM2Nuc P_WIP1Nuc];
+        varsToPlot = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
+        h=plot(t/60,x(:,varsToPlot));
+        xlabel('Time [hrs]');
+        legend(N(varsToPlot));
+        
+
+        
+    else
+        %here display the output value we will do machine learning on. for
+        %now I'll just use the final value of cell cycling. this will not
+        %be what we use eventually, just a placeholder for now. put
+        %plt to false to see this printed out.
+        x(end,O_CELLCYCLING);
+        output = 0;% if output is 0 then it mean we did not cover all the cases which it should not happen. 
+        if max(x(:,O_Apoptosis)) >= 0.7%Apoptosis occurs
+            output = 3;
+        else
+            if max(x(:,O_ARRESTSIGNAL))>= 0.7%cell arrest occurs
+             output = 1;
+            elseif  x(end,O_CELLCYCLING)>= 0.7% cell cycling 
+               output = 2;
+            else
+                output = 4;%other
+            end
+        end
+      disp(strcat('[',int2str(output),']'));     
+        
+    end
 

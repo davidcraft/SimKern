@@ -81,5 +81,5 @@ class MatrixService(object):
             finally:
                 csv_file.close()
                 
-     def changeWorkingDirectory(self, new_directory):
+    def changeWorkingDirectory(self, new_directory):
          os.chdir(new_directory)

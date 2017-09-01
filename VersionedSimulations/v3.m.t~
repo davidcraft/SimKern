@@ -102,6 +102,17 @@ end
         
     end
 
+        c_Kiri = .03;
+        c_Kbe = .03;
+        c_Kbec = $.003$; %decreasinging this to slow down repair process
+        c_Kc = .02;
+        c_Kcc = .01; %caps clearance rate/halflife term
+        c_Mc = .01;
+        c_Kcer = $uniform(.002,0.5),name=c_Kcer$;
+        c_Kf = $uniform(0.001,0.02),name=c_Kf$;
+        ATMtot = 1.3;
+
+
     function xd=f(t,x)
 
         %In this function we have the differential equations.
@@ -117,14 +128,7 @@ end
         %about an organized nomenclature for these. For example it would be nice to be able to tell from the name
         %basically what it is doing. But we also don't want to be cumbersome and have really long names (I think..).
         %So for now we will go with this but we might come up with a more refined standard.
-        c_Kiri = .03;
-        c_Kbe = .03;
-        c_Kbec = $.003$; %decreasinging this to slow down repair process
-        c_Kc = .02;
-        c_Kcc = .01; %caps clearance rate/halflife term
-        c_Mc = .01;
-        c_Kcer = $uniform(.002,0.5),name=c_Kcer$;
-        c_Kf = $uniform(0.001,0.02),name=c_Kf$;
+        
 
         %next come constants from the Elias paper https://hal.inria.fr/hal-00822308/document
         ATMtot = 1.3; % total concentration of ATM proteins (monomers and dimers)

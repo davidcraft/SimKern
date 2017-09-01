@@ -6,7 +6,7 @@
         %down too much. I don't think it will. If it does we might consider using globals or something like that.
 
         global single;
-     
+        
         variableDefinition3
         xd = zeros(numEntities,1);
 
@@ -16,7 +16,7 @@
         xd(O_RADIATION) = -RP.c_Kiri * x(O_RADIATION);
         xd(O_BROKEN_ENDS) = RP.c_Kbe * x(O_RADIATION) - RP.c_Kbec * x(O_BROKEN_ENDS) * x(O_CAPS);
         xd(O_CAPS) = min((RP.c_Kc * x(O_BROKEN_ENDS)) ,RP.c_Mc) - RP.c_Kbec * x(O_BROKEN_ENDS) * x(O_CAPS) ...
-                             - c_Kcc * x(O_CAPS);
+                             - RP.c_Kcc * x(O_CAPS);
         xd(O_CAPPED_ENDS) = RP.c_Kbec * x(O_BROKEN_ENDS) * x(O_CAPS) -RP.c_Kcer * x(O_CAPPED_ENDS);
         xd(O_CAPPED_ENDS_READY) = RP.c_Kcer * x(O_CAPPED_ENDS) - RP.c_Kf * x(O_CAPPED_ENDS_READY);
         xd(O_FIXED) = RP.c_Kf * x(O_CAPPED_ENDS_READY);

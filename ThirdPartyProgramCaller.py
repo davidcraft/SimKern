@@ -34,10 +34,13 @@ class ThirdPartyProgramCaller(object):
         return outputs
 
     def writeOutputFile(self, outputs):
+        output_list = []
+        for file in outputs.keys():
+            output_list.append(outputs[file])
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 outputs_writer = csv.writer(csv_file)
-                outputs_writer.writerow(outputs)
+                outputs_writer.writerow(output_list)
             finally:
                 csv_file.close()
 

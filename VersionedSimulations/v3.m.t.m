@@ -7,7 +7,7 @@ function v3()
     plt = false;
     global single; single = true;
     %mutations
-    global ARF_muta; ARF_muta = $discrete([0,1],name=ARF_muta$;% 1 if ARF is not mutated otherwise 0
+    global ARF_muta; ARF_muta = $discrete([0,1]),name=ARF_muta$;% 1 if ARF is not mutated otherwise 0
     %this is the master sim0 version 2.0
 
     %note for octave compatibility, must install odepkg for octave and also execute the following line
@@ -194,8 +194,8 @@ end
 
         %Apoptosis Rate Constants --> p53 to Cyt c model
 
-        c_KpB1 = $2$;%$
-        c_KpB2 = $2$;%$positive affect on cellcycling
+        c_KpB1 = $2$;%
+        c_KpB2 = $2$;%positive affect on cellcycling
         c_KpB3 = 0.5;
         c_KpBX1 = $2.5$;
         c_KpBX2 = $1.7$;
@@ -212,11 +212,11 @@ end
         c_KBcl2C1 = $1.3$;
         c_KBcl2C2 = $1.1$;
         c_KBcl2C3 = 1;
-        c_KBclXC1 = $1.3$;%$
+        c_KBclXC1 = $1.3$;%
         c_KBclXC2 = $1$;
         c_KBclXC3 = 1;
         c_KCyt = 0.3;%clearence term
-        c_Kapa1 = $2$;%$
+        c_Kapa1 = $2$;%
         c_Kapa2 = 1;
         c_Kapa3 = 0.3;
         c_KAA = 0.7;
@@ -227,13 +227,13 @@ end
         c_Kpp1 = $0.3$;%sig changes in cc and arrest if 1 < k < 100
         c_Kpp2 = $0.6$;%sig changes in cc & arrest if .1 < k < 2
         c_Kpp3 = $0.2$;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
-        c_KpE1 = $0.6$;%$ %changes cc & arrest. .1 < k < 1
-        c_KpE2 = $1.3$;%$ %changes cc & arrest 1 < k < 20 
-        c_KpE3 = $1$;%$ %changes cc & arrest .1 < k < 1
-        c_KpE4 = $0.4$;%$
+        c_KpE1 = $0.6$;% %changes cc & arrest. .1 < k < 1
+        c_KpE2 = $1.3$;% %changes cc & arrest 1 < k < 20 
+        c_KpE3 = $1$;% %changes cc & arrest .1 < k < 1
+        c_KpE4 = $0.4$;%
         K_Rb = $discrete([0,1]),name=K_Rb$;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
-        c_Ka1 = 4;%$ %Cellcycling stops if >70; changes cc and arrest symmetrically;
-        c_Ka2 = 0.8;%$ supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
+        c_Ka1 = 4;% %Cellcycling stops if >70; changes cc and arrest symmetrically;
+        c_Ka2 = 0.8;% supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
         Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
         K_MYC = $uniform(0.5,3),name=K_MYC$;
         c_E2F1 = 1; %clearance term - increases run time if k > 1
