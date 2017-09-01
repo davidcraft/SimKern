@@ -1,6 +1,7 @@
 import re
 import os
 import random
+import csv
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
@@ -138,10 +139,10 @@ class FileProcessingService(object):
             raise ValueError('Unsupported distribution: ' + distribution)
 
     def generateRandomValueFromUniformDistribution(self, mini, maxi):
-        return random.uniform(float(mini), float(maxi))
+        return "%.3f" % random.uniform(float(mini), float(maxi))
 
     def generateRandomValueFromGaussianDistribution(self, mu, sigma):
-        return random.gauss(float(mu), float(sigma))
+        return "%.3f" % random.gauss(float(mu), float(sigma))
 
     def generateRandomValueFromDiscreteDistribution(self, values):
         return random.choice(values)
@@ -213,5 +214,5 @@ class FileProcessingService(object):
             finally:
                 csv_file.close()
                 
-     def changeWorkingDirectory(self, new_directory):
+    def changeWorkingDirectory(self, new_directory):
          os.chdir(new_directory)
