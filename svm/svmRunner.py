@@ -10,8 +10,6 @@ def runSvm(responses, data, kernel_type, pct_train):
             response_list.append(responses[file])
     else:
         response_list=responses
-    por_success = sum(response_list) / response_list.__len__()
-    print(str(100 * por_success) + " percent 1s \n" + str(100 * (1 - por_success)) + " percent 0s")
 
     if kernel_type == "precomputed":
         [train_y, train_X, test_X, test_y] = splitMatrix(response_list, data, pct_train)
@@ -28,6 +26,7 @@ def runSvm(responses, data, kernel_type, pct_train):
     print("Testing predictions: " + str(tePr))
     print("Testing accuracy: " + str(teAc))
     print("Overall accuracy: " + str(totAc))
+    return [trAc, teAc, totAc]
 
 def splitMatrix(responses, data, pct_train):
     tot_data_length = data.__len__()
