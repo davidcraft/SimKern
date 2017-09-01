@@ -1,6 +1,7 @@
 import re
 import os
 import random
+import csv
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
