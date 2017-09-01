@@ -26,10 +26,10 @@ def runSVM(responses, data, kernel_type, pct_train):
     teSc = mod.score(test_X, test_y)
     totSc = mod.score(data, response_list)
     print("Training predictions: " + str(trPr))
-    print("Training accuracy: " + str(trSc))
+    print("Training R^2: " + str(trSc))
     print("Testing predictions: " + str(tePr))
-    print("Testing accuracy: " + str(teSc))
-    print("Overall accuracy: " + str(totSc))
+    print("Testing R^2: " + str(teSc))
+    print("Overall R^2: " + str(totSc))
     return [trSc,teSc,totSc]
 
 def splitMatrix(responses, data, pct_train):
