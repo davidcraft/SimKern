@@ -11,6 +11,7 @@ class FileProcessingService(object):
     GENOMES_FILE_NAME = "Genomes.txt"
     IDENTIFIER_REGEX = re.compile(r'\$.+\$')
     DEFAULT_GAUSSIAN_STANDARD_DEVIATION = 0.1
+    OUTPUT_FILE_NAME = "Sim0GenomesMatrix.csv"
 
     num_generated_coefficients = 0
 
@@ -66,6 +67,7 @@ class FileProcessingService(object):
 
         self.writeGenomesKeyFilesToDirectory(genomes, path)
         genomes_matrix = self.createGenomesMatrix(genomes)
+        self.writeDataFile(genomes_matrix)
         return [genomes_file_list, genomes_matrix]
 
     def maybeCreateNewFileDirectory(self):
@@ -201,4 +203,15 @@ class FileProcessingService(object):
             pos = coefficient_string.index(")")
             return int(coefficient_string[pos - 1])
 
-
+    def writeDataFile(self, genomes_matrix):
+        self.changeWorkingDirectory(self.path + "/GenomeFiles")
+        with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
+            try:
+                data_writer = csv.writer(csv_file)
+                for i in range(0, self.number_of_genomes):
+                    data_writer.writerow(genomes_matrix[i])
+            finally:
+                csv_file.close()
+                
+     def changeWorkingDirectory(self, new_directory):
+         os.chdir(new_directory)
