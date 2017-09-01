@@ -60,19 +60,16 @@ class ThirdPartyProgramCaller(object):
         return output[0]
 
     def callMATLAB(self, directory_of_file, call_file):
-        cmd = 'matlab -nojvm -nodisplay -nosplash ' + directory_of_file + "/" + call_file
+        cmd = '/Applications/MATLAB_R2017a.app/bin/matlab -nojvm -nodisplay -nosplash -nodesktop <' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
-        print(out)
 
-        output = out.strip().split("\n")
-        try:
-            output = [int(i) for i in output]
-        except ValueError as valueError:
-            print(valueError)  # TODO: setup logging for this class.
-            output = [int(-1)]
+        first=out.index("[")
+        second=out.index("]")
+        output=out[first+1:second]
+        print(output)
 
-        return output[0]
+        return int(output)
 
     def callR(self, directory_of_file, call_file):
         cmd = 'Rscript ' + directory_of_file + "/" + call_file
