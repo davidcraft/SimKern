@@ -9,7 +9,7 @@
     plt = false;
     global single; single = true;
     %MUTATIONS - TODO - consider making a MUTATIONS structure
-    RP.ARF_muta = $boolean(.5),name=ARF_muta$;% 1 if ARF is not mutated otherwise 0
+    RP.ARF_muta = $boolean(0.5),name=ARF_muta$;% 1 if ARF is not mutated otherwise 0
 
     %note for octave compatibility, must install odepkg for octave and also execute the following line
     %every session.
@@ -21,7 +21,7 @@
     %ENTITIES in the model:
     %These are the proteins, mRNA, etc., each of which has an ODE describing its dynamics, which we store in a file
     %so we can re-use in the ODE function.
-    run /Users/taylorsorenson/Desktop/MGH/DSPP/VersionedSimulations/variableDefinition3.m
+    variableDefinition3
 
     %Initial conditions
     x0 = zeros(numEntities,1);
@@ -58,11 +58,11 @@ end
  %NOTE: RP is structure defining the values of the Rate Parameters
     RP.c_Kiri = .03;
     RP.c_Kbe = .03;
-    RP.c_Kbec = $.003$; %decreasinging this to slow down repair process
+    RP.c_Kbec = $0.003$; %decreasinging this to slow down repair process
     RP.c_Kc = .02;
     RP.c_Kcc = .01; %caps clearance rate/halflife term
     RP.c_Mc = .01;
-    RP.c_Kcer = $uniform(.002,0.5),name=c_Kcer$;
+    RP.c_Kcer = $uniform(0.002,0.5),name=c_Kcer$;
     RP.c_Kf = $uniform(0.001,0.02),name=c_Kf$;
     RP.ATMtot = 1.3;
 
@@ -162,7 +162,7 @@ end
     RP.c_KpE2 = $1.3$; %changes cc & arrest 1 < k < 20 
     RP.c_KpE3 = $1$; %changes cc & arrest .1 < k < 1
     RP.c_KpE4 = $0.4$;%
-    RP.K_Rb = $boolean(.5), name=K_Rb$;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+    RP.K_Rb = $boolean(0.3), name=K_Rb$;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
     RP.c_Ka1 = 4; %Cellcycling stops if >70; changes cc and arrest symmetrically;
     RP.c_Ka2 = 0.8;% supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
     RP.Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
@@ -219,10 +219,10 @@ end
         %plt to false to see this printed out.
         x(end,O_CELLCYCLING);
         output = 0;% if output is 0 then it mean we did not cover all the cases which it should not happen. 
-        if max(x(:,O_Apoptosis)) >= 0.7%Apoptosis occurs
+        if max(x(:,O_Apoptosis)) >= 0.8%Apoptosis occurs
             output = 3;
         else
-            if max(x(:,O_ARRESTSIGNAL))>= 0.7%cell arrest occurs
+            if max(x(:,O_ARRESTSIGNAL))>= 0.55%cell arrest occurs
              output = 1;
             elseif  x(end,O_CELLCYCLING)>= 0.7% cell cycling 
                output = 2;
