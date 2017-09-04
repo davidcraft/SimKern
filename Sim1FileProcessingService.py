@@ -29,7 +29,7 @@ class Sim1FileProcessingService(FileProcessingService):
         path = self.maybeCreateNewFileDirectory()
 
         for trial in range(1, self.number_of_trials + 1):
-            family_coefs = []
+            coefficient_map = {}
             trial_name = 'trial' + str(trial)  # Note - T
             new_trial_file = open(path + "/" + trial_name + "_genome1." + self.file_type, "w")
             sim1_file_list.append(trial_name + "_genome1." + self.file_type)
@@ -37,19 +37,9 @@ class Sim1FileProcessingService(FileProcessingService):
                 if line[0] == comment_character:
                     new_trial_file.write(line)
                     continue
-                search_result_for_distribution = self.IDENTIFIER_REGEX.search(line)
-                if search_result_for_distribution is not None:
-                    target_sequence = line[(search_result_for_distribution.regs[0][0] + 1):
-                    (search_result_for_distribution.regs[0][1] - 1)]
-                    distribution = self.extractDistributionName(target_sequence)
-                    params = self.extractParameters(target_sequence)
-                    coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
-                    # Replace $stuff$ with extracted coefficient value, write to file
-                    new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
-                    new_trial_file.write(new_line)
-                    family_coefs.append(coefficient_value)
-                else:
-                    new_trial_file.write(line)
+                new_line = self.maybeGenerateNewLineAndSaveCoefficientValues(coefficient_map, line)
+                new_trial_file.write(new_line)
+
             new_trial_file.close()
             self.data_file.seek(0)
             for genome in range(2, self.number_of_genomes + 1):

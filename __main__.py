@@ -59,7 +59,7 @@ def promptUserForInput():
         createAndAnalyzeGenomes(file_extension, input_file, path, permutations)
     elif simulation_as_int == 1:
         input_file = recursivelyPromptUser("Enter path of input file:\n", str)
-        file_extension = input_file.split(".")[1]  # TODO: prompt if MATLAB or Octave
+        file_extension = input_file.split(".")[1]
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         number_of_trials = recursivelyPromptUser("Enter number of trials for each genome (R) as an integer:\n", int)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)

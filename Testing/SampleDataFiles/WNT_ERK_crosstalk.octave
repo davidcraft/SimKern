@@ -90,6 +90,9 @@ end
 function xdot=f(x,t)
 % End Octave code
 
+% Parameter: bogus
+    bogus_array = [$gauss(.1,.01),name=bogus_variable_one$ $gauss(.1,.01),name=bogus_variable_two$];
+
 % Compartment: id = cytoplasm, name = cytoplasm, constant
 	compartment_cytoplasm=$uniform(.1,.2),name=Gs6$;
 % Compartment: id = nucleus, name = nucleus, constant

@@ -10,7 +10,7 @@ class FileProcessingService(object):
 
     GENERATED_FOLDER_NAME = "/GenomeFiles"
     GENOMES_FILE_NAME = "Genomes.txt"
-    IDENTIFIER_REGEX = re.compile(r'\$.+\$')
+    IDENTIFIER_REGEX = re.compile(r'\$.+?\$')
     DEFAULT_GAUSSIAN_STANDARD_DEVIATION = 0.1
     OUTPUT_FILE_NAME = "Sim0GenomesMatrix.csv"
 
@@ -38,29 +38,16 @@ class FileProcessingService(object):
         for genome in range(1, self.number_of_genomes + 1):
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
             coefficient_map = {}
-            new_m_file = open(path + "/" + genome_name + "." + self.file_type, "w")
+            new_genome_file = open(path + "/" + genome_name + "." + self.file_type, "w")
             genomes_file_list.append(genome_name + "." + self.file_type)
 
             for line in self.data_file:
                 if line[0] == comment_character:
-                    new_m_file.write(line)
+                    new_genome_file.write(line)
                     continue
-                search_result = self.IDENTIFIER_REGEX.search(line)
-                if search_result is not None:
-                    target_sequence = line[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
-                    coefficient_name = self.extractCoefficientName(target_sequence)
-                    distribution = self.extractDistributionName(target_sequence)
-                    params = self.extractParameters(target_sequence)
-                    coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
-                    # Replace $stuff$ with extracted coefficient value, write to file
-                    new_line = self.IDENTIFIER_REGEX.sub(str(coefficient_value), line)
-                    new_m_file.write(new_line)
-                    if type(coefficient_value) is str:
-                        coefficient_value = self.replaceCoefValue(coefficient_value)
-                    coefficient_map[coefficient_name] = coefficient_value
-                else:
-                    new_m_file.write(line)
-            new_m_file.close()
+                new_line = self.maybeGenerateNewLineAndSaveCoefficientValues(coefficient_map, line)
+                new_genome_file.write(new_line)
+            new_genome_file.close()
 
             self.data_file.seek(0)
             self.num_generated_coefficients = 0
@@ -79,6 +66,26 @@ class FileProcessingService(object):
         else:
             raise ValueError('Provided path must not be root directory.')
         return target_directory
+
+    def maybeGenerateNewLineAndSaveCoefficientValues(self, coefficient_map, line):
+        target_sequences = self.extractTargetSequences(line)
+        new_line = line
+        for i in range(0, len(target_sequences)):
+            target_sequence = target_sequences[i]
+            coefficient_name = self.extractCoefficientName(target_sequence)
+            distribution = self.extractDistributionName(target_sequence)
+            params = self.extractParameters(target_sequence)
+            coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
+
+            # Replace $stuff$ with extracted coefficient value, write to file
+            new_line = new_line.replace("$" + target_sequence + "$", str(coefficient_value), 1)
+            if type(coefficient_value) is str:
+                coefficient_value = self.replaceCoefValue(coefficient_value)
+            coefficient_map[coefficient_name] = coefficient_value
+        return new_line
+
+    def extractTargetSequences(self, line):
+        return [target_sequence.replace("$", "") for target_sequence in self.IDENTIFIER_REGEX.findall(line)]
 
     def extractCoefficientName(self, target_sequence):
         if "name=" in target_sequence:
@@ -108,7 +115,7 @@ class FileProcessingService(object):
                 regex = re.compile(r'\d+')
                 return [substring for substring in re.findall(regex, target_sequence.split("name=")[0])]
         elif self.file_type == SupportedFileTypes.MATLAB or SupportedFileTypes.OCTAVE:
-            pattern = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
+            pattern = re.compile('-?\ *\.?[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
             return [param.strip() for param in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
@@ -205,6 +212,7 @@ class FileProcessingService(object):
             return int(coefficient_string[pos - 1])
 
     def writeDataFile(self, genomes_matrix):
+        current_directory = os.getcwd()
         self.changeWorkingDirectory(self.path + "/GenomeFiles")
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
@@ -213,6 +221,11 @@ class FileProcessingService(object):
                     data_writer.writerow(genomes_matrix[i])
             finally:
                 csv_file.close()
-                
+                self.changeWorkingDirectory(current_directory)
+
+    #TODO: repeated code with MatrixService. DRY it up.
     def changeWorkingDirectory(self, new_directory):
-         os.chdir(new_directory)
+        if os.path.isdir(new_directory):
+            os.chdir(new_directory)
+        else:
+            os.mkdir(new_directory)

@@ -45,7 +45,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         assert os.path.isdir(self.current_working_dir)
         created_files = [file for file in os.listdir(self.generated_folder)]
         # Check files successfully written
-        assert len(created_files) == (self.number_of_genomes * 2) + 1
+        assert len(created_files) == (self.number_of_genomes * 2) + 2
         assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1
 
     def testCallOctaveAndReturnSimulationResult(self):

@@ -58,9 +58,9 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert len(created_genome_files) == number_of_genomes
         assert os.path.isdir(self.current_working_dir)
         created_files = [file for file in os.listdir(self.generated_folder)]
-        assert len(created_files) == (2 * number_of_genomes)
+        assert len(created_files) == (2 * number_of_genomes) + 1
         assert len([file for file in created_files if re.findall(r'.*_key.*', file)]) == number_of_genomes
-        assert len([file for file in created_files if re.findall(r'' + file_type + '', file)]) == (2 * number_of_genomes)
+        assert len([file for file in created_files if re.findall(r'\.' + file_type + '', file)]) == (2 * number_of_genomes)
 
     def testSim1FileProcessingServiceForOctave(self):
         data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
@@ -100,7 +100,7 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert os.path.isdir(self.current_working_dir)
         total_created_files = [file for file in os.listdir(self.generated_folder)]
         # 2*K files created + R*K trial files
-        assert len(total_created_files) == (2 * number_of_genomes) + len(trial_files_created)
+        assert len(total_created_files) == (2 * number_of_genomes) + len(trial_files_created) + 1
         assert len([file for file in total_created_files if re.findall(r'trial\d*_genome\d*.*', file)]) == len(
             trial_files_created)
 
@@ -110,37 +110,37 @@ class FileProcessingServiceIT(unittest.TestCase):
         fp_service = self.file_processing_service
 
         line_default = 'variableOne <- $gauss(0,1),name=varOne$;'
-        target_sequence_default = self.extractTargetSequenceFromLine(line_default)
+        target_sequence_default = self.extractTargetSequencesFromLine(line_default)[0]
         assert fp_service.extractCoefficientName(target_sequence_default) == 'varOne'
         assert fp_service.extractDistributionName(target_sequence_default) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_default) == ['0', '1']
 
         line_no_name = 'variableOne <- $gamma(0,1)$;'
-        target_sequence_no_name = self.extractTargetSequenceFromLine(line_no_name)
+        target_sequence_no_name = self.extractTargetSequencesFromLine(line_no_name)[0]
         assert fp_service.extractCoefficientName(target_sequence_no_name) == 'coefficient1'
         assert fp_service.extractDistributionName(target_sequence_no_name) == SupportedDistributions.GAMMA
         assert fp_service.extractParameters(target_sequence_no_name) == ['0', '1']
 
         line_quick = 'variableOne <- $0,name=varOne$;'
-        target_sequence_quick = self.extractTargetSequenceFromLine(line_quick)
+        target_sequence_quick = self.extractTargetSequencesFromLine(line_quick)[0]
         assert fp_service.extractCoefficientName(target_sequence_quick) == 'varOne'
         assert fp_service.extractDistributionName(target_sequence_quick) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_quick) == ['0']
 
         line_quick_no_name = 'variableOne <- $0$'
-        target_sequence_quick_no_name = self.extractTargetSequenceFromLine(line_quick_no_name)
+        target_sequence_quick_no_name = self.extractTargetSequencesFromLine(line_quick_no_name)[0]
         assert fp_service.extractCoefficientName(target_sequence_no_name) == 'coefficient2'
         assert fp_service.extractDistributionName(target_sequence_quick_no_name) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_quick_no_name) == ['0']
 
         bool_default = '$boolean(0.5), name= B_AKT2$,'
-        target_sequence_bool_default = self.extractTargetSequenceFromLine(bool_default)
+        target_sequence_bool_default = self.extractTargetSequencesFromLine(bool_default)[0]
         assert fp_service.extractCoefficientName(target_sequence_bool_default) == 'B_AKT2'
         assert fp_service.extractDistributionName(target_sequence_bool_default) == SupportedDistributions.BOOLEAN
         assert fp_service.extractParameters(target_sequence_bool_default) == ['0.5']
 
         mutate_default = '$mutate(CTNNB1, 0, .304), name= M_CTNNB1$'
-        target_sequence_mutate_default = self.extractTargetSequenceFromLine(mutate_default)
+        target_sequence_mutate_default = self.extractTargetSequencesFromLine(mutate_default)[0]
         assert fp_service.extractCoefficientName(target_sequence_mutate_default) == 'M_CTNNB1'
         assert fp_service.extractDistributionName(target_sequence_mutate_default) == SupportedDistributions.MUTATE
         assert fp_service.extractParameters(target_sequence_mutate_default) == ['CTNNB1', '0', '.304']
@@ -151,30 +151,43 @@ class FileProcessingServiceIT(unittest.TestCase):
         fp_service = self.file_processing_service
 
         line_default = 'variableOne=$gauss(0,1),name=varOne$;'
-        target_sequence_default = self.extractTargetSequenceFromLine(line_default)
+        target_sequence_default = self.extractTargetSequencesFromLine(line_default)[0]
         assert fp_service.extractCoefficientName(target_sequence_default) == 'varOne'
         assert fp_service.extractDistributionName(target_sequence_default) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_default) == ['0', '1']
 
         line_no_name = 'variableOne=$gamma(0,1)$;'
-        target_sequence_no_name = self.extractTargetSequenceFromLine(line_no_name)
+        target_sequence_no_name = self.extractTargetSequencesFromLine(line_no_name)[0]
         assert fp_service.extractCoefficientName(target_sequence_no_name) == 'coefficient1'
         assert fp_service.extractDistributionName(target_sequence_no_name) == SupportedDistributions.GAMMA
         assert fp_service.extractParameters(target_sequence_no_name) == ['0', '1']
 
         line_quick = 'variableOne=$0,name=varOne$;'
-        target_sequence_quick = self.extractTargetSequenceFromLine(line_quick)
+        target_sequence_quick = self.extractTargetSequencesFromLine(line_quick)[0]
         assert fp_service.extractCoefficientName(target_sequence_quick) == 'varOne'
         assert fp_service.extractDistributionName(target_sequence_quick) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_quick) == ['0']
 
         line_quick_no_name = 'variableOne=$0$'
-        target_sequence_quick_no_name = self.extractTargetSequenceFromLine(line_quick_no_name)
+        target_sequence_quick_no_name = self.extractTargetSequencesFromLine(line_quick_no_name)[0]
         assert fp_service.extractCoefficientName(target_sequence_no_name) == 'coefficient2'
         assert fp_service.extractDistributionName(target_sequence_quick_no_name) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_quick_no_name) == ['0']
 
-    def extractTargetSequenceFromLine(self, line):
-        search_result = self.file_processing_service.IDENTIFIER_REGEX.search(line)
-        assert search_result is not None
-        return line[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
+    def testMultipleTargetSequenceReplacementsPerLine(self):
+        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
+        self.setupFileProcessingService(data_file, SupportedFileTypes.MATLAB)
+        fp_service = self.file_processing_service
+
+        line_default = 'bogus_array = [$gauss(.1,.01),name=bogus_variable_one$ $gauss(.1,.01),name=bogus_variable_two$];'
+        target_sequences = self.extractTargetSequencesFromLine(line_default)
+        assert len(target_sequences) == 2
+
+        for i in range(0, len(target_sequences)):
+            target_sequence = target_sequences[i]
+            assert fp_service.extractCoefficientName(target_sequence).index("bogus_variable") == 0
+            assert fp_service.extractDistributionName(target_sequence) == "gauss"
+            assert fp_service.extractParameters(target_sequence) == ['.1', '.01']
+
+    def extractTargetSequencesFromLine(self, line):
+        return self.file_processing_service.extractTargetSequences(line)

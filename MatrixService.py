@@ -71,7 +71,7 @@ class MatrixService(object):
         return valid_trial_list
     
     def writeDataFile(self, similarity_matrix):
-        path=os.getcwd()
+        path = os.getcwd()
         self.changeWorkingDirectory(path + "/GenomeFiles")
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
@@ -80,6 +80,11 @@ class MatrixService(object):
                     data_writer.writerow(similarity_matrix[i])
             finally:
                 csv_file.close()
-                
+                os.chdir(path)
+
+    #TODO: repeated code with FileProcessingService. DRY it up.
     def changeWorkingDirectory(self, new_directory):
-         os.chdir(new_directory)
+        if os.path.isdir(new_directory):
+            os.chdir(new_directory)
+        else:
+            os.mkdir(new_directory)
