@@ -99,7 +99,7 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert len(trial_files_created) == number_of_trials * number_of_genomes
         assert os.path.isdir(self.current_working_dir)
         total_created_files = [file for file in os.listdir(self.generated_folder)]
-        # 2*K files created + R*K trial files
+        # 2*K files created + R*K trial files + SIM1MatrixFile
         assert len(total_created_files) == (2 * number_of_genomes) + len(trial_files_created) + 1
         assert len([file for file in total_created_files if re.findall(r'trial\d*_genome\d*.*', file)]) == len(
             trial_files_created)

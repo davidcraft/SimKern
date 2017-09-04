@@ -5,6 +5,7 @@ import unittest
 
 from FileProcessingService import FileProcessingService
 from SupportedFileTypes import SupportedFileTypes
+from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 
 
@@ -22,7 +23,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         if self.generated_folder != "/":
             shutil.rmtree(self.generated_folder)
 
-    def initializeServicesAndCreateGenomes(self, file_name, file_type):
+    def initializeServicesAndCreateGenomes(self, file_name, file_type, expected_response_type):
         data_file = self.setTargetFile('SampleDataFiles', file_name)
         file_processing_service = FileProcessingService(data_file, file_type,
                                                         self.number_of_genomes, self.current_working_dir)
@@ -30,16 +31,16 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         genomes_created = file_processing_service.createGenomes()
         file_processing_service.data_file.close()
         self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, file_type,
-                                                               genomes_created[0])
+                                                               genomes_created[0], expected_response_type)
 
     def setTargetFile(self, path_name, file_name):
         resource_path = '/'.join((path_name, file_name))
         return open(resource_path)
 
-    def assertThirdPartyProgramCallerResults(self, simulation_result):
+    def assertThirdPartyProgramCallerResults(self, simulation_result, expected_response_type):
         assert len(simulation_result) == self.number_of_genomes
         for genome_result in simulation_result.values():
-            assert (type(genome_result) is int and genome_result >= 0)
+            assert type(genome_result) is expected_response_type
 
         # Check directory successfully set back to original
         assert os.path.isdir(self.current_working_dir)
@@ -49,20 +50,34 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1
 
     def testCallOctaveAndReturnSimulationResult(self):
-        self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE)
+        expected_response_type = SupportedThirdPartyResponses.INTEGER
+        self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE,
+                                                expected_response_type)
 
         self.log.info("Testing %s genomes of .octave files successfully call Octave and return results.",
                       self.number_of_genomes)
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
-        self.assertThirdPartyProgramCallerResults(simulation_result)
+        self.assertThirdPartyProgramCallerResults(simulation_result, expected_response_type)
 
     def testCallOctaveAndReturnSimulationResultForLinearProgramming(self):
-        self.initializeServicesAndCreateGenomes('linearProgrammingModel.octave', SupportedFileTypes.OCTAVE)
+        expected_response_type = SupportedThirdPartyResponses.INTEGER
+        self.initializeServicesAndCreateGenomes('linearProgrammingModel.octave', SupportedFileTypes.OCTAVE,
+                                                expected_response_type)
 
         self.log.info("Testing %s genomes of .octave files successfully call Octave and return results.",
                       self.number_of_genomes)
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
-        self.assertThirdPartyProgramCallerResults(simulation_result)
+        self.assertThirdPartyProgramCallerResults(simulation_result, expected_response_type)
+
+    def testCallOctaveAndReturnSimulationResultForNonIntegerResponse(self):
+        expected_response_type = SupportedThirdPartyResponses.VECTOR
+        self.initializeServicesAndCreateGenomes('linearProgrammingModelWithVectorResponse.octave', SupportedFileTypes.OCTAVE,
+                                                expected_response_type)
+
+        self.log.info("Testing %s genomes of .octave files successfully call Octave and return results.",
+                      self.number_of_genomes)
+        simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
+        self.assertThirdPartyProgramCallerResults(simulation_result, expected_response_type)
 
     # # TODO: Zach
     # def callMATLABAndReturnSimulationResult(self):
@@ -72,9 +87,11 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
     #     self.assertThirdPartyProgramCallerResults(simulation_result)
 
     def testCallRAndReturnSimulationResult(self):
-        self.initializeServicesAndCreateGenomes('booleanModelTest.r.t', SupportedFileTypes.R)
+        expected_response_type = SupportedThirdPartyResponses.INTEGER
+        self.initializeServicesAndCreateGenomes('booleanModelTest.r.t', SupportedFileTypes.R,
+                                                expected_response_type)
 
         self.log.info("Testing %s genomes of .m files successfully call R and return results.",
                       self.number_of_genomes)
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
-        self.assertThirdPartyProgramCallerResults(simulation_result)
+        self.assertThirdPartyProgramCallerResults(simulation_result, expected_response_type)

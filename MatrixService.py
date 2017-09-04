@@ -2,6 +2,7 @@ from __future__ import division
 import os
 import csv
 
+
 class MatrixService(object):
     
     OUTPUT_FILE_NAME = "Sim1SimilarityMatrix.csv"
@@ -62,7 +63,7 @@ class MatrixService(object):
         return kernel
     
     def getValidTrials(self, response_matrix):
-        valid_trial_list=[]
+        valid_trial_list = []
         for i in range(0, self.number_of_trials):
             for j in range(1, self.number_of_genomes):
                 if response_matrix[j][i] != response_matrix[0][i]:

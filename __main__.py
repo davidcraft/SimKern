@@ -6,6 +6,7 @@ from FileProcessingService import FileProcessingService
 from RandomForest.RandomForestTrainer import RandomForestTrainer
 from Sim1FileProcessingService import Sim1FileProcessingService
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
+from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
 
 log = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ log.setLevel(logging.INFO)
 
 def main():
     arguments = sys.argv[1:]
+    # TODO: Also accept third party response type as an input
     if len(arguments) == 0:
         promptUserForInput()
 
@@ -70,11 +72,13 @@ def promptUserForInput():
         print("Invalid command, please type 0, 1, or 'Q'.\n")
         promptUserForInput()
 
+
 def safeCast(val, to_type, default=None):
     try:
         return to_type(val)
     except (ValueError, TypeError):
         return default
+
 
 def recursivelyPromptUser(message, return_type):
     response = input(message)
@@ -91,7 +95,7 @@ def createAndAnalyzeGenomes(file_extension, input_file, path, number_of_genomes)
         try:
             genomes = processInputFileAndCreateGenomes(data_file, file_extension,
                                                        path, number_of_genomes)
-            third_party_result = callThirdPartyService(file_extension, path, genomes[0])
+            third_party_result = callThirdPartyService(file_extension, path, genomes[0], True)
             log.info("Result of differential equation analysis %s", third_party_result)
 
             random_forest_model = trainRandomForestClassifier(genomes, third_party_result, 0.7)
@@ -102,17 +106,19 @@ def createAndAnalyzeGenomes(file_extension, input_file, path, number_of_genomes)
             log.debug("Closing file %s", input_file)
             data_file.close()
 
+
 def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_genomes):
     file_parsing_service = FileProcessingService(data_file, file_extension, number_of_genomes, path)
     return file_parsing_service.createGenomes()
 
 
-def callThirdPartyService(file_extension, path, file_list):
-    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list)
-    return third_party_caller_service.callThirdPartyProgram(True)
+def callThirdPartyService(file_extension, path, file_list, record_output):
+    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list, SupportedThirdPartyResponses.INTEGER)
+    return third_party_caller_service.callThirdPartyProgram(record_output)
+
 
 def trainRandomForestClassifier(genomes, third_party_result, percent_train):
-    random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
+    random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result, SupportedThirdPartyResponses.INTEGER)
     return random_forest_trainer.trainRandomForest(percent_train)
 
 
@@ -121,7 +127,7 @@ def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_fil
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
-            third_party_program_output = runGenomeSimulations(file_extension, trial_files, path)
+            third_party_program_output = callThirdPartyService(file_extension, path, trial_files, False)
             matrices = generateMatrices(number_of_genomes, number_of_trials, third_party_program_output)
             trainSVMClassifier(number_of_genomes, matrices[0])
         except ValueError as valueError:
@@ -137,11 +143,6 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     trial_files = process_trial_files.createTrialFiles()
     log.info("Trial Files: %s\n", trial_files)
     return trial_files
-
-
-def runGenomeSimulations(file_extension, trial_files, path):
-    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, trial_files)
-    return third_party_caller_service.callThirdPartyProgram(False)
 
 
 def generateMatrices(number_of_genomes, number_of_trials, third_party_program_output):

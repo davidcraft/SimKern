@@ -3,16 +3,24 @@ import subprocess
 import csv
 from SupportedFileTypes import SupportedFileTypes
 import collections
+import logging
+
+from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 
 
 class ThirdPartyProgramCaller(object):
 
+    log = logging.getLogger(__name__)
+    logging.basicConfig()
+    log.setLevel(logging.INFO)
+
     OUTPUT_FILE_NAME = 'Sim0Output.csv'
 
-    def __init__(self, files_directory, file_type, file_list):
+    def __init__(self, files_directory, file_type, file_list, response_type):
         self.files_directory = files_directory
         self.file_type = file_type
         self.file_list = file_list
+        self.response_type = response_type
         self.counter = 1
 
     def callThirdPartyProgram(self, should_write_sim0_output):
@@ -52,37 +60,47 @@ class ThirdPartyProgramCaller(object):
         cmd = 'octave -q ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
-        print(out)
+        self.log.debug(out)
+        output = out.strip()
 
-        output = out.strip().split("\n")
-        try:
-            output = [int(i) for i in output]
-        except ValueError as valueError:
-            print(valueError)  # TODO: setup logging for this class.
-            output = [int(-1)]
-        
-        return output[0]
+        if self.response_type == SupportedThirdPartyResponses.VECTOR:
+            try:
+                response_vector = output.split("\n")
+                return response_vector
+            except TypeError as type_error:
+                self.log.error(type_error)
+                return []
+        else:
+            try:
+                response_number = self.response_type(output)
+                return response_number
+            except TypeError as type_error:
+                self.log.error(type_error)
+                return self.response_type(-1)
+
+
 
     def callMATLAB(self, directory_of_file, call_file):
-        cmd = '/Applications/MATLAB_R2017a.app/bin/matlab -nojvm -nodisplay -nosplash -nodesktop <' + directory_of_file + "/" + call_file
+        cmd = 'matlab -nojvm -nodisplay -nosplash -nodesktop <' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
 
-        first=out.index("[")
-        second=out.index("]")
-        output=out[first+1:second]
-        print(output+": "+str(100*self.counter/self.file_list.__len__())+"% complete")
-        self.counter=self.counter+1
+        first = out.index("[")
+        second = out.index("]")
+        output = out[first + 1:second]
+        self.log.info(output + ": " + str(100 * self.counter / len(self.file_list)) + "% complete")
+        self.counter = self.counter + 1
         return int(output)
 
     def callR(self, directory_of_file, call_file):
         cmd = 'Rscript ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
+
         pos = out.index("]")
         output = out[pos + 2]
-        print(output+": "+str(100*self.counter/self.file_list.__len__())+"% complete")
-        self.counter=self.counter+1
+        self.log.info(output + ": " + str(100 * self.counter / len(self.file_list)) + "% complete")
+        self.counter = self.counter + 1
         return int(output)
 
 

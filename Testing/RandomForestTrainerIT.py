@@ -6,10 +6,11 @@ import unittest
 from RandomForest.RandomForestTrainer import RandomForestTrainer
 from FileProcessingService import FileProcessingService
 from SupportedFileTypes import SupportedFileTypes
+from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 
-class RandomForestTrainerIT(unittest.TestCase):
 
+class RandomForestTrainerIT(unittest.TestCase):
 
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
@@ -22,7 +23,7 @@ class RandomForestTrainerIT(unittest.TestCase):
         if self.generated_folder != "/":
             shutil.rmtree(self.generated_folder)
 
-    def initializeServicesAndCreateGenomes(self, file_name, file_type):
+    def initializeServicesAndCreateGenomes(self, file_name, file_type, response_type):
         data_file = self.setTargetFile('SampleDataFiles', file_name)
         file_processing_service = FileProcessingService(data_file, file_type,
                                                         self.number_of_genomes, self.current_working_dir)
@@ -30,7 +31,7 @@ class RandomForestTrainerIT(unittest.TestCase):
         genomes_created = file_processing_service.createGenomes()
         file_processing_service.data_file.close()
         self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, file_type,
-                                                               genomes_created[0])
+                                                               genomes_created[0], response_type)
         return genomes_created
 
     def setTargetFile(self, path_name, file_name):
@@ -40,11 +41,13 @@ class RandomForestTrainerIT(unittest.TestCase):
     def getThirdPartyResult(self):
         return self.thirdPartyProgramCaller.callThirdPartyProgram(True)
 
-    def testModelCreatedSuccessfully(self):
-        genomes = self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE)
+    def testIntegerClassifierModelCreatedSuccessfully(self):
+        response_type = SupportedThirdPartyResponses.INTEGER
+        genomes = self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE,
+                                                          SupportedThirdPartyResponses.INTEGER)
         third_party_result = self.getThirdPartyResult()
 
-        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
+        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result, response_type)
         random_forest_model = random_forest_trainer.trainRandomForest(0.7)
 
         assert random_forest_model is not None
@@ -52,6 +55,7 @@ class RandomForestTrainerIT(unittest.TestCase):
         assert len(random_forest_model.classes_) == 2
 
     def testMultiClassifierModelCreatedSuccessfullyWithLinearProgramming(self):
+        response_type = SupportedThirdPartyResponses.INTEGER
         attempts_at_multi_classification = 0
         hit_more_than_two_outcomes = False
         third_party_result = {}
@@ -60,7 +64,8 @@ class RandomForestTrainerIT(unittest.TestCase):
         while attempts_at_multi_classification < 10 and not hit_more_than_two_outcomes:
             attempts_at_multi_classification += 1
             self.log.info("Attempt number %s at getting multi-classifier results.", attempts_at_multi_classification)
-            genomes = self.initializeServicesAndCreateGenomes('linearProgrammingModel.octave', SupportedFileTypes.OCTAVE)
+            genomes = self.initializeServicesAndCreateGenomes('linearProgrammingModel.octave', SupportedFileTypes.OCTAVE,
+                                                              response_type)
             third_party_result = self.getThirdPartyResult()
             classes = list(set(third_party_result.values()))
             if len(classes) > 2:
@@ -70,9 +75,22 @@ class RandomForestTrainerIT(unittest.TestCase):
             self.log.error("Unable to return more than 2 classes from third party response.")
             assert False
 
-        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
+        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result, response_type)
         random_forest_model = random_forest_trainer.trainRandomForest(0.7)
 
         assert random_forest_model is not None
         assert random_forest_model.feature_importances_.size == len(genomes[1][0])  # num 'importances' == num features
         assert len(random_forest_model.classes_) == 3
+
+    # TODO: Figure out how and where to compute a similarity score. Perhaps use a lambda function to pass it in.
+    # def testVectorClassifierModelCreatedSuccessfullyWithLinearProgramming(self):
+    #     response_type = SupportedThirdPartyResponses.VECTOR
+    #     genomes = self.initializeServicesAndCreateGenomes('linearProgrammingModelWithVectorResponse.octave',
+    #                                                       SupportedFileTypes.OCTAVE, response_type)
+    #     third_party_result = self.getThirdPartyResult()
+    #
+    #     random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result, response_type)
+    #     random_forest_model = random_forest_trainer.trainRandomForest(0.7)
+    #
+    #     assert random_forest_model is not None
+    #     assert random_forest_model.feature_importances_.size == len(genomes[1][0])  # num 'importances' == num features
