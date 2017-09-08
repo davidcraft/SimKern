@@ -1,10 +1,11 @@
 from __future__ import division
 from sklearn.svm import SVC
+import numpy as np
 
 def runSvm(responses, data, kernel_type, pct_train):
 
 # Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"
-    if type(responses)!= list:
+    if (type(responses) != np.ndarray) & (type(responses) != list):
         response_list=[]
         for file in responses.keys():
             response_list.append(responses[file])

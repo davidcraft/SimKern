@@ -9,7 +9,7 @@
     plt = false;
     global single; single = true;
     %MUTATIONS - TODO - consider making a MUTATIONS structure
-    RP.ARF_muta = $boolean(0.5),name=ARF_muta$;% 1 if ARF is not mutated otherwise 0
+    RP.ARF_muta = $boolean(0.5),name= RP.ARF_muta$;% 1 if ARF is not mutated otherwise 0
 
     %note for octave compatibility, must install odepkg for octave and also execute the following line
     %every session.
@@ -58,20 +58,20 @@ end
  %NOTE: RP is structure defining the values of the Rate Parameters
     RP.c_Kiri = .03;
     RP.c_Kbe = .03;
-    RP.c_Kbec = $0.003$; %decreasinging this to slow down repair process
+    RP.c_Kbec = $0.003,name= RP.c_Kbec $; %decreasinging this to slow down repair process
     RP.c_Kc = .02;
     RP.c_Kcc = .01; %caps clearance rate/halflife term
     RP.c_Mc = .01;
-    RP.c_Kcer = $uniform(0.002,0.5),name=c_Kcer$;
-    RP.c_Kf = $uniform(0.001,0.02),name=c_Kf$;
+    RP.c_Kcer = $uniform(0.002,0.5),name= RP.c_Kcer$;
+    RP.c_Kf = $uniform(0.001,0.02),name= RP.c_Kf$;
     RP.ATMtot = 1.3;
 
     RP.k3=3;
-    RP.Katm=$0.1$;
+    RP.Katm=$0.1,name= RP.Katm$;
     RP.kdph1=7800; %craft: changing this to see if i can get
                       %p53nucphos to taper out faster. orig
                       %value: 78
-    RP.Kdph1=$250$; %try this one too
+    RP.Kdph1=$250,name= RP.Kdph1$; %try this one too
     RP.k1=10;
     RP.K1=1.01;
     RP.pp=0.083;
@@ -81,7 +81,7 @@ end
     RP.kSm=0.005;
     RP.kSpm=1;
     RP.KSpm=0.1;
-    RP.pmrna=$0.083$;
+    RP.pmrna=$0.083,name= RP.pmrna$;
     RP.deltamrna=0.0001;
     RP.ktm=1;
     RP.kS=0.015;
@@ -95,7 +95,7 @@ end
     RP.deltawrna=0.001;
     RP.ktw=1;
     % this next one to modify the radiation impact:
-    RP.kph2=$uniform(15,150),name=kph2$;
+    RP.kph2=$uniform(15,150),name=RP.kph2$;
     RP.Kph2=1;
 
     RP.kdph2=96;
@@ -125,48 +125,48 @@ end
 
     %Apoptosis Rate Constants --> p53 to Cyt c model
 
-    RP.c_KpB1 = $2$;
-    RP.c_KpB2 = $2$;%positive affect on cellcycling
+    RP.c_KpB1 = $2,name= RP.c_KpB1 $;
+    RP.c_KpB2 = $2,name= RP.c_KpB2$;%positive affect on cellcycling
     RP.c_KpB3 = 0.5;
-    RP.c_KpBX1 = $2.5$;
-    RP.c_KpBX2 = $1.7$;
+    RP.c_KpBX1 = $2.5,name= RP.c_KpBX1$;
+    RP.c_KpBX2 = $1.7,name= RP.c_KpBX2$;
     RP.c_KpBX3 = 0.4; %clearance term - slows if k > 2
-    RP.c_KpF1 = $1.5$; %affects apop reasonably if .1 < k < 10
-    RP.c_KpF2 = $2$; %affects apop reasonably if .01 < k < 5
-    RP.c_KpF3 = $0.2$; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
-    RP.c_KpBa1 = $2$;
+    RP.c_KpF1 = $1.5,name=RP.c_KpF1 $; %affects apop reasonably if .1 < k < 10
+    RP.c_KpF2 = $2,name=RP.c_KpF2 $; %affects apop reasonably if .01 < k < 5
+    RP.c_KpF3 = $0.2,name=RP.c_KpF3 $; %clearance term - slows if k > 1, reasonably affects apop if 1 > k > .1
+    RP.c_KpBa1 = $2,name= RP.c_KpBa1 $;
     RP.c_KpBa2 = 2;
-    RP.c_KpBa3 = $0.3$;%clearance term - slows if k > 1
+    RP.c_KpBa3 = $0.3,name=RP.c_KpBa3$;%clearance term - slows if k > 1
     RP.c_KBaxC1 = 1.3;
     RP.c_KBaxC2 = 0.9;
     RP.c_KBaxC3 = 1;
-    RP.c_KBcl2C1 = $1.3$;
-    RP.c_KBcl2C2 = $1.1$;
+    RP.c_KBcl2C1 = $1.3,name=RP.c_KBcl2C1$;
+    RP.c_KBcl2C2 = $1.1,name=RP.c_KBcl2C2$;
     RP.c_KBcl2C3 = 1;
-    RP.c_KBclXC1 = $1.3$;
-    RP.c_KBclXC2 = $1$;
+    RP.c_KBclXC1 = $1.3,name=RP.c_KBclXC1$;
+    RP.c_KBclXC2 = $1,name=RP.c_KBclXC2$;
     RP.c_KBclXC3 = 1;
     RP.c_KCyt = 0.3;%clearence term
-    RP.c_Kapa1 = $2$;
+    RP.c_Kapa1 = $2,name=RP.c_Kapa1$;
     RP.c_Kapa2 = 1;
     RP.c_Kapa3 = 0.3;
     RP.c_KAA = 0.7;
     RP.c_KAA2 = 0.3;%clearance term - DOES NOT slow, does not affect cell fate
-    RP.c_KApop = $0.12$;%increase Apoptosis - apop changes reasonably if .1 < k < 10
-    RP.c_KApop2 = $0.11$;%increase Apoptosis maybe set this around 1 to make it resonalable
-    RP.c_KApop3 = $0.2$;%reasonable changes in apop if  .08 < k < 5
-    RP.c_Kpp1 = $0.3$;%sig changes in cc and arrest if 1 < k < 100
-    RP.c_Kpp2 = $0.6$;%sig changes in cc & arrest if .1 < k < 2
-    RP.c_Kpp3 = $0.2$;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
-    RP.c_KpE1 = $0.6$; %changes cc & arrest. .1 < k < 1
-    RP.c_KpE2 = $1.3$; %changes cc & arrest 1 < k < 20 
-    RP.c_KpE3 = $1$; %changes cc & arrest .1 < k < 1
-    RP.c_KpE4 = $0.4$;%
-    RP.K_Rb = $boolean(0.3), name=K_Rb$;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
+    RP.c_KApop = $0.12,name= RP.c_KApop$;%increase Apoptosis - apop changes reasonably if .1 < k < 10
+    RP.c_KApop2 = $0.11,name= RP.c_KApop2$;%increase Apoptosis maybe set this around 1 to make it resonalable
+    RP.c_KApop3 = $0.2,name= RP.c_KApop3$;%reasonable changes in apop if  .08 < k < 5
+    RP.c_Kpp1 = $0.3,name=RP.c_Kpp1$;%sig changes in cc and arrest if 1 < k < 100
+    RP.c_Kpp2 = $0.6,name=RP.c_Kpp2$;%sig changes in cc & arrest if .1 < k < 2
+    RP.c_Kpp3 = $0.2,name=RP.c_Kpp3$;%slow clearance term if k > 2 AND affects cell cycling and arrest signal if <1
+    RP.c_KpE1 = $0.6,name=RP.c_KpE1$; %changes cc & arrest. .1 < k < 1
+    RP.c_KpE2 = $1.3,name=RP.c_KpE2$; %changes cc & arrest 1 < k < 20 
+    RP.c_KpE3 = $1,name=RP.c_KpE3$; %changes cc & arrest .1 < k < 1
+    RP.c_KpE4 = $0.4,name=RP.c_KpE4$;%
+    RP.K_Rb = $boolean(0.3), name=RP.K_Rb$;%1 <K_Rb < 28 affects cellcycling & arrestsignal symmetrically
     RP.c_Ka1 = 4; %Cellcycling stops if >70; changes cc and arrest symmetrically;
     RP.c_Ka2 = 0.8;% supress arrest signaling max 0.9 %Sig. changes in cc and arrest if 1 < k < 3
     RP.Kg = 0.8;%Significant changes in cell cycling if 1 < Kg < 28
-    RP.K_MYC = $uniform(0.5,3),name=K_MYC$;
+    RP.K_MYC = $uniform(0.5,3),name=RP.K_MYC$;
     RP.c_E2F1 = 1; %clearance term - increases run time if k > 1
     RP.c_ARF1 = 1.5;
     RP.c_ARF2 = 2;

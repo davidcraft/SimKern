@@ -1,8 +1,9 @@
 from __future__ import division
 from sklearn.ensemble import RandomForestClassifier
+import numpy as np
 
 def runRF(responses, data, pct_train):
-    if type(responses)!=list:
+    if (type(responses)!= np.ndarray) & (type(responses)!= list):
         response_list = []
         for file in responses.keys():
             response_list.append(responses[file])

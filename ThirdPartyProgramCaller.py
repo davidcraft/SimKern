@@ -102,5 +102,3 @@ class ThirdPartyProgramCaller(object):
         self.log.info(output + ": " + str(100 * self.counter / len(self.file_list)) + "% complete")
         self.counter = self.counter + 1
         return int(output)
-
-
