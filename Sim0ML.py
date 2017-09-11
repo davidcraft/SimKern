@@ -28,6 +28,5 @@ def csvReader(file):
     output = np.loadtxt(open(file, "rb"), delimiter=",")
     return output
 
-
-sim0test('/home/sockle/Desktop/Sim0GenomesMatrix.csv',
-         '/home/sockle/Desktop/Sim0Output.csv', 10, 0.7)
+sim0test('/Users/zhaoqiwang/Desktop/MGH/DSPP/GenomeFiles/Sim0GenomesMatrix.csv',
+         '/Users/zhaoqiwang/Desktop/MGH/DSPP/GenomeFiles/Sim0Output.csv', 10, 0.7)
