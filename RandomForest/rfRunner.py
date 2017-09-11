@@ -15,18 +15,18 @@ def runRF(responses, data, pct_train):
     print("RANDOM FOREST output")
     
     [train_y, train_X, test_X, test_y] = splitData(response_list, data, pct_train)
-    mod=RandomForestClassifier(n_estimators=50)
+    mod = RandomForestClassifier(n_estimators=50)
     mod.fit(train_X, train_y)
-    trPr=mod.predict(train_X)
-    tePr=mod.predict(test_X)
-    [trAc, teAc, totAc]=getAccuracies(trPr, train_y, tePr, test_y)
+    trPr = mod.predict(train_X)
+    tePr = mod.predict(test_X)
+    [trAc, teAc, totAc] = getAccuracies(trPr, train_y, tePr, test_y)
     print("Training predictions: " + str(trPr))
     print("Training accuracy: " + str(trAc))
     print("Testing predictions: " + str(tePr))
     print("Testing accuracy: " + str(teAc))
     print("Overall accuracy: " + str(totAc))
     print("Variable importances: " + str(mod.feature_importances_))
-    return [trAc,teAc,totAc]
+    return [trAc, teAc, totAc]
 
 
 def splitData(responses, data, pct_train):

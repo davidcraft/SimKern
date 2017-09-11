@@ -1,10 +1,12 @@
 import logging
 import sys
 
-from sklearn import svm
+import numpy
 from FileProcessingService import FileProcessingService
 from RandomForest.RandomForestTrainer import RandomForestTrainer
+from SupportVectorMachines.SupportVectorMachinesTrainer import SupportVectorMachinesTrainer
 from Sim1FileProcessingService import Sim1FileProcessingService
+from SupportVectorMachines.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
@@ -19,6 +21,11 @@ def main():
     # TODO: Also accept third party response type as an input
     if len(arguments) == 0:
         promptUserForInput()
+
+    if len(arguments) == 2:
+        output_file = arguments[0]
+        genomes_matrix_file = arguments[1]
+        performMachineLearningWithoutSimulations(output_file, genomes_matrix_file)
 
     elif len(arguments) == 3:
         # Sim0
@@ -49,7 +56,9 @@ def promptUserForInput():
     simulation_to_run = input("-------Main Menu-------\n"
                               "Choose your simulation:\n"
                               "\t0: SIM0 - create and analyze K genomes\n"
-                              "\t1: SIM1 - create similarity scores between R permutations of  K genomes\n"
+                              "\t1: SIM1 - create similarity scores between R permutations of K genomes\n"
+                              "\t2: Perform machine learning with existing SIM0 data\n"
+                              # "\t3: Perform machine learning with existing SIM1 data\n"
                               "\tQ: Quit\n")
     simulation_as_int = safeCast(simulation_to_run, int)
     simulation_as_string = safeCast(simulation_to_run, str, "Q")
@@ -65,7 +74,17 @@ def promptUserForInput():
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         number_of_trials = recursivelyPromptUser("Enter number of trials for each genome (R) as an integer:\n", int)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
-        createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path, permutations, number_of_trials)
+        createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path, permutations,
+                                                           number_of_trials)
+    elif simulation_as_int == 2:
+        output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
+        genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
+        performMachineLearningWithoutSimulations(output_file, genomes_matrix_file)
+
+    # TODO: Get only SIM1 Outputs and run SVM on that.
+    # elif simulation_as_int == 3:
+    #     input_file = recursivelyPromptUser("Enter path of input file:\n", str)
+
     elif simulation_as_string == "Q":
         return
     else:
@@ -99,7 +118,8 @@ def createAndAnalyzeGenomes(file_extension, input_file, path, number_of_genomes)
             log.info("Result of differential equation analysis %s", third_party_result)
 
             random_forest_model = trainRandomForestClassifier(genomes, third_party_result, 0.7)
-            log.info("Random Forest Model successfully created based off of %s features", random_forest_model.n_features_)
+            log.info("Random Forest Model successfully created based off of %s features",
+                     random_forest_model.model.n_features_)
         except ValueError as valueError:
             log.error(valueError)
         finally:
@@ -113,12 +133,13 @@ def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_
 
 
 def callThirdPartyService(file_extension, path, file_list, record_output):
-    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list, SupportedThirdPartyResponses.INTEGER)
+    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list,
+                                                         SupportedThirdPartyResponses.INTEGER)
     return third_party_caller_service.callThirdPartyProgram(record_output)
 
 
 def trainRandomForestClassifier(genomes, third_party_result, percent_train):
-    random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result, SupportedThirdPartyResponses.INTEGER)
+    random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
     return random_forest_trainer.trainRandomForest(percent_train)
 
 
@@ -129,7 +150,7 @@ def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_fil
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
             third_party_program_output = callThirdPartyService(file_extension, path, trial_files, False)
             matrices = generateMatrices(number_of_genomes, number_of_trials, third_party_program_output)
-            trainSVMClassifier(number_of_genomes, matrices[0])
+            svm_classifier = trainSim1SVMClassifier(number_of_genomes, matrices)
         except ValueError as valueError:
             log.error(valueError)
         finally:
@@ -156,14 +177,45 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
     return genomes_by_trial_matrix, kernel_matrix
 
 
-def trainSVMClassifier(number_of_genomes, similarity_matrix):
-    # As this grows we may want to consider extracting this to a service.
-    classifier_model = svm.SVC()
-    sample_labels = []
-    for label in range(0, int(number_of_genomes)):
-        sample_labels.append("feature" + str(label))
-    classifier_model.fit(similarity_matrix, sample_labels)
-    log.info("Successful creation of classifier model: %s\n", classifier_model)
+def trainSim1SVMClassifier(number_of_genomes, matrices):
+    trials_by_genome_SVM_trainer = SupportVectorMachinesTrainer(matrices[0], None)
+    return trials_by_genome_SVM_trainer.trainSupportVectorMachinesForSim1(number_of_genomes)
+
+
+def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file):
+    responses = readCSVFile(output_file)
+    matrix = readCSVFile(genomes_matrix_file)
+
+    num_permutations = 10
+    training_percent = .5
+
+    num_examples = len(matrix)
+    num_genomes = len(matrix[0])
+    which = numpy.arange(num_genomes)
+    results = []
+    for i in range(0, num_permutations):
+        order = numpy.random.permutation(num_examples)
+        new_matrix = matrix[order[:, None], which].tolist()
+        new_responses = responses[order].tolist()
+
+        # TODO: Refactor these trainers so they don't need to be re-instantiated with each new permutation
+        rf_trainer = RandomForestTrainer(new_matrix, new_responses)
+        rf_results = rf_trainer.trainRandomForest(training_percent)
+
+        svm_trainer = SupportVectorMachinesTrainer(new_matrix, new_responses)
+        svm_results = svm_trainer.trainSupportVectorMachines(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
+                                                             training_percent)
+        results += rf_results[1] + svm_results[1]
+
+    results = numpy.array(results).reshape((num_permutations, 6))
+    results = numpy.mean(results, axis=0)
+
+    print(results.tolist(), training_percent, num_permutations)
+
+
+def readCSVFile(file):
+    return numpy.loadtxt(open(file, "rb"), delimiter=",")
+
 
 if __name__ == "__main__":
     main()

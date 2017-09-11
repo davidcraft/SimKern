@@ -3,8 +3,9 @@ import os
 import shutil
 import unittest
 
-from RandomForest.RandomForestTrainer import RandomForestTrainer
+from SupportVectorMachines.SupportVectorMachinesTrainer import SupportVectorMachinesTrainer
 from FileProcessingService import FileProcessingService
+from SupportVectorMachines.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from SupportedFileTypes import SupportedFileTypes
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
@@ -42,9 +43,8 @@ class RandomForestTrainerIT(unittest.TestCase):
         return self.thirdPartyProgramCaller.callThirdPartyProgram(True)
 
     @staticmethod
-    def assertModelTrainedSuccessfully(genomes, model, expected_classes):
+    def assertModelTrainedSuccessfully(model, expected_classes):
         assert model is not None
-        assert model.feature_importances_.size == len(genomes[1][0])  # num 'importances' == num features
         assert len(model.classes_) == expected_classes
 
     def testIntegerClassifierModelCreatedSuccessfully(self):
@@ -52,33 +52,7 @@ class RandomForestTrainerIT(unittest.TestCase):
                                                           SupportedThirdPartyResponses.INTEGER)
         third_party_result = self.getThirdPartyResult()
 
-        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
-        random_forest_result = random_forest_trainer.trainRandomForest(0.7)
+        svm_trainer = SupportVectorMachinesTrainer(genomes[1], third_party_result)
+        svm_result = svm_trainer.trainSupportVectorMachines(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION, 0.7)
 
-        self.assertModelTrainedSuccessfully(genomes, random_forest_result[0], 2)
-
-    def testMultiClassifierModelCreatedSuccessfullyWithLinearProgramming(self):
-        response_type = SupportedThirdPartyResponses.INTEGER
-        attempts_at_multi_classification = 0
-        hit_more_than_two_outcomes = False
-        third_party_result = {}
-        genomes = []
-
-        while attempts_at_multi_classification < 10 and not hit_more_than_two_outcomes:
-            attempts_at_multi_classification += 1
-            self.log.info("Attempt number %s at getting multi-classifier results.", attempts_at_multi_classification)
-            genomes = self.initializeServicesAndCreateGenomes('linearProgrammingModel.octave',
-                                                              SupportedFileTypes.OCTAVE, response_type)
-            third_party_result = self.getThirdPartyResult()
-            classes = list(set(third_party_result.values()))
-            if len(classes) > 2:
-                hit_more_than_two_outcomes = True
-
-        if len(genomes) == 0 or third_party_result == {}:
-            self.log.error("Unable to return more than 2 classes from third party response.")
-            assert False
-
-        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
-        random_forest_result = random_forest_trainer.trainRandomForest(0.7)
-
-        self.assertModelTrainedSuccessfully(genomes, random_forest_result[0], 3)
+        self.assertModelTrainedSuccessfully(svm_result[0], 2)
