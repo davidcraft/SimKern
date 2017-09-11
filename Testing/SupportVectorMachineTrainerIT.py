@@ -3,15 +3,15 @@ import os
 import shutil
 import unittest
 
-from SupportVectorMachines.SupportVectorMachinesTrainer import SupportVectorMachinesTrainer
+from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from FileProcessingService import FileProcessingService
-from SupportVectorMachines.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
+from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from SupportedFileTypes import SupportedFileTypes
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 
 
-class RandomForestTrainerIT(unittest.TestCase):
+class SupportVectorMachineIT(unittest.TestCase):
 
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
@@ -52,7 +52,7 @@ class RandomForestTrainerIT(unittest.TestCase):
                                                           SupportedThirdPartyResponses.INTEGER)
         third_party_result = self.getThirdPartyResult()
 
-        svm_trainer = SupportVectorMachinesTrainer(genomes[1], third_party_result)
-        svm_result = svm_trainer.trainSupportVectorMachines(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION, 0.7)
+        svm_trainer = SupportVectorMachineTrainer(genomes[1], third_party_result)
+        svm_result = svm_trainer.trainSupportVectorMachine(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION, 0.7)
 
         self.assertModelTrainedSuccessfully(svm_result[0], 2)

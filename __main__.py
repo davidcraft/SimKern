@@ -4,9 +4,9 @@ import sys
 import numpy
 from FileProcessingService import FileProcessingService
 from RandomForest.RandomForestTrainer import RandomForestTrainer
-from SupportVectorMachines.SupportVectorMachinesTrainer import SupportVectorMachinesTrainer
+from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from Sim1FileProcessingService import Sim1FileProcessingService
-from SupportVectorMachines.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
+from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
@@ -178,8 +178,8 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
 
 
 def trainSim1SVMClassifier(number_of_genomes, matrices):
-    trials_by_genome_SVM_trainer = SupportVectorMachinesTrainer(matrices[0], None)
-    return trials_by_genome_SVM_trainer.trainSupportVectorMachinesForSim1(number_of_genomes)
+    trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(matrices[0], None)
+    return trials_by_genome_SVM_trainer.trainSupportVectorMachineForSim1(number_of_genomes)
 
 
 def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file):
@@ -202,9 +202,9 @@ def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file):
         rf_trainer = RandomForestTrainer(new_matrix, new_responses)
         rf_results = rf_trainer.trainRandomForest(training_percent)
 
-        svm_trainer = SupportVectorMachinesTrainer(new_matrix, new_responses)
-        svm_results = svm_trainer.trainSupportVectorMachines(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
-                                                             training_percent)
+        svm_trainer = SupportVectorMachineTrainer(new_matrix, new_responses)
+        svm_results = svm_trainer.trainSupportVectorMachine(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
+                                                            training_percent)
         results += rf_results[1] + svm_results[1]
 
     results = numpy.array(results).reshape((num_permutations, 6))

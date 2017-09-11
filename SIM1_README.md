@@ -93,7 +93,7 @@ SIM1 will then return a matrix of dimensions (number_of_genomes x number_of_tria
 If any of the simulations produce questionable values or fail to run, a value of -1 will appear instead of a 0 or 1.
 The resulting list/matrix can then be used for machine learning using any choice of software.
 
-Finally a support vector machines classifier model will then be produced. Details of this model
+Finally a support vector machine classifier model will then be produced. Details of this model
 will be expressed on the command line.
 
 ### OUTPUT FILES
@@ -110,4 +110,4 @@ trail1_genome1.m
 trial5_genome10.m
 
 Each one of these files should return a 0 or 1, the result of which will be used to analyze these genomes by support
-vector machines.
+vector machine.

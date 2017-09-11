@@ -1,4 +1,4 @@
-from SupportVectorMachines.SupportVectorMachinesRunner import runSvm
+from SupportVectorMachine.SupportVectorMachineRunner import runSvm
 from RandomForest.rfRunner import *
 import numpy as np
 

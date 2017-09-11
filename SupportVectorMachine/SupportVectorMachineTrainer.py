@@ -7,7 +7,7 @@ from sklearn.svm import SVC
 import numpy as np
 
 
-class SupportVectorMachinesTrainer(object):
+class SupportVectorMachineTrainer(object):
 
     log = logging.getLogger(__name__)
     logging.basicConfig()
@@ -17,7 +17,7 @@ class SupportVectorMachinesTrainer(object):
         self.similarity_matrix = similarity_matrix
         self.third_party_response = third_party_response
 
-    def trainSupportVectorMachinesForSim1(self, number_of_genomes):
+    def trainSupportVectorMachineForSim1(self, number_of_genomes):
         classifier_model = svm.SVC()
         sample_labels = []
         for label in range(0, int(number_of_genomes)):
@@ -26,7 +26,7 @@ class SupportVectorMachinesTrainer(object):
         self.log.info("Successful creation of classifier model: %s\n", classifier_model)
         return classifier_model
 
-    def trainSupportVectorMachines(self, kernel_type, pct_train):
+    def trainSupportVectorMachine(self, kernel_type, pct_train):
 
         # Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"
         if (type(self.third_party_response) != np.ndarray) & (type(self.third_party_response) != list):
