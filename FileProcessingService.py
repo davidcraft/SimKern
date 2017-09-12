@@ -152,7 +152,7 @@ class FileProcessingService(object):
         return random.gauss(float(mu), float(sigma))
 
     def generateRandomValueFromDiscreteDistribution(self, values):
-        return random.choice(values)
+        return float(random.choice(values))
 
     def generateRandomValueFromGammaDistribution(self, k, theta):
         return random.gamma(float(k), float(theta))
