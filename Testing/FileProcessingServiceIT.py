@@ -133,6 +133,12 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert fp_service.extractDistributionName(target_sequence_quick_no_name) == SupportedDistributions.GAUSS
         assert fp_service.extractParameters(target_sequence_quick_no_name) == ['0']
 
+        line_only_distribution_given = "$uniform(.8,1.2)$"
+        target_sequence_only_distribution_given = self.extractTargetSequencesFromLine(line_only_distribution_given)[0]
+        assert fp_service.extractCoefficientName(target_sequence_only_distribution_given) == 'coefficient3'
+        assert fp_service.extractDistributionName(target_sequence_only_distribution_given) == SupportedDistributions.UNIFORM
+        assert fp_service.extractParameters(target_sequence_only_distribution_given) == ['.8', '1.2']
+
         bool_default = '$boolean(0.5), name= B_AKT2$,'
         target_sequence_bool_default = self.extractTargetSequencesFromLine(bool_default)[0]
         assert fp_service.extractCoefficientName(target_sequence_bool_default) == 'B_AKT2'
