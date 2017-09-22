@@ -96,14 +96,17 @@ class FileProcessingService(object):
             return "coefficient" + str(self.num_generated_coefficients)
 
     def extractDistributionName(self, target_sequence):
+        distribution_name = ''
         if "name=" in target_sequence or ("(" in target_sequence and ")" in target_sequence):
             distribution_name = re.findall(r'[a-z]*', target_sequence.split("name=")[0])[0]
-            if distribution_name == '':
-                return SupportedDistributions.GAUSS
-            else:
-                return distribution_name
-        else:
+
+        elif "name=" not in target_sequence and ("(" in target_sequence and ")" in target_sequence):
+            distribution_name = re.findall(r'[a-z]*', target_sequence)[0]
+
+        if distribution_name == '':
             return SupportedDistributions.GAUSS
+        else:
+            return distribution_name
 
     def extractParameters(self, target_sequence):
         if self.file_type == SupportedFileTypes.R:
