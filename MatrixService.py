@@ -6,12 +6,12 @@ import numpy as np
 class MatrixService(object):
     
     OUTPUT_FILE_NAME = "Sim1SimilarityMatrix.csv"
+
     #TODO Add the inputs for weight_vector
     def __init__(self, simulation_result, number_of_genomes, number_of_trials):
         self.simulation_result = simulation_result
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
-
 
     def generateSimilarityMatrix(self):
         response_list = self.generateResponseList()
@@ -87,15 +87,14 @@ class MatrixService(object):
         the weight must be a 1*n vector where n is the number of entities
         """
         num_of_entities,num_of_time_points = matrix1.shape
-        matrix1, matrix2 = self.rescaleVecotor(matrix1, matrix2)
+        matrix1, matrix2 = self.rescaleVector(matrix1, matrix2)
         if weight_vector is None:
             similarity = 1 - 1/(num_of_entities * num_of_time_points)*np.sum((matrix1 - matrix2)**2)
         else:
             similarity = 1 - 1/(num_of_entities * num_of_time_points)*np.sum(np.dot(weight_vector,(matrix1 - matrix2)**2))
         return similarity
 
-
-    def rescaleVecotor(self,matrix1,matrix2):
+    def rescaleVector(self, matrix1, matrix2):
         """take two sim1 output and return a rescaled version """
         max1 = np.amax(matrix1,axis = 1,keepdims = True)
         max2 = np.amax(matrix2 , axis = 1,keepdims = True)
@@ -103,8 +102,6 @@ class MatrixService(object):
         matrix1 /= max_vector
         matrix2 /= max_vector
         return matrix1,matrix2
-
-
 
     def writeDataFile(self, similarity_matrix):
         path = os.getcwd()
