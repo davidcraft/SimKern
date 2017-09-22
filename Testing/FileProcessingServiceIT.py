@@ -189,5 +189,45 @@ class FileProcessingServiceIT(unittest.TestCase):
             assert fp_service.extractDistributionName(target_sequence) == "gauss"
             assert fp_service.extractParameters(target_sequence) == ['.1', '.01']
 
+    def testDistributionsBehaveProperly(self):
+        data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
+        self.setupFileProcessingService(data_file, SupportedFileTypes.MATLAB)
+        fp_service = self.file_processing_service
+
+        discrete_line = 'var discrete = $discrete([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]),name=discrete$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, discrete_line, float)
+
+        gauss_line = 'var gauss = $gauss(.1,.01),name=gauss$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, gauss_line, float)
+
+        uniform_line = 'var uniform = $uniform(0,1),name=uniform$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, uniform_line, float)
+
+        gamma_line = 'var gamma = $gamma(1,2),name=gamma$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, gamma_line, float)
+
+        lognormal_line = 'var lognormal = $lognormal(.1,.01),name=lognormal$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, lognormal_line, float)
+
+        binomial_line = 'var binomial = $binomial(1000,.3),name=binomial$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, binomial_line, int)
+
+        poisson_line = 'var poisson = $poisson(500),name=poisson$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, poisson_line, int)
+
+        boolean_line = 'var boolean = $boolean(.5),name=boolean$;'
+        self.assertAppropriateCoefficientValueParsed(fp_service, boolean_line, int)
+
+        mutate_line = 'var mutate = $mutate(mutate,.3,.6),name=mutate$;'
+        fp_service.file_type = SupportedFileTypes.R
+        self.assertAppropriateCoefficientValueParsed(fp_service, mutate_line, str)
+
+    def assertAppropriateCoefficientValueParsed(self, fp_service, line, expected_type):
+        target_sequence = self.extractTargetSequencesFromLine(line)[0]
+        distribution = fp_service.extractDistributionName(target_sequence)
+        params = fp_service.extractParameters(target_sequence)
+        coefficient_val = fp_service.retrieveCoefficientValueFromDistribution(distribution, params)
+        assert isinstance(coefficient_val, expected_type)
+
     def extractTargetSequencesFromLine(self, line):
         return self.file_processing_service.extractTargetSequences(line)

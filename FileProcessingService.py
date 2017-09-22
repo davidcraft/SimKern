@@ -2,6 +2,7 @@ import re
 import os
 import random
 import csv
+import numpy
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 
@@ -137,7 +138,7 @@ class FileProcessingService(object):
         elif distribution == SupportedDistributions.BINOMIAL:
             return self.generateRandomValueFromBinomialDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.POISSON:
-            return self.generateRandomValueFromPoissonDistribution(params[0], params[1])
+            return self.generateRandomValueFromPoissonDistribution(params[0])
         elif distribution == SupportedDistributions.BOOLEAN:
             return self.pickBoolean(params[0])
         elif distribution == SupportedDistributions.MUTATE:
@@ -152,19 +153,19 @@ class FileProcessingService(object):
         return random.gauss(float(mu), float(sigma))
 
     def generateRandomValueFromDiscreteDistribution(self, values):
-        return random.choice(values)
+        return float(random.choice(values))
 
     def generateRandomValueFromGammaDistribution(self, k, theta):
-        return random.gamma(float(k), float(theta))
+        return random.gammavariate(float(k), float(theta))
 
     def generateRandomValueFromLogNormalDistribution(self, mu, sigma):
-        return random.lognormal(float(mu), float(sigma))
+        return random.lognormvariate(float(mu), float(sigma))
 
     def generateRandomValueFromBinomialDistribution(self, n, p):
-        return random.binomial(float(n), float(p))
+        return numpy.random.binomial(int(n), float(p))
 
-    def generateRandomValueFromPoissonDistribution(self, k, lmbda):
-        return random.poisson(float(k), float(lmbda))
+    def generateRandomValueFromPoissonDistribution(self, k):
+        return numpy.random.poisson(int(k))
 
     # Only supported for R
     def pickBoolean(self, probability_of_zero):

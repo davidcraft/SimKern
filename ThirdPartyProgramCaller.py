@@ -4,7 +4,7 @@ import csv
 from SupportedFileTypes import SupportedFileTypes
 import collections
 import logging
-
+import numpy as np
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 
 
@@ -87,10 +87,32 @@ class ThirdPartyProgramCaller(object):
 
         first = out.index("[")
         second = out.index("]")
-        output = out[first + 1:second]
-        self.log.info(output + ": " + str(100 * self.counter / len(self.file_list)) + "% complete")
+        self. log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
         self.counter = self.counter + 1
-        return int(output)
+        output = out[first + 1:second]
+        output = output.split()
+        print(len(output))
+        if len(output) == 1:
+            try:
+                output = int(output[0])
+                return output
+            except TypeError as type_error:
+                self.log.error(type_error)
+                return self.response_type(-1)
+        else:
+            try:
+                response_vector = output[2:]
+                response_vector = [float(i) for i in response_vector]
+                n = int(output[0])
+                t = int(output[1])
+                assert ((n * t) == len(response_vector))
+                response_vector = np.array(response_vector).reshape((n,t))#reconstruct the origianl matrix
+                print(response_vector)
+                return response_vector
+
+            except TypeError as type_error:
+                self.log.error(type_error)
+                return []
 
     def callR(self, directory_of_file, call_file):
         cmd = 'Rscript ' + directory_of_file + "/" + call_file
