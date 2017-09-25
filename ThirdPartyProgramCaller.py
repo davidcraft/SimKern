@@ -60,7 +60,7 @@ class ThirdPartyProgramCaller(object):
         cmd = 'octave -q ' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
-        self.log.debug(out)
+        self.log.info("Output result from file %s: %s", call_file, out)
         output = out.strip()
 
         if self.response_type == SupportedThirdPartyResponses.VECTOR:

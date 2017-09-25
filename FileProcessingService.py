@@ -129,11 +129,11 @@ class FileProcessingService(object):
         elif distribution == SupportedDistributions.GAUSS:  # changed form GAUSSIAN TO GAUSS
             if len(params) <= 1:
                 return self.generateRandomValueFromGaussianDistribution(params[0],
-                                                                        self.DEFAULT_GAUSSIAN_STANDARD_DEVIATION*float(params[0]))
+                                                                        self.DEFAULT_GAUSSIAN_STANDARD_DEVIATION * float(params[0]))
             else:
                 return self.generateRandomValueFromGaussianDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.DISCRETE:
-            return self.generateRandomValueFromDiscreteDistribution(params)  # TODO - test this
+            return self.generateRandomValueFromDiscreteDistribution(params)
         elif distribution == SupportedDistributions.GAMMA:
             return self.generateRandomValueFromGammaDistribution(params[0], params[1])
         elif distribution == SupportedDistributions.LOGNORMAL:
