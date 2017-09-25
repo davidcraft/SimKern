@@ -140,7 +140,7 @@ def callThirdPartyService(file_extension, path, file_list, record_output):
 
 def trainRandomForestClassifier(genomes, third_party_result, percent_train):
     random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
-    return random_forest_trainer.trainRandomForest(percent_train)
+    return random_forest_trainer.trainRandomForestClassifier(percent_train)
 
 
 def createSimilarityScoresBetweenPermutationsOfGenomes(file_extension, input_file, path,
@@ -200,7 +200,7 @@ def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file):
 
         # TODO: Refactor these trainers so they don't need to be re-instantiated with each new permutation
         rf_trainer = RandomForestTrainer(new_matrix, new_responses)
-        rf_results = rf_trainer.trainRandomForest(training_percent)
+        rf_results = rf_trainer.trainRandomForestClassifier(training_percent)
 
         svm_trainer = SupportVectorMachineTrainer(new_matrix, new_responses)
         svm_results = svm_trainer.trainSupportVectorMachine(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
