@@ -4,6 +4,7 @@ import shutil
 import unittest
 
 from RandomForest.RandomForestTrainer import RandomForestTrainer
+from sklearn.ensemble import RandomForestClassifier
 from FileProcessingService import FileProcessingService
 from SupportedFileTypes import SupportedFileTypes
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
@@ -45,7 +46,8 @@ class RandomForestTrainerIT(unittest.TestCase):
     def assertModelTrainedSuccessfully(genomes, model, expected_classes):
         assert model is not None
         assert model.feature_importances_.size == len(genomes[1][0])  # num 'importances' == num features
-        assert len(model.classes_) == expected_classes
+        if model is RandomForestClassifier:
+            assert len(model.classes_) == expected_classes
 
     def testIntegerClassifierModelCreatedSuccessfully(self):
         genomes = self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk.octave', SupportedFileTypes.OCTAVE,
@@ -53,7 +55,18 @@ class RandomForestTrainerIT(unittest.TestCase):
         third_party_result = self.getThirdPartyResult()
 
         random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
-        random_forest_result = random_forest_trainer.trainRandomForest(0.7)
+        random_forest_result = random_forest_trainer.trainRandomForestClassifier(0.7)
+
+        self.assertModelTrainedSuccessfully(genomes, random_forest_result[0], 2)
+
+    def testRegressorModelCreatedSuccessfully(self):
+        genomes = self.initializeServicesAndCreateGenomes('WNT_ERK_crosstalk_float_output.octave',
+                                                          SupportedFileTypes.OCTAVE,
+                                                          SupportedThirdPartyResponses.FLOAT)
+        third_party_result = self.getThirdPartyResult()
+
+        random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
+        random_forest_result = random_forest_trainer.trainRandomForestRegressor(0.7)
 
         self.assertModelTrainedSuccessfully(genomes, random_forest_result[0], 2)
 
@@ -79,6 +92,6 @@ class RandomForestTrainerIT(unittest.TestCase):
             assert False
 
         random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
-        random_forest_result = random_forest_trainer.trainRandomForest(0.7)
+        random_forest_result = random_forest_trainer.trainRandomForestClassifier(0.7)
 
         self.assertModelTrainedSuccessfully(genomes, random_forest_result[0], 3)

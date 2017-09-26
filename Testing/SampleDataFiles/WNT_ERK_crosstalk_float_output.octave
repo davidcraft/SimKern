@@ -74,7 +74,7 @@ function main()
 %0/1 result. note could also write a file, but this is easier.
 %could runs this out put into a file by calling this like oc
     global result;
-    result = x(end, end) > 0.8;
+    result = x(end, end);
 end
 
 
@@ -416,27 +416,6 @@ function xdot=f(x,t)
 
 % Species:   id = X28, name = GSK3beta, affected by kineticLaw
 	xdot(28) = (1/(compartment_cytoplasm))*(( 1.0 * reaction_R32) + (-1.0 * reaction_R33));
-end
-
-% adding few functions representing operators used in SBML but not present directly
-% in either matlab or octave.
-function z=pow(x,y),z=x^y;end
-function z=root(x,y),z=y^(1/x);end
-function z = piecewise(varargin)
-	numArgs = nargin;
-	result = 0;
-	foundResult = 0;
-	for k=1:2: numArgs-1
-		if varargin{k+1} == 1
-			result = varargin{k};
-			foundResult = 1;
-			break;
-		end
-	end
-	if foundResult == 0
-		result = varargin{numArgs};
-	end
-	z = result;
 end
 
 main();
