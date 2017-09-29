@@ -79,12 +79,15 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
         self.assertThirdPartyProgramCallerResults(simulation_result, expected_response_type)
 
-    # # TODO: Zach
-    # def callMATLABAndReturnSimulationResult(self):
-    #     self.log.info("Testing %s genomes of .m files successfully call MATLAB and return results.",
-    #                   self.number_of_genomes)
-    #     simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
-    #     self.assertThirdPartyProgramCallerResults(simulation_result)
+    def callMATLABAndReturnSimulationResult(self):
+        self.log.info("Testing %s genomes of .m files successfully call MATLAB and return results.",
+                      self.number_of_genomes)
+        expected_response_type = SupportedThirdPartyResponses.INTEGER
+        self.initializeServicesAndCreateGenomes('rso.m', SupportedFileTypes.MATLAB,
+                                                expected_response_type)
+
+        simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
+        self.assertThirdPartyProgramCallerResults(simulation_result)
 
     def testCallRAndReturnSimulationResult(self):
         expected_response_type = SupportedThirdPartyResponses.INTEGER

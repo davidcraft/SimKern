@@ -5,7 +5,7 @@ import numpy as np
 
 class MatrixService(object):
     
-    OUTPUT_FILE_NAME = "Sim1SimilarityMatrix.csv"
+    OUTPUT_FILE_NAME = "Sim1SimilarityMatrix"
 
     #TODO Add the inputs for weight_vector
     def __init__(self, simulation_result, number_of_genomes, number_of_trials):
@@ -13,11 +13,11 @@ class MatrixService(object):
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
 
-    def generateSimilarityMatrix(self):
+    def generateSimilarityMatrix(self,output_trials):
         response_list = self.generateResponseList()
         index_matrix = self.generateIndexMatrix()
         similarity_matrix = self.computeSimilarityScores(response_list,index_matrix,weight_vector=None)
-        self.writeDataFile(similarity_matrix)
+        self.writeDataFile(similarity_matrix,output_trials)
         return similarity_matrix
 
     def generateIndexMatrix(self):
@@ -103,10 +103,11 @@ class MatrixService(object):
         matrix2 /= max_vector
         return matrix1,matrix2
 
-    def writeDataFile(self, similarity_matrix):
+    def writeDataFile(self, similarity_matrix,output_trials):
         path = os.getcwd()
-        self.changeWorkingDirectory(path + "/GenomeFiles")
-        with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
+        self.changeWorkingDirectory(path + "/SimilarityMatrix")
+        file_name = self.OUTPUT_FILE_NAME + output_trials + ".csv"
+        with open(file_name, 'w') as csv_file:
             try:
                 data_writer = csv.writer(csv_file)
                 for i in range(0, self.number_of_genomes):

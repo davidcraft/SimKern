@@ -6,6 +6,8 @@ import collections
 import logging
 import numpy as np
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
+from MatrixService import MatrixService
+
 
 
 class ThirdPartyProgramCaller(object):
@@ -13,32 +15,56 @@ class ThirdPartyProgramCaller(object):
     log = logging.getLogger(__name__)
     logging.basicConfig()
     log.setLevel(logging.INFO)
-
     OUTPUT_FILE_NAME = 'Sim0Output.csv'
 
-    def __init__(self, files_directory, file_type, file_list, response_type):
+    def __init__(self, files_directory, file_type, file_list, response_type, number_of_genomes, number_of_trials):
         self.files_directory = files_directory
         self.file_type = file_type
         self.file_list = file_list
         self.response_type = response_type
-        self.counter = 1
+        self.counter = 0
+        self.number_of_genomes = int(number_of_genomes)
+        self.number_of_trials = int(number_of_trials)
+
 
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
         directory_of_files = self.files_directory + "/GenomeFiles"
         self.changeWorkingDirectory(directory_of_files)
         outputs = collections.OrderedDict()
-        for file in self.file_list:
-            file_result = []
-            if self.file_type == SupportedFileTypes.MATLAB:
-                file_result = self.callMATLAB(directory_of_files, file)
-            elif self.file_type == SupportedFileTypes.R:
+        if self.file_type == SupportedFileTypes.MATLAB:
+            try:
+                import matlab.engine
+                outputs = self.callMatlabAPI(outputs)
+            except ImportError:
+                for file in self.file_list:
+                    self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
+                    self.counter = self.counter + 1
+                    file_result = self.callMATLAB(directory_of_files, file)
+                    outputs[file.split(".")[0]] = file_result
+                    if self.number_of_trials != 0:
+                        self.writeSim1Matrix(outputs)
+        elif self.file_type == SupportedFileTypes.R:
+            for file in self.file_list:
+                self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
+                self.counter = self.counter + 1
                 file_result = self.callR(directory_of_files, file)
-            elif self.file_type == SupportedFileTypes.OCTAVE:
+                outputs[file.split(".")[0]] = file_result
+                if self.number_of_trials != 0:
+                    self.writeSim1Matrix(outputs)
+        elif self.file_type == SupportedFileTypes.OCTAVE:
+            for file in self.file_list:
+                self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
+                self.counter = self.counter + 1
                 file_result = self.callOctave(directory_of_files, file)
-            outputs[file.split(".")[0]] = file_result
+                outputs[file.split(".")[0]] = file_result
+                if self.number_of_trials != 0:
+                    self.writeSim1Matrix(outputs)
         if should_write_sim0_output:
             self.writeOutputFile(outputs)
+        elif self.number_of_trials != 0:
+            sim1matrix_service = MatrixService(outputs, self.number_of_genomes, self.number_of_trials)
+            sim1matrix_service.generateSimilarityMatrix('final')
         self.changeWorkingDirectory(current_directory)
         return outputs
 
@@ -78,6 +104,21 @@ class ThirdPartyProgramCaller(object):
                 self.log.error(type_error)
                 return self.response_type(-1)
 
+    def callMatlabAPI(self,outputs):
+        import matlab.engine
+        eng = matlab.engine.start_matlab('-nojvm -nodisplay -nosplash -nodesktop')
+        for file in self.file_list:
+            file_name = file.split(".")[0]
+            eng.eval(file_name,nargout=0)
+            output = eng.workspace['output']
+            output = np.array(output)
+            outputs[file_name] = output
+            self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
+            self.counter = self.counter + 1
+            if self.number_of_trials != 0:
+                self.writeSim1Matrix(outputs)
+        eng.quit()
+        return outputs
 
 
     def callMATLAB(self, directory_of_file, call_file):
@@ -125,3 +166,10 @@ class ThirdPartyProgramCaller(object):
         self.log.info(output + ": " + str(100 * self.counter / len(self.file_list)) + "% complete")
         self.counter = self.counter + 1
         return int(output)
+
+    def writeSim1Matrix(self, outputs, min_num_of_trails =1):
+        current_trail_number = (self.counter // self.number_of_genomes)
+        if (self.counter % (1 * self.number_of_genomes) == 0) and (current_trail_number > min_num_of_trails):
+            sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trail_number)
+            self.log.info('writing similarity matrix based on '+str(current_trail_number)+' number of trials.')
+            sim1matrix_service.generateSimilarityMatrix(str(current_trail_number))

@@ -218,7 +218,7 @@ end
         %be what we use eventually, just a placeholder for now. put
         %plt to false to see this printed out.
         x(end,O_CELLCYCLING);
-        [t,xs] = size(x);
+        [t,xs] = size(x)
         timepoints = round(linspace(1,t-1,6));
         varsToDisp = [O_CELLCYCLING O_ARRESTSIGNAL O_Apoptosis];
         output = x(timepoints,varsToDisp);% if output is 0 then it mean we did not cover all the cases which it should not happen. 
