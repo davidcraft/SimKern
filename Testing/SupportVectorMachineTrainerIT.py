@@ -21,7 +21,7 @@ class SupportVectorMachineIT(unittest.TestCase):
         self.number_of_genomes = 20
 
     def tearDown(self):
-        if self.generated_folder != "/":
+        if self.generated_folder != "/" and os.path.isdir(self.generated_folder):
             shutil.rmtree(self.generated_folder)
 
     def initializeServicesAndCreateGenomes(self, file_name, file_type, response_type):
@@ -31,8 +31,8 @@ class SupportVectorMachineIT(unittest.TestCase):
         self.generated_folder = self.current_working_dir + file_processing_service.GENERATED_FOLDER_NAME
         genomes_created = file_processing_service.createGenomes()
         file_processing_service.data_file.close()
-        self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, file_type,
-                                                               genomes_created[0], response_type)
+        self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, file_type, genomes_created[0],
+                                                               response_type, self.number_of_genomes, 0)
         return genomes_created
 
     def setTargetFile(self, path_name, file_name):

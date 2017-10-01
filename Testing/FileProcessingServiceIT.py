@@ -35,7 +35,6 @@ class FileProcessingServiceIT(unittest.TestCase):
         resource_path = '/'.join((path_name, file_name))
         return open(resource_path)
 
-
     def testOctaveGenomeFilesSuccessfullyCreated(self):
         data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
         self.setupFileProcessingService(data_file, SupportedFileTypes.OCTAVE)

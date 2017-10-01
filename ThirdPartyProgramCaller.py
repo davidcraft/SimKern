@@ -9,7 +9,6 @@ from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
 
 
-
 class ThirdPartyProgramCaller(object):
 
     log = logging.getLogger(__name__)
@@ -17,7 +16,7 @@ class ThirdPartyProgramCaller(object):
     log.setLevel(logging.INFO)
     OUTPUT_FILE_NAME = 'Sim0Output.csv'
 
-    def __init__(self, files_directory, file_type, file_list, response_type, number_of_genomes, number_of_trials):
+    def __init__(self, files_directory, file_type, file_list, response_type, number_of_genomes, number_of_trials=0):
         self.files_directory = files_directory
         self.file_type = file_type
         self.file_list = file_list
@@ -25,7 +24,6 @@ class ThirdPartyProgramCaller(object):
         self.counter = 0
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
-
 
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()

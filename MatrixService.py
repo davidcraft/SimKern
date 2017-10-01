@@ -3,9 +3,11 @@ import os
 import csv
 import numpy as np
 
+
 class MatrixService(object):
     
     OUTPUT_FILE_NAME = "Sim1SimilarityMatrix"
+    OUTPUT_FOLDER_NAME = "/SimilarityMatrix"
 
     #TODO Add the inputs for weight_vector
     def __init__(self, simulation_result, number_of_genomes, number_of_trials):
@@ -13,17 +15,18 @@ class MatrixService(object):
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
 
-    def generateSimilarityMatrix(self,output_trials):
+    def generateSimilarityMatrix(self, output_trials=''):
         response_list = self.generateResponseList()
         index_matrix = self.generateIndexMatrix()
-        similarity_matrix = self.computeSimilarityScores(response_list,index_matrix,weight_vector=None)
-        self.writeDataFile(similarity_matrix,output_trials)
+        similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, weight_vector=None)
+        self.writeDataFile(similarity_matrix, output_trials)
         return similarity_matrix
 
     def generateIndexMatrix(self):
-        """return a matrix with the dimentions as number of trials * (number of geneomes * length of sim1outputs) contains all the index"""
-        index_list = np.arange(0,self.number_of_genomes * self.number_of_trials)
-        response_matrix = index_list.reshape(self.number_of_trials,-1)
+        """return a matrix with the dimentions as number of trials * (number of geneomes *
+            length of sim1outputs) contains all the index"""
+        index_list = np.arange(0, self.number_of_genomes * self.number_of_trials)
+        response_matrix = index_list.reshape(self.number_of_trials, -1)
         return response_matrix
 
     def generateResponseList(self):
@@ -32,7 +35,7 @@ class MatrixService(object):
             response_list.append(self.simulation_result[file])
         return response_list
 
-    def computeSimilarityScores(self, response_list,index_matrix,weight_vector):
+    def computeSimilarityScores(self, response_list, index_matrix, weight_vector):
         kernel = [None]*self.number_of_genomes
         for i in range(0, self.number_of_genomes):
             kernel[i] = [None]*self.number_of_genomes
@@ -96,16 +99,16 @@ class MatrixService(object):
 
     def rescaleVector(self, matrix1, matrix2):
         """take two sim1 output and return a rescaled version """
-        max1 = np.amax(matrix1,axis = 1,keepdims = True)
-        max2 = np.amax(matrix2 , axis = 1,keepdims = True)
-        max_vector = np.max((max1,max2), axis = 0)#TODO check the if this is the correct
+        max1 = np.amax(matrix1, axis=1, keepdims=True)
+        max2 = np.amax(matrix2, axis=1, keepdims=True)
+        max_vector = np.max((max1, max2), axis=0)  # TODO check the if this is the correct
         matrix1 /= max_vector
         matrix2 /= max_vector
-        return matrix1,matrix2
+        return matrix1, matrix2
 
-    def writeDataFile(self, similarity_matrix,output_trials):
+    def writeDataFile(self, similarity_matrix, output_trials):
         path = os.getcwd()
-        self.changeWorkingDirectory(path + "/SimilarityMatrix")
+        self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
         file_name = self.OUTPUT_FILE_NAME + output_trials + ".csv"
         with open(file_name, 'w') as csv_file:
             try:
@@ -118,7 +121,6 @@ class MatrixService(object):
 
     #TODO: repeated code with FileProcessingService. DRY it up.
     def changeWorkingDirectory(self, new_directory):
-        if os.path.isdir(new_directory):
-            os.chdir(new_directory)
-        else:
+        if not os.path.isdir(new_directory):
             os.mkdir(new_directory)
+        os.chdir(new_directory)

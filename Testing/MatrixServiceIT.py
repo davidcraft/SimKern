@@ -1,4 +1,5 @@
 import logging
+import shutil
 import unittest
 import os
 import numpy
@@ -18,7 +19,9 @@ class MatrixServiceIT(unittest.TestCase):
         self.number_of_trials = 5
 
     def tearDown(self):
-        pass
+        generated_matrix_directory = self.current_working_dir + MatrixService.MatrixService.OUTPUT_FOLDER_NAME
+        if generated_matrix_directory != "/" and os.path.isdir(generated_matrix_directory):
+            shutil.rmtree(generated_matrix_directory)
 
     def randomizeSimulationResponses(self):
         simulation_result = {}

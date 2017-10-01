@@ -20,18 +20,18 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         self.current_working_dir = os.getcwd()
 
     def tearDown(self):
-        if self.generated_folder != "/":
+        if self.generated_folder != "/" and os.path.isdir(self.generated_folder):
             shutil.rmtree(self.generated_folder)
 
     def initializeServicesAndCreateGenomes(self, file_name, file_type, expected_response_type):
         data_file = self.setTargetFile('SampleDataFiles', file_name)
-        file_processing_service = FileProcessingService(data_file, file_type,
-                                                        self.number_of_genomes, self.current_working_dir)
+        file_processing_service = FileProcessingService(data_file, file_type, self.number_of_genomes,
+                                                        self.current_working_dir)
         self.generated_folder = self.current_working_dir + file_processing_service.GENERATED_FOLDER_NAME
         genomes_created = file_processing_service.createGenomes()
         file_processing_service.data_file.close()
-        self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, file_type,
-                                                               genomes_created[0], expected_response_type)
+        self.thirdPartyProgramCaller = ThirdPartyProgramCaller(self.current_working_dir, file_type, genomes_created[0],
+                                                               expected_response_type, self.number_of_genomes)
 
     def setTargetFile(self, path_name, file_name):
         resource_path = '/'.join((path_name, file_name))

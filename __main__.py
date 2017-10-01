@@ -132,9 +132,9 @@ def recursivelyPromptUser(message, return_type):
 def createGenomesSIM0(file_extension, input_file, path, number_of_genomes):
     with open(input_file) as data_file:
         try:
-            genomes = processInputFileAndCreateGenomes(data_file, file_extension,
-                                                       path, number_of_genomes)
-            third_party_result = callThirdPartyService(file_extension, path, genomes[0],True , number_of_genomes,number_of_trials = 0)
+            genomes = processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_genomes)
+            third_party_result = callThirdPartyService(file_extension, path, genomes[0], True, number_of_genomes,
+                                                       number_of_trials=0)
             log.info("Results of third party call: %s", third_party_result)
         except ValueError as valueError:
             log.error(valueError)
@@ -148,9 +148,10 @@ def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_
     return file_parsing_service.createGenomes()
 
 
-def callThirdPartyService(file_extension, path, file_list,record_output,number_of_genomes, number_of_trials,):
+def callThirdPartyService(file_extension, path, file_list, record_output, number_of_genomes, number_of_trials,):
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list,
-                                                         SupportedThirdPartyResponses.FLOAT,number_of_genomes, number_of_trials,)
+                                                         SupportedThirdPartyResponses.FLOAT, number_of_genomes,
+                                                         number_of_trials)
     return third_party_caller_service.callThirdPartyProgram(record_output)
 
 
@@ -164,7 +165,8 @@ def createGenomesSIM1(file_extension, input_file, path,
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
-            third_party_result = callThirdPartyService(file_extension, path, trial_files, False, number_of_genomes, number_of_trials)
+            third_party_result = callThirdPartyService(file_extension, path, trial_files, False,
+                                                       number_of_genomes, number_of_trials)
             log.info("Results of third party call: %s", third_party_result)
         except ValueError as valueError:
             log.error(valueError)
