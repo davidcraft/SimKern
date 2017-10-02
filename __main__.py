@@ -52,7 +52,7 @@ def main():
         file_extension = input_file.split(".")[1]
         log.info("Starting SIM1 genome creation K=%s genomes, and R=%s trials from file %s,"
                  " being output to %s/GenomeFiles.",
-                 number_of_genomes, input_file, path)
+                 number_of_genomes, number_of_trials, input_file, path)
         createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials)
 
     elif safeCast(arguments[0], int) == 2:
