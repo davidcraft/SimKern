@@ -104,6 +104,7 @@ class ThirdPartyProgramCaller(object):
 
     def callMatlabAPI(self,outputs):
         import matlab.engine
+        self.log.info('Using the matlab api hook')
         eng = matlab.engine.start_matlab('-nojvm -nodisplay -nosplash -nodesktop')
         for file in self.file_list:
             file_name = file.split(".")[0]

@@ -180,7 +180,8 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     process_trial_files = Sim1FileProcessingService(data_file, file_extension, number_of_genomes,
                                                     number_of_trials, path)
     trial_files = process_trial_files.createTrialFiles()
-    log.info("Trial Files: %s\n", trial_files)
+    # log.info("Trial Files: %s\n", trial_files)
+    log.info("Created all the trial files")
     return trial_files
 
 
