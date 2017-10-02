@@ -17,7 +17,7 @@ class SupportVectorMachineTrainer(object):
         self.similarity_matrix = similarity_matrix
         self.third_party_response = third_party_response
 
-    def trainSupportVectorMachineForSim1(self, number_of_genomes):
+    def trainSupportVectorMachineForSIM1(self, number_of_genomes):
         classifier_model = svm.SVC()
         sample_labels = []
         for label in range(0, int(number_of_genomes)):

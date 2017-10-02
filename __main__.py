@@ -65,18 +65,22 @@ def main():
         output_file = arguments[1]
         genomes_matrix_file = arguments[2]
         analysis = arguments[3]
-        performMachineLearningWithoutSimulations(output_file, genomes_matrix_file, analysis)
+        performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
     elif safeCast(arguments[0], int) == 3:
-        #TODO: SIM1 analysis with existing ML data.
-        pass
+        log.info("Machine Learning on SIM1 data requested...")
+        if len(arguments) is not 2:
+            log.info("Program expects 2 arguments: an integer expressing the desired action from the main menu, "
+                     "and a file Sim0Output.csv file expressing the similarity matrix output from SIM1 simulations.")
+            return
+        output_file = arguments[1]
+        performMachineLearningOnSIM1(output_file)
     return
-
 
 def promptUserForInput():
     simulation_to_run = input("-------Main Menu-------\n"
                               "Choose your task:\n"
-                              "\t0: SIM0 - create and analyze K genomes\n"
-                              "\t1: SIM1 - create similarity scores between R permutations of K genomes\n"
+                              "\t0: SIM0 - create K genomes\n"
+                              "\t1: SIM1 - create R permutations of K genomes\n"
                               "\t2: Perform machine learning with existing SIM0 data\n"
                               "\t3: Perform machine learning with existing SIM1 data\n"
                               "\tQ: Quit\n")
@@ -99,16 +103,14 @@ def promptUserForInput():
         output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
         genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
         analysis_type = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type:\n", str)
-        performMachineLearningWithoutSimulations(output_file, genomes_matrix_file, analysis_type)
-
-    # TODO: Get only SIM1 Outputs and run SVM on that.
-    # elif simulation_as_int == 3:
-    #     input_file = recursivelyPromptUser("Enter path of input file:\n", str)
-
+        performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type)
+    elif simulation_as_int == 3:
+        output_file = recursivelyPromptUser("Enter path of .CSV file representing the similarity matrix\n", str)
+        performMachineLearningOnSIM1(output_file)
     elif simulation_as_string == "Q":
         return
     else:
-        print("Invalid command, please type 0, 1, or 'Q'.\n")
+        print("Invalid command, please type 0, 1, 2, 3 or 'Q'.\n")
         promptUserForInput()
 
 
@@ -148,7 +150,7 @@ def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_
     return file_parsing_service.createGenomes()
 
 
-def callThirdPartyService(file_extension, path, file_list, record_output, number_of_genomes, number_of_trials,):
+def callThirdPartyService(file_extension, path, file_list, record_output, number_of_genomes, number_of_trials):
     third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list,
                                                          SupportedThirdPartyResponses.FLOAT, number_of_genomes,
                                                          number_of_trials)
@@ -160,8 +162,7 @@ def trainRandomForestClassifier(genomes, third_party_result, percent_train):
     return random_forest_trainer.trainRandomForestClassifier(percent_train)
 
 
-def createGenomesSIM1(file_extension, input_file, path,
-                      number_of_genomes, number_of_trials):
+def createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials):
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
@@ -195,11 +196,11 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
 
 
 def trainSim1SVMClassifier(number_of_genomes, matrices):
-    trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(matrices[0], None)
-    return trials_by_genome_SVM_trainer.trainSupportVectorMachineForSim1(number_of_genomes)
+    trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(matrices[1], None)
+    return trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(number_of_genomes)
 
 
-def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file, analysis_type):
+def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type):
     responses = readCSVFile(output_file)
     matrix = readCSVFile(genomes_matrix_file)
 
@@ -223,6 +224,7 @@ def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file, a
             results += rf_results[1]
         else:
             rf_results = rf_trainer.trainRandomForestClassifier(training_percent)
+            # TODO: Verify this is indeed the similarity matrix we're passing in here.
             svm_trainer = SupportVectorMachineTrainer(new_matrix, new_responses)
             svm_results = svm_trainer.trainSupportVectorMachine(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
                                                                 training_percent)
@@ -235,6 +237,12 @@ def performMachineLearningWithoutSimulations(output_file, genomes_matrix_file, a
     results = numpy.mean(results, axis=0)
 
     print("Final Accuracies:", results.tolist(), training_percent, num_permutations)
+
+
+def performMachineLearningOnSIM1(output_file):
+    similarity_matrix = readCSVFile(output_file)
+    trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(similarity_matrix, None)
+    trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(len(similarity_matrix))
 
 
 def readCSVFile(file):

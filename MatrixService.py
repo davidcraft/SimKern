@@ -23,8 +23,8 @@ class MatrixService(object):
         return similarity_matrix
 
     def generateIndexMatrix(self):
-        """return a matrix with the dimentions as number of trials * (number of geneomes *
-            length of sim1outputs) contains all the index"""
+        """return a matrix with the dimensions as number of trials * (number of genomes *
+            length of SIM1Outputs) contains all the index"""
         index_list = np.arange(0, self.number_of_genomes * self.number_of_trials)
         response_matrix = index_list.reshape(self.number_of_trials, -1)
         return response_matrix
