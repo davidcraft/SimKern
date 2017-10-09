@@ -14,7 +14,7 @@ class ThirdPartyProgramCaller(object):
     log = logging.getLogger(__name__)
     logging.basicConfig()
     log.setLevel(logging.INFO)
-    OUTPUT_FILE_NAME = 'SimulationOutput.csv'
+    OUTPUT_FILE_NAME = 'Sim0Output.csv'
 
     def __init__(self, files_directory, file_type, file_list, response_type, number_of_genomes, number_of_trials=0):
         self.files_directory = files_directory
