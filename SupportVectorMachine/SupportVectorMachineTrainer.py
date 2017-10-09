@@ -14,7 +14,7 @@ class SupportVectorMachineTrainer(object):
     log.setLevel(logging.INFO)
 
     def __init__(self, similarity_matrix, third_party_response):
-        self.similarity_matrix = similarity_matrix
+        self.matrix = similarity_matrix
         self.third_party_response = third_party_response
 
     def trainSupportVectorMachineForSIM1(self, number_of_genomes):
@@ -22,11 +22,11 @@ class SupportVectorMachineTrainer(object):
         sample_labels = []
         for label in range(0, int(number_of_genomes)):
             sample_labels.append("feature" + str(label))
-        classifier_model.fit(self.similarity_matrix, sample_labels)
+        classifier_model.fit(self.matrix, sample_labels)
         self.log.info("Successful creation of classifier model: %s\n", classifier_model)
         return classifier_model
 
-    def trainSupportVectorMachine(self, kernel_type, pct_train):
+    def trainSupportVectorMachineForSIM0(self, kernel_type, pct_train):
 
         # Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"
         if (type(self.third_party_response) != np.ndarray) & (type(self.third_party_response) != list):
@@ -37,9 +37,9 @@ class SupportVectorMachineTrainer(object):
             response_list = self.third_party_response
 
         if kernel_type == "precomputed":
-            [train_y, train_X, test_X, test_y] = self.splitMatrix(response_list, self.similarity_matrix, pct_train)
+            [train_y, train_X, test_X, test_y] = self.splitMatrix(response_list, self.matrix, pct_train)
         else:
-            [train_y, train_X, test_X, test_y] = self.splitData(response_list, self.similarity_matrix, pct_train)
+            [train_y, train_X, test_X, test_y] = self.splitData(response_list, self.matrix, pct_train)
 
         model = SVC(kernel=kernel_type)
         model.fit(train_X, train_y)

@@ -76,6 +76,7 @@ def main():
         performMachineLearningOnSIM1(output_file)
     return
 
+
 def promptUserForInput():
     simulation_to_run = input("-------Main Menu-------\n"
                               "Choose your task:\n"
@@ -166,7 +167,7 @@ def createGenomesSIM1(file_extension, input_file, path, number_of_genomes, numbe
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
-            third_party_result = callThirdPartyService(file_extension, path, trial_files, False,
+            third_party_result = callThirdPartyService(file_extension, path, trial_files, True,
                                                        number_of_genomes, number_of_trials)
             log.info("Results of third party call: %s", third_party_result)
         except ValueError as valueError:
@@ -196,11 +197,6 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
     return genomes_by_trial_matrix, kernel_matrix
 
 
-def trainSim1SVMClassifier(number_of_genomes, matrices):
-    trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(matrices[1], None)
-    return trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(number_of_genomes)
-
-
 def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type):
     responses = readCSVFile(output_file)
     matrix = readCSVFile(genomes_matrix_file)
@@ -225,10 +221,9 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
             results += rf_results[1]
         else:
             rf_results = rf_trainer.trainRandomForestClassifier(training_percent)
-            # TODO: Verify this is indeed the similarity matrix we're passing in here.
             svm_trainer = SupportVectorMachineTrainer(new_matrix, new_responses)
-            svm_results = svm_trainer.trainSupportVectorMachine(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
-                                                                training_percent)
+            svm_results = svm_trainer.trainSupportVectorMachineForSIM0(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
+                                                                       training_percent)
             results += rf_results[1] + svm_results[1]
 
     if analysis_type == 'REGRESSION':
@@ -241,9 +236,36 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
 
 
 def performMachineLearningOnSIM1(output_file):
+    training_percent = .5
+    num_permutations = 10
     similarity_matrix = readCSVFile(output_file)
-    trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(similarity_matrix, None)
-    trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(len(similarity_matrix))
+
+    num_genomes = len(similarity_matrix)
+
+    for permutation in range(0, num_permutations):
+        order = numpy.random.permutation(num_genomes)
+        train_length = int(training_percent * num_genomes)
+        training_set = order[0:train_length]
+        testing_set = order[train_length:len(order)]
+        new_training_matrix = []
+        new_testing_matrix = []
+
+        splitSimilarityMatrix(similarity_matrix, new_training_matrix, training_set)
+        splitSimilarityMatrix(similarity_matrix, new_testing_matrix, testing_set)
+
+        trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(new_training_matrix, None)
+        model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(len(new_training_matrix))
+        prediction = model.predict(new_testing_matrix)
+        log.info("SIM1 SVM model:\n%s\n Predicts: %s\n", model, prediction)
+
+
+def splitSimilarityMatrix(similarity_matrix, new_matrix, training_set):
+    for i in range(0, len(training_set)):
+        new_matrix_row = []
+        for j in range(0, len(training_set)):
+            new_matrix_row.append(similarity_matrix[training_set[i], training_set[j]])
+
+        new_matrix.append(numpy.around(new_matrix_row, 2).tolist())
 
 
 def readCSVFile(file):

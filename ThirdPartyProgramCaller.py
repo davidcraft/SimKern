@@ -14,7 +14,7 @@ class ThirdPartyProgramCaller(object):
     log = logging.getLogger(__name__)
     logging.basicConfig()
     log.setLevel(logging.INFO)
-    OUTPUT_FILE_NAME = 'Sim0Output.csv'
+    OUTPUT_FILE_NAME = 'SimulationOutput.csv'
 
     def __init__(self, files_directory, file_type, file_list, response_type, number_of_genomes, number_of_trials=0):
         self.files_directory = files_directory
@@ -34,7 +34,8 @@ class ThirdPartyProgramCaller(object):
             try:
                 import matlab.engine
                 outputs = self.callMatlabAPI(outputs)
-            except ImportError:
+            except ImportError as error:
+                self.log.warn("Unable to find MATLAB API hook. Starting program once per trial file.\n%s", error)
                 for file in self.file_list:
                     self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
                     self.counter = self.counter + 1
@@ -170,5 +171,5 @@ class ThirdPartyProgramCaller(object):
         current_trail_number = (self.counter // self.number_of_genomes)
         if (self.counter % (1 * self.number_of_genomes) == 0) and (current_trail_number > min_num_of_trails):
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trail_number)
-            self.log.info('writing similarity matrix based on '+str(current_trail_number)+' number of trials.')
+            self.log.info('Writing similarity matrix based on %s trials.', str(current_trail_number))
             sim1matrix_service.generateSimilarityMatrix(str(current_trail_number))

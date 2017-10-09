@@ -87,7 +87,7 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
                                                 expected_response_type)
 
         simulation_result = self.thirdPartyProgramCaller.callThirdPartyProgram(True)
-        self.assertThirdPartyProgramCallerResults(simulation_result)
+        self.assertThirdPartyProgramCallerResults(simulation_result, expected_response_type)
 
     def testCallRAndReturnSimulationResult(self):
         expected_response_type = SupportedThirdPartyResponses.INTEGER
