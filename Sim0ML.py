@@ -34,4 +34,4 @@ def csvReader(file):
     return output
 
 
-sim0test('/Users/zhaoqiwang/Desktop/MGH/DSPP/GenomeFiles/Sim1SimilarityMatrix.csv','/Users/zhaoqiwang/Desktop/MGH/DSPP/GenomeFiles/Sim0Output.csv',100,0.6)
+sim0test('/Users/zhaoqiwang/Desktop/MGH/DSPP/GenomeFiles/SimilarityMatrix/Sim1SimilarityMatrixfinal.csv','/Users/zhaoqiwang/Desktop/MGH/DSPP/GenomeFiles/Sim0Output.csv',20,0.7)

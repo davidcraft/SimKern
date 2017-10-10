@@ -1,7 +1,7 @@
 import logging
 import sys
 
-import numpy
+import numpy as np
 from FileProcessingService import FileProcessingService
 from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
@@ -196,7 +196,31 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
     return genomes_by_trial_matrix, kernel_matrix
 
 
-def trainSim1SVMClassifier(number_of_genomes, matrices):
+def trainSim1SVMClassifier(output_file, genomes_matrix_file, analysis_type, num_permutations=10,training_percent = 0.3):
+    responses = readCSVFile(output_file)
+    matrix = readCSVFile(genomes_matrix_file)
+    num_examples = matrix.shape[0]
+    num_genomes = matrix.shape[1]
+    which = np.arange(num_genomes)
+    assert (num_examples == len(responses))
+    svm_trainer = SupportVectorMachineTrainer(matrix,responses)
+    results = []
+    for i in range(0, num_permutations):
+        order = np.random.permutation(num_examples)
+        newmatrix = matrix[order[:, None], order]
+        newresponses = responses[order]
+
+
+        [trAcSVM, teAcSVM, totAcSVM] = runSvm(newresponses, newmatrix, "precomputed", training_per_cent)
+
+        # [trAcRF, teAcRF, totAcRF] = runRF(newresponses, newmatrix, training_per_cent)
+        # results += [trAcSVM, teAcSVM, totAcSVM] + [trAcRF, teAcRF, totAcRF]
+        results += [trAcSVM, teAcSVM, totAcSVM]
+
+    results = np.array(results).reshape((num_permutations,3))
+    results = np.mean(results, axis=0)
+    print(results, training_per_cent ,num_permutations )
+
     trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(matrices[1], None)
     return trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(number_of_genomes)
 
