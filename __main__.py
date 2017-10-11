@@ -167,7 +167,7 @@ def createGenomesSIM1(file_extension, input_file, path, number_of_genomes, numbe
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
-            third_party_result = callThirdPartyService(file_extension, path, trial_files, True,
+            third_party_result = callThirdPartyService(file_extension, path, trial_files, False,
                                                        number_of_genomes, number_of_trials)
             log.info("Results of third party call: %s", third_party_result)
         except ValueError as valueError:
@@ -272,7 +272,7 @@ def performMachineLearningOnSIM1(output_file):
     num_genomes = len(similarity_matrix)
 
     for permutation in range(0, num_permutations):
-        order = numpy.random.permutation(num_genomes)
+        order = np.random.permutation(num_genomes)
         train_length = int(training_percent * num_genomes)
         training_set = order[0:train_length]
         testing_set = order[train_length:len(order)]
@@ -294,11 +294,11 @@ def splitSimilarityMatrix(similarity_matrix, new_matrix, training_set):
         for j in range(0, len(training_set)):
             new_matrix_row.append(similarity_matrix[training_set[i], training_set[j]])
 
-        new_matrix.append(numpy.around(new_matrix_row, 2).tolist())
+        new_matrix.append(np.around(new_matrix_row, 2).tolist())
 
 
 def readCSVFile(file):
-    return numpy.loadtxt(open(file, "rb"), delimiter=",")
+    return np.loadtxt(open(file, "rb"), delimiter=",")
 
 
 if __name__ == "__main__":

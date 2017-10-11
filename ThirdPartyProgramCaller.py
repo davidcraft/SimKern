@@ -26,8 +26,6 @@ class ThirdPartyProgramCaller(object):
         self.counter = 0
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
-        self.current_trials = 0
-        self.current_genomes = 0
 
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
@@ -46,7 +44,7 @@ class ThirdPartyProgramCaller(object):
                     file_result = self.callMATLAB(directory_of_files, file)
                     outputs[file.split(".")[0]] = file_result
                     if self.number_of_trials != 0:
-                        output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes)+'Trail'+str(self.current_trials)
+                        output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' + file.split(".")[0]
                         self.writeOutputFile(file_result,output_file_name)
                         self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.R:
@@ -56,8 +54,7 @@ class ThirdPartyProgramCaller(object):
                 file_result = self.callR(directory_of_files, file)
                 outputs[file.split(".")[0]] = file_result
                 if self.number_of_trials != 0:
-                    output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes) + 'Trail' + str(
-                        self.current_trials)
+                    output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' + file.split(".")[0]
                     self.writeOutputFile(file_result, output_file_name)
                     self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.OCTAVE:
@@ -67,13 +64,14 @@ class ThirdPartyProgramCaller(object):
                 file_result = self.callOctave(directory_of_files, file)
                 outputs[file.split(".")[0]] = file_result
                 if self.number_of_trials != 0:
-
-                    output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes) + 'Trail' + str(
-                        self.current_trials)
+                    output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' + file.split(".")[0]
                     self.writeOutputFile(file_result, output_file_name)
                     self.writeSim1Matrix(outputs)
         if should_write_sim0_output:
-            self.writeOutputFile(outputs)
+            output_list = []
+            for file in outputs.keys():
+                output_list.append(outputs[file])
+            self.writeOutputFile(output_list , self.SIM0OUTPUT_FILE_NAME)
         elif self.number_of_trials != 0:
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, self.number_of_trials)
             sim1matrix_service.generateSimilarityMatrix('final')
@@ -90,15 +88,8 @@ class ThirdPartyProgramCaller(object):
                 outputs_writer.writerow(outputs)
             finally:
                 csv_file.close()
+                os.chdir(path)
 
-    #TODO ADD THIS BACK IN SO IT WORKS FINE WITH SIM0
-    def sim0outputlist(self,outputs):
-        output_list = []
-        for file in outputs.keys():
-            output_list.append(outputs[file])
-
-    def changeWorkingDirectory(self, new_directory):
-        os.chdir(new_directory)
 
     def callOctave(self, directory_of_file, call_file):
         cmd = 'octave -q ' + directory_of_file + "/" + call_file
@@ -132,13 +123,11 @@ class ThirdPartyProgramCaller(object):
             output = eng.workspace['output']
             output = np.array(output)
             outputs[file_name] = output
-            self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
             self.counter = self.counter + 1
+            self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
             if self.number_of_trials != 0:
-                output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes) + 'Trail' + str(
-                    self.current_trials)
+                output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' +file_name
                 self.writeOutputFile(output, output_file_name)
-                self.writeOutputFile(output)
                 self.writeSim1Matrix(outputs)
         eng.quit()
         return outputs
@@ -156,7 +145,6 @@ class ThirdPartyProgramCaller(object):
         output = out[first + 1:second]
         output = output.strip()
         output = output.split()
-        print(len(output))
         if len(output) == 1:
             try:
                 output = int(output[0])
@@ -190,9 +178,14 @@ class ThirdPartyProgramCaller(object):
         self.counter = self.counter + 1
         return int(output)
 
-    def writeSim1Matrix(self, outputs, min_num_of_trails =10):
-        current_trail_number = (self.counter // self.number_of_genomes)
-        if (self.counter % (2 * self.number_of_genomes) == 0) and (current_trail_number > min_num_of_trails):
-            sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trail_number)
-            self.log.info('Writing similarity matrix based on %s trials.', str(current_trail_number))
-            sim1matrix_service.generateSimilarityMatrix(str(current_trail_number))
+    def writeSim1Matrix(self, outputs, min_num_of_trials = 5):
+        current_trials = 1 + (self.counter//self.number_of_genomes)
+        if (self.counter % (2 * self.number_of_genomes) == 0) and (current_trials > min_num_of_trials):
+            sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trials)
+            self.log.info('Writing similarity matrix based on %s trials.', str(current_trials))
+            sim1matrix_service.generateSimilarityMatrix(str(current_trials))
+
+    def changeWorkingDirectory(self, new_directory):
+        if not os.path.isdir(new_directory):
+            os.mkdir(new_directory)
+        os.chdir(new_directory)
