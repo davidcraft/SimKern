@@ -14,7 +14,9 @@ class ThirdPartyProgramCaller(object):
     log = logging.getLogger(__name__)
     logging.basicConfig()
     log.setLevel(logging.INFO)
-    OUTPUT_FILE_NAME = 'Sim0Output.csv'
+    SIM0OUTPUT_FILE_NAME = 'Sim0Output'
+    SIM1OUTPUT_FILE_NAME = 'Sim1'
+    OUTPUT_FOLDER_NAME = "/SimulationOutputs"
 
     def __init__(self, files_directory, file_type, file_list, response_type, number_of_genomes, number_of_trials=0):
         self.files_directory = files_directory
@@ -24,6 +26,8 @@ class ThirdPartyProgramCaller(object):
         self.counter = 0
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
+        self.current_trials = 0
+        self.current_genomes = 0
 
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
@@ -34,13 +38,16 @@ class ThirdPartyProgramCaller(object):
             try:
                 import matlab.engine
                 outputs = self.callMatlabAPI(outputs)
-            except ImportError:
+            except ImportError as error:
+                self.log.warn("Unable to find MATLAB API hook. Starting program once per trial file.\n%s", error)
                 for file in self.file_list:
                     self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
                     self.counter = self.counter + 1
                     file_result = self.callMATLAB(directory_of_files, file)
                     outputs[file.split(".")[0]] = file_result
                     if self.number_of_trials != 0:
+                        output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes)+'Trail'+str(self.current_trials)
+                        self.writeOutputFile(file_result,output_file_name)
                         self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.R:
             for file in self.file_list:
@@ -49,6 +56,9 @@ class ThirdPartyProgramCaller(object):
                 file_result = self.callR(directory_of_files, file)
                 outputs[file.split(".")[0]] = file_result
                 if self.number_of_trials != 0:
+                    output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes) + 'Trail' + str(
+                        self.current_trials)
+                    self.writeOutputFile(file_result, output_file_name)
                     self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.OCTAVE:
             for file in self.file_list:
@@ -57,6 +67,10 @@ class ThirdPartyProgramCaller(object):
                 file_result = self.callOctave(directory_of_files, file)
                 outputs[file.split(".")[0]] = file_result
                 if self.number_of_trials != 0:
+
+                    output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes) + 'Trail' + str(
+                        self.current_trials)
+                    self.writeOutputFile(file_result, output_file_name)
                     self.writeSim1Matrix(outputs)
         if should_write_sim0_output:
             self.writeOutputFile(outputs)
@@ -66,16 +80,22 @@ class ThirdPartyProgramCaller(object):
         self.changeWorkingDirectory(current_directory)
         return outputs
 
-    def writeOutputFile(self, outputs):
+    def writeOutputFile(self, outputs, output_file_name):
+        path = os.getcwd()
+        self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
+        file_name = output_file_name + ".csv"
+        with open(file_name, 'w') as csv_file:
+            try:
+                outputs_writer = csv.writer(csv_file)
+                outputs_writer.writerow(outputs)
+            finally:
+                csv_file.close()
+
+    #TODO ADD THIS BACK IN SO IT WORKS FINE WITH SIM0
+    def sim0outputlist(self,outputs):
         output_list = []
         for file in outputs.keys():
             output_list.append(outputs[file])
-        with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
-            try:
-                outputs_writer = csv.writer(csv_file)
-                outputs_writer.writerow(output_list)
-            finally:
-                csv_file.close()
 
     def changeWorkingDirectory(self, new_directory):
         os.chdir(new_directory)
@@ -115,6 +135,10 @@ class ThirdPartyProgramCaller(object):
             self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
             self.counter = self.counter + 1
             if self.number_of_trials != 0:
+                output_file_name = self.SIM1OUTPUT_FILE_NAME + 'Geno' + str(self.current_genomes) + 'Trail' + str(
+                    self.current_trials)
+                self.writeOutputFile(output, output_file_name)
+                self.writeOutputFile(output)
                 self.writeSim1Matrix(outputs)
         eng.quit()
         return outputs
@@ -170,5 +194,5 @@ class ThirdPartyProgramCaller(object):
         current_trail_number = (self.counter // self.number_of_genomes)
         if (self.counter % (2 * self.number_of_genomes) == 0) and (current_trail_number > min_num_of_trails):
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trail_number)
-            self.log.info('writing similarity matrix based on '+str(current_trail_number)+' number of trials.')
+            self.log.info('Writing similarity matrix based on %s trials.', str(current_trail_number))
             sim1matrix_service.generateSimilarityMatrix(str(current_trail_number))

@@ -53,6 +53,6 @@ class SupportVectorMachineIT(unittest.TestCase):
         third_party_result = self.getThirdPartyResult()
 
         svm_trainer = SupportVectorMachineTrainer(genomes[1], third_party_result)
-        svm_result = svm_trainer.trainSupportVectorMachine(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION, 0.7)
+        svm_result = svm_trainer.trainSupportVectorMachineForSIM0(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION, 0.7)
 
         self.assertModelTrainedSuccessfully(svm_result[0], 2)
