@@ -45,7 +45,7 @@ class ThirdPartyProgramCaller(object):
                     outputs[file.split(".")[0]] = file_result
                     if self.number_of_trials != 0:
                         output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' + file.split(".")[0]
-                        self.writeOutputFile(file_result,output_file_name)
+                        self.writeOutputFile(file_result, output_file_name)
                         self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.R:
             for file in self.file_list:
@@ -71,7 +71,7 @@ class ThirdPartyProgramCaller(object):
             output_list = []
             for file in outputs.keys():
                 output_list.append(outputs[file])
-            self.writeOutputFile(output_list , self.SIM0OUTPUT_FILE_NAME)
+            self.writeOutputFile(output_list, self.SIM0OUTPUT_FILE_NAME)
         elif self.number_of_trials != 0:
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, self.number_of_trials)
             sim1matrix_service.generateSimilarityMatrix('final')
@@ -89,7 +89,6 @@ class ThirdPartyProgramCaller(object):
             finally:
                 csv_file.close()
                 os.chdir(path)
-
 
     def callOctave(self, directory_of_file, call_file):
         cmd = 'octave -q ' + directory_of_file + "/" + call_file

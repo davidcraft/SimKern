@@ -47,7 +47,12 @@ class ThirdPartyProgramCallerIT(unittest.TestCase):
         created_files = [file for file in os.listdir(self.generated_folder)]
         # Check files successfully written
         assert len(created_files) == (self.number_of_genomes * 2) + 2
-        assert len([file for file in created_files if file == self.thirdPartyProgramCaller.OUTPUT_FILE_NAME]) == 1
+
+        output_folder = self.thirdPartyProgramCaller.OUTPUT_FOLDER_NAME
+        simulation_outputs = [file for file in os.listdir(self.generated_folder + output_folder)]
+        outputSIM0 = self.thirdPartyProgramCaller.SIM0OUTPUT_FILE_NAME + ".csv"
+        outputSIM1 = self.thirdPartyProgramCaller.SIM1OUTPUT_FILE_NAME + ".csv"
+        assert len([file for file in simulation_outputs if (file == outputSIM0 or file == outputSIM1)]) == 1
 
     def testCallOctaveAndReturnSimulationResult(self):
         expected_response_type = SupportedThirdPartyResponses.INTEGER
