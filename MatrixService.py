@@ -77,9 +77,9 @@ class MatrixService(object):
     def getValidTrials(self, response_list,index_matrix):
         valid_trial_list = []
         for i in range(0, self.number_of_trials):
+            index1 = index_matrix[i][0]
             for j in range(1, self.number_of_genomes):
-                index1 = index_matrix[i][j]
-                index2 = index_matrix[i][0]
+                index2 = index_matrix[i][j]
                 if response_list[index1] != response_list[index2]:
                     valid_trial_list.append(i)
                     break
@@ -101,10 +101,10 @@ class MatrixService(object):
         """take two sim1 output and return a rescaled version """
         max1 = np.amax(matrix1, axis=1, keepdims=True)
         max2 = np.amax(matrix2, axis=1, keepdims=True)
-        max_vector = np.max((max1, max2), axis=0)  # TODO check the if this is the correct
-        matrix1 /= max_vector
-        matrix2 /= max_vector
-        return matrix1, matrix2
+        max_vector = np.max((max1, max2), axis=0)  # TODO Cache the value to improve effieciency
+        new_matrix1 = matrix1/ max_vector
+        new_matrix2 = matrix2/max_vector
+        return new_matrix1, new_matrix2
 
     def writeDataFile(self, similarity_matrix, output_trials):
         path = os.getcwd()
