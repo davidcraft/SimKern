@@ -1,7 +1,7 @@
 import logging
 import sys
 
-import numpy as np
+import numpy
 from FileProcessingService import FileProcessingService
 from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
@@ -197,35 +197,6 @@ def generateMatrices(number_of_genomes, number_of_trials, third_party_program_ou
     return genomes_by_trial_matrix, kernel_matrix
 
 
-# def trainSim1SVMClassifier(output_file, genomes_matrix_file, analysis_type, num_permutations=10,training_percent = 0.3):
-#     responses = readCSVFile(output_file)
-#     matrix = readCSVFile(genomes_matrix_file)
-#     num_examples = matrix.shape[0]
-#     num_genomes = matrix.shape[1]
-#     which = np.arange(num_genomes)
-#     assert (num_examples == len(responses))
-#     svm_trainer = SupportVectorMachineTrainer(matrix,responses)
-#     results = []
-#     for i in range(0, num_permutations):
-#         order = np.random.permutation(num_examples)
-#         newmatrix = matrix[order[:, None], order]
-#         newresponses = responses[order]
-#
-#
-#         [trAcSVM, teAcSVM, totAcSVM] = runSvm(newresponses, newmatrix, "precomputed", training_per_cent)
-#
-#         # [trAcRF, teAcRF, totAcRF] = runRF(newresponses, newmatrix, training_per_cent)
-#         # results += [trAcSVM, teAcSVM, totAcSVM] + [trAcRF, teAcRF, totAcRF]
-#         results += [trAcSVM, teAcSVM, totAcSVM]
-#
-#     results = np.array(results).reshape((num_permutations,3))
-#     results = np.mean(results, axis=0)
-#     print(results, training_per_cent ,num_permutations )
-
-    # trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(matrices[1], None)
-    # return trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(number_of_genomes)
-
-
 def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type):
     responses = readCSVFile(output_file)
     matrix = readCSVFile(genomes_matrix_file)
@@ -272,7 +243,7 @@ def performMachineLearningOnSIM1(output_file):
     num_genomes = len(similarity_matrix)
 
     for permutation in range(0, num_permutations):
-        order = np.random.permutation(num_genomes)
+        order = numpy.random.permutation(num_genomes)
         train_length = int(training_percent * num_genomes)
         training_set = order[0:train_length]
         testing_set = order[train_length:len(order)]
@@ -280,6 +251,7 @@ def performMachineLearningOnSIM1(output_file):
         new_testing_matrix = []
 
         splitSimilarityMatrix(similarity_matrix, new_training_matrix, training_set)
+        # TODO: Properly split similarity matrix for testing data. Should not be a square matrix.
         splitSimilarityMatrix(similarity_matrix, new_testing_matrix, testing_set)
 
         trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(new_training_matrix, None)
@@ -294,11 +266,11 @@ def splitSimilarityMatrix(similarity_matrix, new_matrix, training_set):
         for j in range(0, len(training_set)):
             new_matrix_row.append(similarity_matrix[training_set[i], training_set[j]])
 
-        new_matrix.append(np.around(new_matrix_row, 2).tolist())
+        new_matrix.append(numpy.around(new_matrix_row, 2).tolist())
 
 
 def readCSVFile(file):
-    return np.loadtxt(open(file, "rb"), delimiter=",")
+    return numpy.loadtxt(open(file, "rb"), delimiter=",")
 
 
 if __name__ == "__main__":
