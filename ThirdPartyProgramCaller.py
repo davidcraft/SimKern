@@ -178,9 +178,9 @@ class ThirdPartyProgramCaller(object):
         self.counter = self.counter + 1
         return int(output)
 
-    def writeSim1Matrix(self, outputs, min_num_of_trials = 5):
-        current_trials = 1 + (self.counter//self.number_of_genomes)
-        if (self.counter % (2 * self.number_of_genomes) == 0) and (current_trials > min_num_of_trials):
+    def writeSim1Matrix(self, outputs, min_num_of_trials = 2):
+        current_trials = (self.counter//self.number_of_genomes)
+        if (self.counter % (1 * self.number_of_genomes) == 0) and (current_trials > min_num_of_trials):
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trials)
             self.log.info('Writing similarity matrix based on %s trials.', str(current_trials))
             sim1matrix_service.generateSimilarityMatrix(str(current_trials))
