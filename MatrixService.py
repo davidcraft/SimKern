@@ -14,6 +14,7 @@ class MatrixService(object):
         self.simulation_result = simulation_result
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
+        self.list_of_maximum = []
 
     def generateSimilarityMatrix(self, output_trials=''):
         response_list = self.generateResponseList()
@@ -99,10 +100,10 @@ class MatrixService(object):
 
     def rescaleVector(self, matrix1, matrix2):
         """take two sim1 output and return a rescaled version """
-        max1 = np.amax(matrix1, axis=1, keepdims=True)
-        max2 = np.amax(matrix2, axis=1, keepdims=True)
-        max_vector = np.max((max1, max2), axis=0)  # TODO Cache the value to improve effieciency
-        new_matrix1 = matrix1/ max_vector
+        max1 = np.amax(matrix1, axis=0, keepdims=True)
+        max2 = np.amax(matrix2, axis=0, keepdims=True)
+        max_vector = np.maximum(max1, max2)  # TODO Cache the value to improve effieciency
+        new_matrix1 = matrix1/max_vector
         new_matrix2 = matrix2/max_vector
         return new_matrix1, new_matrix2
 
