@@ -125,3 +125,25 @@ class MatrixService(object):
         if not os.path.isdir(new_directory):
             os.mkdir(new_directory)
         os.chdir(new_directory)
+
+    @staticmethod
+    def splitSimilarityMatrixForTraining(similarity_matrix, training_set):
+        # TODO: Write ITs for these static methods.
+        new_matrix = []
+        for i in range(0, len(training_set)):
+            new_matrix_row = []
+            for j in range(0, len(training_set)):
+                new_matrix_row.append(similarity_matrix[training_set[i], training_set[j]])
+
+            new_matrix.append(np.around(new_matrix_row, 2).tolist())
+        return new_matrix
+
+    @staticmethod
+    def splitSimilarityMatrixForTesting(similarity_matrix, testing_set, train_length):
+        testing_matrix = []
+        for i in range(0, len(testing_set)):
+            new_matrix_row = []
+            for j in range(0, train_length):
+                new_matrix_row.append(similarity_matrix[testing_set[i], j])
+            testing_matrix.append(new_matrix_row)
+        return testing_matrix

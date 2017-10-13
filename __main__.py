@@ -236,37 +236,38 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
 
 
 def performMachineLearningOnSIM1(output_file):
-    training_percent = .5
+    training_percent = .70
     num_permutations = 10
     similarity_matrix = readCSVFile(output_file)
 
     num_genomes = len(similarity_matrix)
+    total_accuracies = []
 
     for permutation in range(0, num_permutations):
         order = numpy.random.permutation(num_genomes)
         train_length = int(training_percent * num_genomes)
         training_set = order[0:train_length]
         testing_set = order[train_length:len(order)]
-        new_training_matrix = []
-        new_testing_matrix = []
 
-        splitSimilarityMatrix(similarity_matrix, new_training_matrix, training_set)
-        # TODO: Properly split similarity matrix for testing data. Should not be a square matrix.
-        splitSimilarityMatrix(similarity_matrix, new_testing_matrix, testing_set)
+        training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
+        testing_matrix = MatrixService.splitSimilarityMatrixForTesting(similarity_matrix, testing_set, train_length)
 
-        trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(new_training_matrix, None)
-        model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(len(new_training_matrix))
-        prediction = model.predict(new_testing_matrix)
-        log.info("SIM1 SVM model:\n%s\n Predicts: %s\n", model, prediction)
+        trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(training_matrix, None)
+        model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(training_set)
+        predictions = model.predict(testing_matrix)
+        accuracies = []
+        for i in range(0, len(predictions)):
+            actual_similarity = similarity_matrix[testing_set[i], predictions[i]]
+            accuracies.append(actual_similarity)
+            log.info("Predicts genome %s is most similar to genome %s, with actual similarity score of %s\n",
+                     testing_set[i], predictions[i], actual_similarity)
+        average_accuracy = numpy.average(accuracies)
+        log.info("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
+        total_accuracies.append(average_accuracy)
 
-
-def splitSimilarityMatrix(similarity_matrix, new_matrix, training_set):
-    for i in range(0, len(training_set)):
-        new_matrix_row = []
-        for j in range(0, len(training_set)):
-            new_matrix_row.append(similarity_matrix[training_set[i], training_set[j]])
-
-        new_matrix.append(numpy.around(new_matrix_row, 2).tolist())
+    average_total_accuracy = numpy.average(total_accuracies)
+    log.info("Total accuracy for all rounds of matrix permutations with %s percent split and %s permutations: %s",
+             training_percent * 100, num_permutations, numpy.round(average_total_accuracy, 2))
 
 
 def readCSVFile(file):

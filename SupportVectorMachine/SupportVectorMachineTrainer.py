@@ -17,14 +17,14 @@ class SupportVectorMachineTrainer(object):
         self.matrix = similarity_matrix
         self.third_party_response = third_party_response
 
-    def trainSupportVectorMachineForSIM1(self, number_of_genomes):
-        classifier_model = svm.SVC()
+    def trainSupportVectorMachineForSIM1(self, training_set):
+        multi_classifier_model = svm.SVC(decision_function_shape='ovo')
         sample_labels = []
-        for label in range(0, int(number_of_genomes)):
-            sample_labels.append("feature" + str(label))
-        classifier_model.fit(self.matrix, sample_labels)
-        self.log.info("Successful creation of classifier model: %s\n", classifier_model)
-        return classifier_model
+        for label in range(0, int(len(training_set))):
+            sample_labels.append(int(training_set.tolist()[label]))
+        multi_classifier_model.fit(self.matrix, sample_labels)
+        self.log.info("Successful creation of classifier model: %s\n", multi_classifier_model)
+        return multi_classifier_model
 
     def trainSupportVectorMachineForSIM0(self, kernel_type, pct_train):
 
@@ -126,5 +126,3 @@ class SupportVectorMachineTrainer(object):
         totAc = (count1 + count2) / (trLen + teLen)
 
         return [trAc, teAc, totAc]
-
-
