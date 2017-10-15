@@ -128,7 +128,6 @@ class MatrixService(object):
 
     @staticmethod
     def splitSimilarityMatrixForTraining(similarity_matrix, training_set):
-        # TODO: Write ITs for these static methods.
         new_matrix = []
         for i in range(0, len(training_set)):
             new_matrix_row = []

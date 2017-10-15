@@ -2,6 +2,7 @@ import logging
 import sys
 
 import numpy
+
 from FileProcessingService import FileProcessingService
 from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
@@ -10,6 +11,7 @@ from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFun
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
+from GraphingService import GraphingService
 
 log = logging.getLogger(__name__)
 logging.basicConfig()
@@ -236,13 +238,27 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
 
 
 def performMachineLearningOnSIM1(output_file):
-    training_percent = .70
-    num_permutations = 10
+    training_percents = [.1, .25, .5, .75, .9]
     similarity_matrix = readCSVFile(output_file)
+    results_by_percent_train = {}
 
+    for training_percent in training_percents:
+        accuracies_by_permutation = trainAndTestSimilarityMatrix(similarity_matrix, training_percent)
+        results_by_percent_train[training_percent] = accuracies_by_permutation
+        log.info("Total accuracy for all rounds of matrix permutations with %s percent split: %s",
+                 training_percent * 100, numpy.round(numpy.average(accuracies_by_permutation), 2))
+    log.debug("Accuracies by training percent: %s", results_by_percent_train)
+    plotMachineLearningResultsByPercentTrain(results_by_percent_train, output_file)
+
+
+def readCSVFile(file):
+    return numpy.loadtxt(open(file, "rb"), delimiter=",")
+
+
+def trainAndTestSimilarityMatrix(similarity_matrix, training_percent):
     num_genomes = len(similarity_matrix)
     total_accuracies = []
-
+    num_permutations = 100
     for permutation in range(0, num_permutations):
         order = numpy.random.permutation(num_genomes)
         train_length = int(training_percent * num_genomes)
@@ -259,19 +275,25 @@ def performMachineLearningOnSIM1(output_file):
         for i in range(0, len(predictions)):
             actual_similarity = similarity_matrix[testing_set[i], predictions[i]]
             accuracies.append(actual_similarity)
-            log.info("Predicts genome %s is most similar to genome %s, with actual similarity score of %s\n",
-                     testing_set[i], predictions[i], actual_similarity)
+            log.debug("Predicts genome %s is most similar to genome %s, with actual similarity score of %s\n",
+                       testing_set[i], predictions[i], actual_similarity)
         average_accuracy = numpy.average(accuracies)
-        log.info("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
+        log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
         total_accuracies.append(average_accuracy)
-
-    average_total_accuracy = numpy.average(total_accuracies)
-    log.info("Total accuracy for all rounds of matrix permutations with %s percent split and %s permutations: %s",
-             training_percent * 100, num_permutations, numpy.round(average_total_accuracy, 2))
+    return total_accuracies
 
 
-def readCSVFile(file):
-    return numpy.loadtxt(open(file, "rb"), delimiter=",")
+def plotMachineLearningResultsByPercentTrain(results_by_percent_train, csv_file_location):
+    try:
+        output_path = ""
+        csv_path_split = csv_file_location.split("/")
+        for i in range(1, len(csv_path_split) - 1):
+            output_path += "/" + csv_path_split[i]
+
+        graphing_service = GraphingService()
+        graphing_service.makeMultiBarPlot(results_by_percent_train, output_path)
+    except Exception as exception:
+        log.error("Unable to create or save graphs due to: %s", exception)
 
 
 if __name__ == "__main__":

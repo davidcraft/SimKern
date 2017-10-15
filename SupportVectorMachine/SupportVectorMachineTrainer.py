@@ -23,7 +23,7 @@ class SupportVectorMachineTrainer(object):
         for label in range(0, int(len(training_set))):
             sample_labels.append(int(training_set.tolist()[label]))
         multi_classifier_model.fit(self.matrix, sample_labels)
-        self.log.info("Successful creation of classifier model: %s\n", multi_classifier_model)
+        self.log.debug("Successful creation of classifier model: %s\n", multi_classifier_model)
         return multi_classifier_model
 
     def trainSupportVectorMachineForSIM0(self, kernel_type, pct_train):
@@ -46,11 +46,11 @@ class SupportVectorMachineTrainer(object):
         trPr = model.predict(train_X)
         tePr = model.predict(test_X)
         [trAc, teAc, totAc] = self.getAccuracies(trPr, train_y, tePr, test_y)
-        print("Training predictions: " + str(trPr))
-        print("Training accuracy: " + str(trAc))
-        print("Testing predictions: " + str(tePr))
-        print("Testing accuracy: " + str(teAc))
-        print("Overall accuracy: " + str(totAc))
+        self.log.info("Training predictions: " + str(trPr))
+        self.log.info("Training accuracy: " + str(trAc))
+        self.log.info("Testing predictions: " + str(tePr))
+        self.log.info("Testing accuracy: " + str(teAc))
+        self.log.info("Overall accuracy: " + str(totAc))
         return [model, [trAc, teAc, totAc]]
 
     def splitMatrix(self, responses, data, pct_train):
@@ -59,10 +59,10 @@ class SupportVectorMachineTrainer(object):
         if row_to_split_on == tot_data_length:
             test_S = None
             test_y = None
-            print("Warning: no testing data specified. Decrease pct_train to fix.")
+            self.log.info("Warning: no testing data specified. Decrease pct_train to fix.")
             return [responses, data, test_S, test_y]
         elif row_to_split_on == 0:
-            print("Error: no training data specified. Increase pct_train.")
+            self.log.info("Error: no training data specified. Increase pct_train.")
         else:
             train_y = []
             train_S = []
@@ -89,7 +89,7 @@ class SupportVectorMachineTrainer(object):
             test_y = None
             return [responses, data, test_X, test_y]
         elif row_to_split_on == 0:
-            print("Error: no training data specified. Increase pct_train.")
+            self.log.info("Error: no training data specified. Increase pct_train.")
         else:
             train_y = []
             train_X = []
