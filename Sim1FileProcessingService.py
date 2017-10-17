@@ -2,6 +2,7 @@ from FileProcessingService import FileProcessingService
 from SupportedFileTypes import SupportedFileTypes
 import os
 import re
+import collections
 
 
 class Sim1FileProcessingService(FileProcessingService):
@@ -29,7 +30,7 @@ class Sim1FileProcessingService(FileProcessingService):
         path = self.maybeCreateNewFileDirectory()
 
         for trial in range(1, self.number_of_trials + 1):
-            coefficient_map = {}
+            coefficient_map = collections.OrderedDict()
             trial_name = 'trial' + str(trial)  # Note - T
             new_trial_file = open(path + "/" + trial_name + "_genome1." + self.file_type, "w")
             sim1_file_list.append(trial_name + "_genome1." + self.file_type)
