@@ -5,6 +5,7 @@ import csv
 import numpy
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
+import collections
 
 
 class FileProcessingService(object):
@@ -35,10 +36,10 @@ class FileProcessingService(object):
 
         path = self.maybeCreateNewFileDirectory()
 
-        genomes = {}
+        genomes = collections.OrderedDict()
         for genome in range(1, self.number_of_genomes + 1):
             genome_name = file_name_root + str(genome) #Note - changed this to a parameter for SIM1
-            coefficient_map = {}
+            coefficient_map = collections.OrderedDict()
             new_genome_file = open(path + "/" + genome_name + "." + self.file_type, "w")
             genomes_file_list.append(genome_name + "." + self.file_type)
 
