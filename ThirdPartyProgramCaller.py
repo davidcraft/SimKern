@@ -75,10 +75,14 @@ class ThirdPartyProgramCaller(object):
         elif self.number_of_trials != 0:
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, self.number_of_trials)
             sim1matrix_service.generateSimilarityMatrix('final')
+            if self.response_type == SupportedThirdPartyResponses.FLOAT or self.response_type == SupportedThirdPartyResponses.INTEGER:
+                sim1matrix_service.generateResponseMatrix()
         self.changeWorkingDirectory(current_directory)
         return outputs
 
     def writeOutputFile(self, outputs, output_file_name):
+        if type(outputs) != list:
+            outputs = [outputs]
         path = os.getcwd()
         self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
         file_name = output_file_name + ".csv"
@@ -86,6 +90,8 @@ class ThirdPartyProgramCaller(object):
             try:
                 outputs_writer = csv.writer(csv_file)
                 outputs_writer.writerow(outputs)
+            except ValueError as error:
+                self.log.error("Error writing %s to file %s. %s", outputs, file_name, error)
             finally:
                 csv_file.close()
                 os.chdir(path)
@@ -177,7 +183,7 @@ class ThirdPartyProgramCaller(object):
         self.counter = self.counter + 1
         return int(output)
 
-    def writeSim1Matrix(self, outputs, min_num_of_trials = 2):
+    def writeSim1Matrix(self, outputs, min_num_of_trials=2):
         current_trials = (self.counter//self.number_of_genomes)
         if (self.counter % (1 * self.number_of_genomes) == 0) and (current_trials > min_num_of_trials):
             sim1matrix_service = MatrixService(outputs, self.number_of_genomes, current_trials)

@@ -5,6 +5,7 @@ import logging
 from sklearn import svm
 from sklearn.svm import SVC
 import numpy as np
+from scipy import stats
 
 
 class SupportVectorMachineTrainer(object):
@@ -21,7 +22,11 @@ class SupportVectorMachineTrainer(object):
         multi_classifier_model = svm.SVC(decision_function_shape='ovo')
         sample_labels = []
         for label in range(0, int(len(training_set))):
-            sample_labels.append(int(training_set.tolist()[label]))
+            # Take the mode?
+            mode = stats.mode(self.third_party_response[training_set.tolist()[label]])
+            sample_labels.append(mode[0][0])
+        if len(np.unique(sample_labels)) <= 1:
+            return None
         multi_classifier_model.fit(self.matrix, sample_labels)
         self.log.debug("Successful creation of classifier model: %s\n", multi_classifier_model)
         return multi_classifier_model
@@ -42,6 +47,9 @@ class SupportVectorMachineTrainer(object):
             [train_y, train_X, test_X, test_y] = self.splitData(response_list, self.matrix, pct_train)
 
         model = SVC(kernel=kernel_type)
+        if len(np.unique(train_y)) <= 1:
+            self.log.debug("Skipping training, as only class was found.")
+            return None
         model.fit(train_X, train_y)
         trPr = model.predict(train_X)
         tePr = model.predict(test_X)
