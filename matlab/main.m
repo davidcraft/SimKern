@@ -7,6 +7,18 @@ clc
 % - categorical variables need to be >0 for dummy coding
 % - number of trees set to 50 (to make debugging faster)
 % - search fewer hyperparameter values (to make debugging faster)
+
+% TO DO
+% - replace .classes by .outcome
+% - replace .accuracy by .performanceMetric or .metric
+% - consider replacing R2 by MSE
+% - move the condition (>0 for dummy coding) into the function for
+% simplicity
+% - consider incremental subsampling (always adding on top of the current
+% set)
+% - create outer loop that requires a path to data files for each rep
+% - 
+
 % load libsvm
 addpath('')
 %% read in data
