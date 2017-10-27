@@ -5,30 +5,28 @@ clc
 % - linear svm training takes much longer than rbf svm??
 % - rbf svm regression predicts same value
 % - categorical variables need to be >0 for dummy coding
-% - number of trees set to 50 (to make debugging faster)
-% - search fewer hyperparameter values (to make debugging faster)
+% - currently, number of trees set to 50 (to make debugging faster)
+% - currently, searching fewer hyperparameter values (to make debugging faster)
 
 % TO DO
 % - replace .classes by .outcome
 % - replace .accuracy by .performanceMetric or .metric
 % - consider replacing R2 by MSE
-% - move the condition (>0 for dummy coding) into the function for
-% simplicity
 % - consider incremental subsampling (always adding on top of the current
 % set)
 % - create outer loop that requires a path to data files for each rep
 % - 
 
 % load libsvm
-addpath('')
+addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22')
 %% read in data
 
 %read full similarity matrix
-f = '\Sim1SimilarityMatrixfinal.csv';
+f = 'C:\Users\timo.deist\Documents\sim0sim1\data\flower\Sim1SimilarityMatrixfinal.csv';
 sm =  csvread(f);
 
 %xfile needed for RF and normnal SVMs, but not used by custom kernel SVM
-xfile = '\Sim0GenomesMatrix.csv';
+xfile = 'C:\Users\timo.deist\Documents\sim0sim1\data\flower\Sim0GenomesMatrix.csv';
 x = csvread(xfile);
 
 %collapse the MUT vars into 1 [if MUT.knockdown, which is x(:,1),
@@ -36,9 +34,9 @@ x = csvread(xfile);
 %discrete 19 mutation types]
 x = horzcat(x(:,1).*x(:,2),x(:,3:end));
 unstandardizedFeatures = x;
-unstandardizedFeatures(:,1) = 1 + unstandardizedFeatures(:,1);
+% unstandardizedFeatures(:,1) = 1 + unstandardizedFeatures(:,1);
 
-yfile = '\Sim0Output.csv';
+yfile = 'C:\Users\timo.deist\Documents\sim0sim1\data\flower\Sim0Output.csv';
 y=csvread(yfile);
 y=y';
 classes = (y>= median(y)) + 0; % if you want to turn the case into a classification
