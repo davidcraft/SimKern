@@ -4,6 +4,9 @@ GenomeFiles/
 
 
 #--------------------------Generic Files & Folders ------------------------
+# MATLAB auto save files
+matlab/*.asv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
