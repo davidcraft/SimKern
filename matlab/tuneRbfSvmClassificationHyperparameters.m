@@ -6,13 +6,13 @@ for i_c = 1:numel(cValues)
         
         % trainSvm & store model
         inputString = ['-s 0 -t 2 -c ' num2str(cGrid(i_c,i_gamma)) ' -g ' num2str(gammaGrid(i_c,i_gamma)) ' -q'];
-        [svmModel{i_c,i_gamma}] = svmtrain(trainData.classes, trainData.dummycodedFeatures, inputString);
+        [svmModel{i_c,i_gamma}] = svmtrain(trainData.outcome, trainData.dummycodedFeatures, inputString);
         % testSvm on validation data
-        [predictions{i_c,i_gamma}] = svmpredict(zeros(size(validationData.classes,1),size(validationData.classes,2)),validationData.dummycodedFeatures,svmModel{i_c,i_gamma},'-q');
+        [predictions{i_c,i_gamma}] = svmpredict(zeros(size(validationData.outcome,1),size(validationData.outcome,2)),validationData.dummycodedFeatures,svmModel{i_c,i_gamma},'-q');
         
         %compute performance metric
-        %     [rSquared(i_c)] = computeRSquared(validationData.classes,predictions{i_c})
-        [accuracy(i_c,i_gamma)] = computeAccuracy(validationData.classes,predictions{i_c,i_gamma});
+        %     [rSquared(i_c)] = computeRSquared(validationData.outcome,predictions{i_c})
+        [accuracy(i_c,i_gamma)] = computeAccuracy(validationData.outcome,predictions{i_c,i_gamma});
     end
 end
 % find model with best performance metric

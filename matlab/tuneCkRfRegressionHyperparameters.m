@@ -7,14 +7,14 @@ for i_m = 1:numel(mValues)
         
         % train RF
         
-        rfModel{i_m,i_maxSplits} = TreeBagger(numTrees,trainData.sm,trainData.classes,'Method','regression', ...
+        rfModel{i_m,i_maxSplits} = TreeBagger(numTrees,trainData.sm,trainData.outcome,'Method','regression', ...
             'NumPredictorsToSample',mGrid(i_m,i_maxSplits),'MaxNumSplits',maxSplitsGrid(i_m,i_maxSplits),'CategoricalPredictors',false(1,size(trainData.sm,2)),'MaxNumCategories',numCategories);
         
         %use RF for prediction for testing set:
         baggerPredictions = predict(rfModel{i_m,i_maxSplits},validationData.sm);
         predictions{i_m,i_maxSplits} = baggerPredictions;
         %compute performance metric
-        [rSquared(i_m,i_maxSplits)] = computeRSquared(validationData.classes,predictions{i_m,i_maxSplits});
+        [rSquared(i_m,i_maxSplits)] = computeRSquared(validationData.outcome,predictions{i_m,i_maxSplits});
     end
 end
 % find model with best performance metric

@@ -4,6 +4,6 @@ function [rSquared] = predictTestDataWithRfRegression(testData,bestModel)
 baggerPredictions = predict(bestModel,testData.features);
 predictions = baggerPredictions;
 %compute performance metric
-[rSquared] = computeRSquared(testData.classes,predictions);
+[rSquared] = computeRSquared(testData.outcome,predictions);
 
 end

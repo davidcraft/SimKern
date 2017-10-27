@@ -9,7 +9,7 @@ clc
 % - currently, searching fewer hyperparameter values (to make debugging faster)
 
 % TO DO
-% - replace .classes by .outcome
+% - replace .outcome by .outcome
 % - consider replacing R2 by MSE
 % - consider incremental subsampling (always adding on top of the current
 % set)
@@ -39,14 +39,14 @@ y=csvread(yfile);
 y=y';
 
 % if you want to turn the case into a ternary classification
-classes(y < quantile(y,1/3)) = 1;
-classes( (y >= quantile(y,1/3)) & (y < quantile(y,2/3)) ) = 2;
-classes(y >= quantile(y,2/3)) = 3;
-classes = classes'; % libsvm expects column vectors
+outcome(y < quantile(y,1/3)) = 1;
+outcome( (y >= quantile(y,1/3)) & (y < quantile(y,2/3)) ) = 2;
+outcome(y >= quantile(y,2/3)) = 3;
+outcome = outcome'; % libsvm expects column vectors
 % if you want to turn the case into a binary classification
-% classes = (y>= median(y)) + 0;
+% outcome = (y>= median(y)) + 0;
 % if you want to use regression
-% classes = y; % regression
+% outcome = y; % regression
 
 %% experiment parameters
 splitRatios = [0.5 0.25 0.25];
@@ -54,9 +54,9 @@ subsamplingRatios = [0.2 0.4 0.6 0.8 1];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
 classificationBoolean = true;
 %%
-for i_reps = 1:10
+for i_reps = 1:2
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
-    classes,sm,splitRatios,classificationBoolean,subsamplingRatios,...
+    outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
     categoricalIndices);
 end
 %% plotting for a single run

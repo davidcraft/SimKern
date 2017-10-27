@@ -4,6 +4,6 @@ function [accuracy] = predictTestDataWithCkRfClassification(testData,bestModel)
 baggerPredictions = predict(bestModel,testData.sm);
 predictions = cellfun(@str2num,baggerPredictions);
 %compute performance metric
-[accuracy] = computeAccuracy(testData.classes,predictions);
+[accuracy] = computeAccuracy(testData.outcome,predictions);
 
 end

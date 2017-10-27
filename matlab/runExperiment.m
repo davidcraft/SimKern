@@ -1,8 +1,8 @@
-function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(unstandardizedFeatures,classes,sm,splitRatios,classificationBoolean,subsamplingRatios,categoricalIndices)
+function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(unstandardizedFeatures,outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,categoricalIndices)
 addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows')
 [features] = standardizeFeatures(unstandardizedFeatures,categoricalIndices);
 [dummycodedFeatures] = dummycodeCategoricalFeatures(features,categoricalIndices);
-[trainData,validationData,testData] = splitData(features,dummycodedFeatures,sm,classes,splitRatios,classificationBoolean);
+[trainData,validationData,testData] = splitData(features,dummycodedFeatures,sm,outcome,splitRatios,classificationBoolean);
 for i_subsampling = 1:numel(subsamplingRatios)
     display(['Subsampling iteration ' num2str(i_subsampling) ' of ' num2str(numel(subsamplingRatios)) '.'])
     [subsampledTrainData,subsampledValidationData,subsampledTestData] = applySubsampling(trainData,validationData,testData,subsamplingRatios(i_subsampling),classificationBoolean);
@@ -14,7 +14,7 @@ for i_subsampling = 1:numel(subsamplingRatios)
     % rbfsvm
     gammaValues = 10.^[-5 0 1];
     % rf
-    n = numel(subsampledTrainData.classes);
+    n = numel(subsampledTrainData.outcome);
     p = size(subsampledTrainData.features,2);
     mValues = [1 floor(sqrt(p)) p];
     maxSplitsValues = floor([0.05 0.5 1] * n);
@@ -28,7 +28,7 @@ for i_subsampling = 1:numel(subsamplingRatios)
     %     % rbfsvm
     %     gammaValues = 10.^[-5:1];
     %     % rf
-    %     n = numel(subsampledTrainData.classes);
+    %     n = numel(subsampledTrainData.outcome);
     %     p = size(subsampledTrainData.features,2);
     %     mValues = [1 floor((1 + sqrt(p))/2) floor(sqrt(p)) floor((sqrt(p) + p)/2) p];
     %     maxSplitsValues = floor([0.05 0.1 0.2 0.3 0.4 0.5 0.75 1] * n);

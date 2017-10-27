@@ -1,9 +1,9 @@
 function [accuracy] = predictTestDataWithCkSvmClassification(testData,bestModel)
-numeroTestSamples = numel(testData.classes);
+numeroTestSamples = numel(testData.outcome);
 % predict test data
-[predictions] = svmpredict(zeros(size(testData.classes,1),size(testData.classes,2)),[(1:numeroTestSamples)' testData.sm],bestModel,'-q');
+[predictions] = svmpredict(zeros(size(testData.outcome,1),size(testData.outcome,2)),[(1:numeroTestSamples)' testData.sm],bestModel,'-q');
 
 %compute performance metric
-[accuracy] = computeAccuracy(testData.classes,predictions);
+[accuracy] = computeAccuracy(testData.outcome,predictions);
 
 end
