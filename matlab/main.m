@@ -3,13 +3,11 @@ clc
 
 % NOTES:
 % - linear svm training takes much longer than rbf svm??
-% - rbf svm regression predicts same value
-% - categorical variables need to be >0 for dummy coding
+% - are there cases where rbf svm regression predicts same value? saw it a few times
 % - currently, number of trees set to 50 (to make debugging faster)
 % - currently, searching fewer hyperparameter values (to make debugging faster)
 
 % TO DO
-% - replace .outcome by .outcome
 % - consider replacing R2 by MSE
 % - consider incremental subsampling (always adding on top of the current
 % set)
@@ -38,42 +36,28 @@ yfile = 'C:\Users\timo.deist\Documents\sim0sim1\data\flower\Sim0Output.csv';
 y=csvread(yfile);
 y=y';
 
-% if you want to turn the case into a ternary classification
+%% if you want to turn the case into a ternary classification
 outcome(y < quantile(y,1/3)) = 1;
 outcome( (y >= quantile(y,1/3)) & (y < quantile(y,2/3)) ) = 2;
 outcome(y >= quantile(y,2/3)) = 3;
 outcome = outcome'; % libsvm expects column vectors
-% if you want to turn the case into a binary classification
+classificationBoolean = true;
+%% if you want to turn the case into a binary classification
 % outcome = (y>= median(y)) + 0;
-% if you want to use regression
+% classificationBoolean = true;
+%% if you want to use regression
 % outcome = y; % regression
-
+% classificationBoolean = false;
 %% experiment parameters
 splitRatios = [0.5 0.25 0.25];
 subsamplingRatios = [0.2 0.4 0.6 0.8 1];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
-classificationBoolean = true;
-%%
+%% the actual experiment
 for i_reps = 1:2
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
     categoricalIndices);
 end
-%% plotting for a single run
-% clf
-% hold on
-% % plot(subsamplingRatios,linSvm.perfMetric,'k-*')
-% plot(subsamplingRatios,rbfSvm.perfMetric,'b-*')
-% plot(subsamplingRatios,rf.perfMetric,'g-*')
-% plot(subsamplingRatios,ckSvm.perfMetric,'r-*')
-% xlabel('Subsampling ratio')
-% if classificationBoolean
-%     ylabel('Accuracy')
-% else
-%     ylabel('R^2')
-% end
-% legend('lin SVM','rbf SVM','rf','ck SVM')
-
 %% plotting
 rbfResult = cat(1,rbfSvm(:).perfMetric);
 rfResult = cat(1,rf(:).perfMetric);

@@ -8,32 +8,32 @@ for i_subsampling = 1:numel(subsamplingRatios)
     [subsampledTrainData,subsampledValidationData,subsampledTestData] = applySubsampling(trainData,validationData,testData,subsamplingRatios(i_subsampling),classificationBoolean);
     
     %% hyperparameters (fewer)
-    % all svm
-    cValues = 10.^[-2 0 5];
-    epsilonValues = [0.01 0.1 0.2];
-    % rbfsvm
-    gammaValues = 10.^[-5 0 1];
-    % rf
-    n = numel(subsampledTrainData.outcome);
-    p = size(subsampledTrainData.features,2);
-    mValues = [1 floor(sqrt(p)) p];
-    maxSplitsValues = floor([0.05 0.5 1] * n);
-    maxSplitsValues = min(maxSplitsValues,n-1);
-    maxSplitsValues = max(maxSplitsValues,1);
+%     % all svm
+%     cValues = 10.^[-2 0 5];
+%     epsilonValues = [0.01 0.1 0.2];
+%     % rbfsvm
+%     gammaValues = 10.^[-5 0 1];
+%     % rf
+%     n = numel(subsampledTrainData.outcome);
+%     p = size(subsampledTrainData.features,2);
+%     mValues = [1 floor(sqrt(p)) p];
+%     maxSplitsValues = floor([0.05 0.5 1] * n);
+%     maxSplitsValues = min(maxSplitsValues,n-1);
+%     maxSplitsValues = max(maxSplitsValues,1);
     
     %% hyperparameters
-    %     % all svm
-    %     cValues = 10.^[-2:5];
-    %     epsilonValues = [0.01 0.05 0.1 0.15 0.2];
-    %     % rbfsvm
-    %     gammaValues = 10.^[-5:1];
-    %     % rf
-    %     n = numel(subsampledTrainData.outcome);
-    %     p = size(subsampledTrainData.features,2);
-    %     mValues = [1 floor((1 + sqrt(p))/2) floor(sqrt(p)) floor((sqrt(p) + p)/2) p];
-    %     maxSplitsValues = floor([0.05 0.1 0.2 0.3 0.4 0.5 0.75 1] * n);
-    %     maxSplitsValues = min(maxSplitsValues,n-1);
-    %     maxSplitsValues = max(maxSplitsValues,1);
+        % all svm
+        cValues = 10.^[-2:5];
+        epsilonValues = [0.01 0.05 0.1 0.15 0.2];
+        % rbfsvm
+        gammaValues = 10.^[-5:1];
+        % rf
+        n = numel(subsampledTrainData.outcome);
+        p = size(subsampledTrainData.features,2);
+        mValues = [1 floor((1 + sqrt(p))/2) floor(sqrt(p)) floor((sqrt(p) + p)/2) p];
+        maxSplitsValues = floor([0.05 0.1 0.2 0.3 0.4 0.5 0.75 1] * n);
+        maxSplitsValues = min(maxSplitsValues,n-1);
+        maxSplitsValues = max(maxSplitsValues,1);
     
     %% differentiate between classification and regression
     if classificationBoolean

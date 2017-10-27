@@ -1,5 +1,5 @@
 function [bestModel,bestM,bestMaxSplits] = tuneCkRfRegressionHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices)
-numTrees = 50;
+numTrees = 500;
 numCategories = 25;
 [mGrid,maxSplitsGrid] = ndgrid(mValues,maxSplitsValues);
 for i_m = 1:numel(mValues)
