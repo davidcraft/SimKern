@@ -10,7 +10,7 @@ clc
 
 % TO DO
 % - replace .classes by .outcome
-% - replace .accuracy by .performanceMetric or .metric
+% - replace .accuracy by .performanceMetric or .perfMetric
 % - consider replacing R2 by MSE
 % - consider incremental subsampling (always adding on top of the current
 % set)
@@ -39,7 +39,15 @@ unstandardizedFeatures = x;
 yfile = 'C:\Users\timo.deist\Documents\sim0sim1\data\flower\Sim0Output.csv';
 y=csvread(yfile);
 y=y';
-classes = (y>= median(y)) + 0; % if you want to turn the case into a classification
+
+% if you want to turn the case into a ternary classification
+classes(y < quantile(y,1/3)) = 1;
+classes( (y >= quantile(y,1/3)) & (y < quantile(y,2/3)) ) = 2;
+classes(y >= quantile(y,2/3)) = 3;
+classes = classes'; % libsvm expects column vectors
+% if you want to turn the case into a binary classification
+% classes = (y>= median(y)) + 0;
+% if you want to use regression
 % classes = y; % regression
 
 %% experiment parameters
@@ -49,7 +57,7 @@ categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
 classificationBoolean = true;
 %%
 for i_reps = 1:10
-[linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps)] = runExperiment(unstandardizedFeatures,...
+[linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
     classes,sm,splitRatios,classificationBoolean,subsamplingRatios,...
     categoricalIndices);
 end
@@ -73,19 +81,20 @@ rbfResult = cat(1,rbfSvm(:).accuracy);
 rfResult = cat(1,rf(:).accuracy);
 ckResult = cat(1,ckSvm(:).accuracy);
 linResult = cat(1,linSvm(:).accuracy);
-
+ckRfResult = cat(1,ckRf(:).accuracy);
 clf
 hold on
-boxplot([linResult rbfResult rfResult ckResult],'position', [0.75 1.75 2.75 3.75 4.75 1 2 3 4 5 1.25 2.25 3.25 4.25 5.25 1.5 2.5 3.5 4.5 5.5],...
-    'labels',{'lin' 'lin' 'lin' 'lin' 'lin' 'rbf' 'rbf' 'rbf' 'rbf' 'rbf' 'rf' 'rf' 'rf' 'rf' 'rf' 'ck' 'ck' 'ck' 'ck' 'ck'})
+
+boxplot([linResult rbfResult rfResult ckResult ckRfResult],'position', [1 2 3 4 5 1.1 2.1 3.1 4.1 5.1 1.2 2.2 3.2 4.2 5.2 1.3 2.3 3.3 4.3 5.3 1.4 2.4 3.4 4.4 5.4],...
+    'labels',{'lin' 'lin' 'lin' 'lin' 'lin' 'rbf' 'rbf' 'rbf' 'rbf' 'rbf' 'rf' 'rf' 'rf' 'rf' 'rf' 'ck' 'ck' 'ck' 'ck' 'ck' 'ckrf' 'ckrf' 'ckrf' 'ckrf' 'ckrf'})
 xlabel('Subsampling ratio')
 if classificationBoolean
     ylabel('Accuracy')
 else
     ylabel('R^2')
 end
-line([1.625 1.625],[-100 100],'Color','k')
-line([2.625 2.625],[-100 100],'Color','k')
-line([3.625 3.625],[-100 100],'Color','k')
-line([4.625 4.625],[-100 100],'Color','k')
+line([1.7 1.7],[-100 100],'Color','k')
+line([2.7 2.7],[-100 100],'Color','k')
+line([3.7 3.7],[-100 100],'Color','k')
+line([4.7 4.7],[-100 100],'Color','k')
 
