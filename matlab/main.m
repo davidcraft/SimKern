@@ -10,12 +10,10 @@ clc
 
 % TO DO
 % - replace .classes by .outcome
-% - replace .accuracy by .performanceMetric or .perfMetric
 % - consider replacing R2 by MSE
 % - consider incremental subsampling (always adding on top of the current
 % set)
 % - create outer loop that requires a path to data files for each rep
-% - 
 
 % load libsvm
 addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22')
@@ -64,10 +62,10 @@ end
 %% plotting for a single run
 % clf
 % hold on
-% % plot(subsamplingRatios,linSvm.accuracy,'k-*')
-% plot(subsamplingRatios,rbfSvm.accuracy,'b-*')
-% plot(subsamplingRatios,rf.accuracy,'g-*')
-% plot(subsamplingRatios,ckSvm.accuracy,'r-*')
+% % plot(subsamplingRatios,linSvm.perfMetric,'k-*')
+% plot(subsamplingRatios,rbfSvm.perfMetric,'b-*')
+% plot(subsamplingRatios,rf.perfMetric,'g-*')
+% plot(subsamplingRatios,ckSvm.perfMetric,'r-*')
 % xlabel('Subsampling ratio')
 % if classificationBoolean
 %     ylabel('Accuracy')
@@ -77,11 +75,11 @@ end
 % legend('lin SVM','rbf SVM','rf','ck SVM')
 
 %% plotting
-rbfResult = cat(1,rbfSvm(:).accuracy);
-rfResult = cat(1,rf(:).accuracy);
-ckResult = cat(1,ckSvm(:).accuracy);
-linResult = cat(1,linSvm(:).accuracy);
-ckRfResult = cat(1,ckRf(:).accuracy);
+rbfResult = cat(1,rbfSvm(:).perfMetric);
+rfResult = cat(1,rf(:).perfMetric);
+ckResult = cat(1,ckSvm(:).perfMetric);
+linResult = cat(1,linSvm(:).perfMetric);
+ckRfResult = cat(1,ckRf(:).perfMetric);
 clf
 hold on
 
