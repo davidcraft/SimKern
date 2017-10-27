@@ -5,7 +5,6 @@ import logging
 from sklearn import svm
 from sklearn.svm import SVC
 import numpy as np
-from scipy import stats
 
 
 class SupportVectorMachineTrainer(object):
@@ -18,13 +17,11 @@ class SupportVectorMachineTrainer(object):
         self.matrix = similarity_matrix
         self.third_party_response = third_party_response
 
-    def trainSupportVectorMachineForSIM1(self, training_set):
-        multi_classifier_model = svm.SVC(decision_function_shape='ovo')
+    def trainSupportVectorMachineForSIM1(self, training_set, kernel_type):
+        multi_classifier_model = svm.SVC(kernel=kernel_type)
         sample_labels = []
         for label in range(0, int(len(training_set))):
-            # Take the mode?
-            mode = stats.mode(self.third_party_response[training_set.tolist()[label]])
-            sample_labels.append(mode[0][0])
+            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
         if len(np.unique(sample_labels)) <= 1:
             return None
         multi_classifier_model.fit(self.matrix, sample_labels)
@@ -32,7 +29,6 @@ class SupportVectorMachineTrainer(object):
         return multi_classifier_model
 
     def trainSupportVectorMachineForSIM0(self, kernel_type, pct_train):
-
         # Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"
         if (type(self.third_party_response) != np.ndarray) & (type(self.third_party_response) != list):
             response_list = []

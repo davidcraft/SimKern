@@ -2,7 +2,6 @@ import logging
 import sys
 
 import numpy
-from scipy import stats
 
 
 from FileProcessingService import FileProcessingService
@@ -74,7 +73,8 @@ def main():
         log.info("Machine Learning on SIM1 data requested...")
         if len(arguments) is not 3:
             log.info("Program expects 3 arguments: an integer expressing the desired action from the main menu, "
-                     "a Sim1Responses.csv file and a Sim1SimilarityMatrix.csv file.")
+                     "a file Sim0Output.csv file expressing the third party program results of SIM0,"
+                     "and a Sim1SimilarityMatrix.csv file.")
             return
         output_file = arguments[1]
         similarity_matrix = arguments[2]
@@ -242,7 +242,7 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
 
 
 def performMachineLearningOnSIM1(output_file, similarity_matrix_file):
-    training_percents = [.1, .25, .5, .75, .9]
+    training_percents = [.25, .5, .75, .9]
     responses = readCSVFile(output_file)
     similarity_matrix = readCSVFile(similarity_matrix_file)
     results_by_percent_train = {}
@@ -274,19 +274,21 @@ def trainAndTestSimilarityMatrix(similarity_matrix, training_percent, responses)
         testing_matrix = MatrixService.splitSimilarityMatrixForTesting(similarity_matrix, testing_set, train_length)
 
         trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(training_matrix, responses)
-        model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(training_set)
+        model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(training_set,
+                                                                              SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION)
         if model is None:
             continue
         predictions = model.predict(testing_matrix)
         accuracies = []
         for i in range(0, len(predictions)):
-            mode_of_real_responses = stats.mode(responses[testing_set[i]])[0][0]
+            genome = testing_set[i]
+            real_response = responses[genome]
+            prediction = predictions[i]
             accuracy = 0
-            if mode_of_real_responses == predictions[i]:
+            if real_response == prediction:
                 accuracy = 1
             accuracies.append(accuracy)
-            # log.debug("Predicts genome %s is most similar to genome %s, with actual similarity score of %s\n",
-            #            testing_set[i], predictions[i], accuracy)
+            log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,real_response)
         average_accuracy = numpy.average(accuracies)
         log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
         total_accuracies.append(average_accuracy)
