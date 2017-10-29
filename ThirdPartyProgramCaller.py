@@ -112,13 +112,15 @@ class ThirdPartyProgramCaller(object):
                 return []
         else:
             try:
+                # if output is '':
+                #     output = -1
                 response_number = self.response_type(output)
                 return response_number
             except TypeError as type_error:
                 self.log.error(type_error)
                 return self.response_type(-1)
 
-    def callMatlabAPI(self,outputs):
+    def callMatlabAPI(self, outputs):
         import matlab.engine
         self.log.info('Using the matlab api hook')
         eng = matlab.engine.start_matlab('-nojvm -nodisplay -nosplash -nodesktop')

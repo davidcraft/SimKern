@@ -29,7 +29,7 @@ def main():
         log.info("SIM0 genome creation requested...")
         if len(arguments) is not 4:
             log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
-                     "a file expressing differential equations, an integer representing number of genomes to create, "
+                     "a master SIM0 file, an integer representing number of genomes to create, "
                      "and a path to store generated files\n")
             return
         input_file = arguments[1]
@@ -44,9 +44,8 @@ def main():
         log.info("SIM1 genome creation requested...")
         if len(arguments) is not 5:
             log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
-                     "a file expressing differential equations, an integer representing number of genomes to "
-                     "create (K), another integer representing trials for each genome (R) and a path to store "
-                     "generated files\n")
+                     "a master SIM1 file, an integer representing number of genomes to create (K), another "
+                     "integer representing trials for each genome (R) and a path to store generated files\n")
             return
         input_file = arguments[1]
         number_of_genomes = arguments[2]
@@ -242,7 +241,7 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
 
 
 def performMachineLearningOnSIM1(output_file, similarity_matrix_file):
-    training_percents = [.25, .5, .75, .9]
+    training_percents = [.1, .25, .5, .75, .9]
     responses = readCSVFile(output_file)
     similarity_matrix = readCSVFile(similarity_matrix_file)
     results_by_percent_train = {}
@@ -264,35 +263,57 @@ def trainAndTestSimilarityMatrix(similarity_matrix, training_percent, responses)
     num_genomes = len(similarity_matrix)
     total_accuracies = []
     num_permutations = 100
+    num_optimizations = 10
     for permutation in range(0, num_permutations):
-        order = numpy.random.permutation(num_genomes)
-        train_length = int(training_percent * num_genomes)
-        training_set = order[0:train_length]
-        testing_set = order[train_length:len(order)]
+        most_accurate_model = None
+        most_accurate_model_score = 0
+        testing_set = None
+        testing_matrix = None
+        for hyperparameter_optimization in range(0, num_optimizations):
+            order = numpy.random.permutation(num_genomes)
+            train_length = int(training_percent * num_genomes)
+            validation_length = int((num_genomes - train_length) / 4)  # 25% of testing set.
 
-        training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
-        testing_matrix = MatrixService.splitSimilarityMatrixForTesting(similarity_matrix, testing_set, train_length)
+            training_set = order[0:train_length]
+            validation_set = order[train_length: (train_length + validation_length)]
+            testing_set = order[(train_length + validation_length):len(order)]
 
-        trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(training_matrix, responses)
-        model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(training_set,
-                                                                              SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION)
-        if model is None:
-            continue
-        predictions = model.predict(testing_matrix)
-        accuracies = []
-        for i in range(0, len(predictions)):
-            genome = testing_set[i]
-            real_response = responses[genome]
-            prediction = predictions[i]
-            accuracy = 0
-            if real_response == prediction:
-                accuracy = 1
-            accuracies.append(accuracy)
-            log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,real_response)
-        average_accuracy = numpy.average(accuracies)
+            training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
+            validation_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
+                                                                                           validation_set, train_length)
+            testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
+                                                                                        testing_set, train_length)
+
+            trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(training_matrix, responses)
+            model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(training_set)
+            model_score = predictAverageAccuracy(model, responses, validation_matrix, validation_set)
+            if model_score <= most_accurate_model_score:
+                continue
+            most_accurate_model = model
+            most_accurate_model_score = model_score
+        average_accuracy = predictAverageAccuracy(most_accurate_model, responses, testing_matrix, testing_set)
         log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
         total_accuracies.append(average_accuracy)
     return total_accuracies
+
+
+def predictAverageAccuracy(model, responses, testing_matrix, testing_set):
+    if model is None:
+        return 0
+    predictions = model.predict(testing_matrix)
+    accuracies = []
+    for i in range(0, len(predictions)):
+        genome = testing_set[i]
+        real_response = responses[genome]
+        prediction = predictions[i]
+        accuracy = 0
+        if real_response == prediction:
+            accuracy = 1
+        accuracies.append(accuracy)
+        log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction, real_response)
+    average_accuracy = numpy.average(accuracies)
+    log.debug("Average Accuracy for C-value %s: %s", model.C, average_accuracy)
+    return average_accuracy
 
 
 def plotMachineLearningResultsByPercentTrain(results_by_percent_train, csv_file_location):

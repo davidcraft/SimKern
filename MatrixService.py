@@ -147,7 +147,7 @@ class MatrixService(object):
         return new_matrix
 
     @staticmethod
-    def splitSimilarityMatrixForTesting(similarity_matrix, testing_set, train_length):
+    def splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set, train_length):
         testing_matrix = []
         for i in range(0, len(testing_set)):
             new_matrix_row = []

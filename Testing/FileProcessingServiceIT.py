@@ -59,7 +59,6 @@ class FileProcessingServiceIT(unittest.TestCase):
         created_files = [file for file in os.listdir(self.generated_folder)]
         assert len(created_files) == (2 * number_of_genomes) + 1
         assert len([file for file in created_files if re.findall(r'.*_key.*', file)]) == number_of_genomes
-        assert len([file for file in created_files if re.findall(r'\.' + file_type + '', file)]) == (2 * number_of_genomes)
 
     def testSim1FileProcessingServiceForOctave(self):
         data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
