@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestEpsilon] = tuneCkSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
+function [bestModel,bestC,bestEpsilon,bestRSquared] = tuneCkSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
 numeroTrainSamples = numel(trainData.outcome);
 numeroValidationSamples = numel(validationData.outcome);
 [cGrid,epsilonGrid] = ndgrid(cValues,epsilonValues);
@@ -16,7 +16,7 @@ for i_c = 1:numel(cValues)
     end
 end
 % find model with best performance metric
-[~ ,maxInd] = max(rSquared(:));
+[bestRSquared,maxInd] = max(rSquared(:));
 % return best C & model
 bestC = cGrid(maxInd);
 bestEpsilon = epsilonGrid(maxInd);

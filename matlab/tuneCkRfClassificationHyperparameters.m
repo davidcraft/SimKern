@@ -1,4 +1,4 @@
-function [bestModel,bestM,bestMaxSplits] = tuneCkRfClassificationHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
+function [bestModel,bestM,bestMaxSplits,bestAccuracy] = tuneCkRfClassificationHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
 numCategories = 25;
 [mGrid,maxSplitsGrid] = ndgrid(mValues,maxSplitsValues);
 for i_m = 1:numel(mValues)
@@ -18,7 +18,7 @@ for i_m = 1:numel(mValues)
     end
 end
 % find model with best performance metric
-[~ ,maxInd] = max(accuracy(:));
+[bestAccuracy,maxInd] = max(accuracy(:));
 % return best C & model
 bestM = mGrid(maxInd);
 bestMaxSplits = maxSplitsGrid(maxInd);

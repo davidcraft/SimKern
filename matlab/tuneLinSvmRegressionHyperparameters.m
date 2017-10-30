@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestEpsilon] = tuneLinSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
+function [bestModel,bestC,bestEpsilon,bestRSquared] = tuneLinSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
 
 [cGrid,epsilonGrid] = ndgrid(cValues,epsilonValues);
 for i_c = 1:numel(cValues)
@@ -14,7 +14,7 @@ for i_c = 1:numel(cValues)
     end
 end
 % find model with best performance metric
-[~ ,maxInd] = max(rSquared(:));
+[bestRSquared,maxInd] = max(rSquared(:));
 
 % return best hyperparameters & model
 bestC = cGrid(maxInd);

@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestGamma] = tuneRbfSvmClassificationHyperparameters(trainData,validationData,cValues,gammaValues)
+function [bestModel,bestC,bestGamma,bestAccuracy] = tuneRbfSvmClassificationHyperparameters(trainData,validationData,cValues,gammaValues)
 
 [cGrid,gammaGrid] = ndgrid(cValues,gammaValues);
 for i_c = 1:numel(cValues)
@@ -16,7 +16,7 @@ for i_c = 1:numel(cValues)
     end
 end
 % find model with best performance metric
-[~ ,maxInd] = max(accuracy(:));
+[bestAccuracy,maxInd] = max(accuracy(:));
 % return best C & model
 bestC = cGrid(maxInd);
 bestGamma = gammaGrid(maxInd);

@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestGamma,bestEpsilon] = tuneRbfSvmRegressionHyperparameters(trainData,validationData,cValues,gammaValues,epsilonValues)
+function [bestModel,bestC,bestGamma,bestEpsilon,bestRSquared] = tuneRbfSvmRegressionHyperparameters(trainData,validationData,cValues,gammaValues,epsilonValues)
 
 [cGrid,gammaGrid,epsilonGrid] = ndgrid(cValues,gammaValues,epsilonValues);
 for i_c = 1:numel(cValues)
@@ -17,7 +17,7 @@ for i_c = 1:numel(cValues)
     end
 end
 % find model with best performance metric
-[~ ,maxInd] = max(rSquared(:));
+[bestRSquared,maxInd] = max(rSquared(:));
 % return best C & model
 bestC = cGrid(maxInd);
 bestGamma = gammaGrid(maxInd);
