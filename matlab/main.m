@@ -1,6 +1,6 @@
 clear
 clc
-
+tic
 % NOTES:
 % - linear svm training takes much longer than rbf svm??
 % - are there cases where rbf svm regression predicts same value? saw it a few times
@@ -53,11 +53,12 @@ splitRatios = [0.5 0.25 0.25];
 subsamplingRatios = [0.2 0.4 0.6 0.8 1];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
 %% the actual experiment
-for i_reps = 1:2
+for i_reps = 1:1
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
     categoricalIndices);
 end
+totalRunningTime = toc
 %% plotting
 rbfResult = cat(1,rbfSvm(:).perfMetric);
 rfResult = cat(1,rf(:).perfMetric);
@@ -80,3 +81,4 @@ line([2.7 2.7],[-100 100],'Color','k')
 line([3.7 3.7],[-100 100],'Color','k')
 line([4.7 4.7],[-100 100],'Color','k')
 
+ save('flower_1rep_dump')
