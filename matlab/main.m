@@ -4,6 +4,7 @@ tic
 % NOTES:
 
 % TO DO
+% - save final models separately to avoid massive .mat files
 % - consider replacing R2 by MSE
 % - consider incremental subsampling (always adding on top of the current
 % set)
