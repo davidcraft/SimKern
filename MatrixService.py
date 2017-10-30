@@ -20,8 +20,18 @@ class MatrixService(object):
         response_list = self.generateResponseList()
         index_matrix = self.generateIndexMatrix()
         similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, weight_vector=None)
-        self.writeDataFile(similarity_matrix, output_trials)
+        self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
         return similarity_matrix
+
+    def generateResponseMatrix(self):
+        response_matrix = []
+        results_by_genome = []
+        for result in self.simulation_result.values():
+            results_by_genome.append(result)
+            if len(results_by_genome) >= self.number_of_trials:
+                response_matrix.append(results_by_genome)
+                results_by_genome = []
+        self.writeDataFile(response_matrix, "Sim1Responses.csv")
 
     def generateIndexMatrix(self):
         """return a matrix with the dimensions as number of trials * (number of genomes *
@@ -55,7 +65,7 @@ class MatrixService(object):
                     kernel[i][j] = score
                     kernel[j][i] = score
         else:
-            valid_trial_list = self.getValidTrials(response_list,index_matrix)
+            valid_trial_list = self.getValidTrials(response_list, index_matrix)
             for i in range(0, self.number_of_genomes - 1):
                 for j in range(i + 1, self.number_of_genomes):
                     num_valid = 0
@@ -107,15 +117,14 @@ class MatrixService(object):
         new_matrix2 = matrix2/max_vector
         return new_matrix1, new_matrix2
 
-    def writeDataFile(self, similarity_matrix, output_trials):
+    def writeDataFile(self, matrix, file_name):
         path = os.getcwd()
         self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
-        file_name = self.OUTPUT_FILE_NAME + output_trials + ".csv"
         with open(file_name, 'w') as csv_file:
             try:
                 data_writer = csv.writer(csv_file)
                 for i in range(0, self.number_of_genomes):
-                    data_writer.writerow(similarity_matrix[i])
+                    data_writer.writerow(matrix[i])
             finally:
                 csv_file.close()
                 os.chdir(path)
@@ -138,7 +147,7 @@ class MatrixService(object):
         return new_matrix
 
     @staticmethod
-    def splitSimilarityMatrixForTesting(similarity_matrix, testing_set, train_length):
+    def splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set, train_length):
         testing_matrix = []
         for i in range(0, len(testing_set)):
             new_matrix_row = []

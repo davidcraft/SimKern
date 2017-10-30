@@ -5,6 +5,9 @@ import logging
 from sklearn import svm
 from sklearn.svm import SVC
 import numpy as np
+import random
+
+from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 
 
 class SupportVectorMachineTrainer(object):
@@ -18,16 +21,19 @@ class SupportVectorMachineTrainer(object):
         self.third_party_response = third_party_response
 
     def trainSupportVectorMachineForSIM1(self, training_set):
-        multi_classifier_model = svm.SVC(decision_function_shape='ovo')
+        c_value = random.uniform(0, 10)
+        kernel_type = SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION
+        multi_classifier_model = svm.SVC(kernel=kernel_type, C=c_value)
         sample_labels = []
         for label in range(0, int(len(training_set))):
-            sample_labels.append(int(training_set.tolist()[label]))
+            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
+        if len(np.unique(sample_labels)) <= 1:
+            return None
         multi_classifier_model.fit(self.matrix, sample_labels)
         self.log.debug("Successful creation of classifier model: %s\n", multi_classifier_model)
         return multi_classifier_model
 
     def trainSupportVectorMachineForSIM0(self, kernel_type, pct_train):
-
         # Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"
         if (type(self.third_party_response) != np.ndarray) & (type(self.third_party_response) != list):
             response_list = []
@@ -42,6 +48,9 @@ class SupportVectorMachineTrainer(object):
             [train_y, train_X, test_X, test_y] = self.splitData(response_list, self.matrix, pct_train)
 
         model = SVC(kernel=kernel_type)
+        if len(np.unique(train_y)) <= 1:
+            self.log.debug("Skipping training, as only class was found.")
+            return None
         model.fit(train_X, train_y)
         trPr = model.predict(train_X)
         tePr = model.predict(test_X)
