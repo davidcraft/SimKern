@@ -96,21 +96,9 @@ class ThirdPartyProgramCaller(object):
         (out, err) = proc.communicate()
         self.log.info("Output result from file %s: %s", call_file, out)
         output = out.strip()
+        output = self.reshapeOutput(output)
+        return output
 
-        if self.response_type == SupportedThirdPartyResponses.VECTOR:
-            try:
-                response_vector = output.split("\n")
-                return response_vector
-            except TypeError as type_error:
-                self.log.error(type_error)
-                return []
-        else:
-            try:
-                response_number = self.response_type(output)
-                return response_number
-            except TypeError as type_error:
-                self.log.error(type_error)
-                return self.response_type(-1)
 
     def callMatlabAPI(self,outputs):
         import matlab.engine
@@ -144,27 +132,8 @@ class ThirdPartyProgramCaller(object):
         output = out[first + 1:second]
         output = output.strip()
         output = output.split()
-        if len(output) == 1:
-            try:
-                output = int(output[0])
-                return output
-            except TypeError as type_error:
-                self.log.error(type_error)
-                return self.response_type(-1)
-        else:
-            try:
-                n = int(output[0])
-                t = int(output[1])
-                output = output[2:]
-                output = [float(i) for i in output]
-                assert ((n * t) == len(output))
-                response_vector = np.array(output).reshape((n,t))#reconstruct the origianl matrix
-                print(response_vector)
-                return response_vector
-
-            except TypeError as type_error:
-                self.log.error(type_error)
-                return []
+        output = self.reshapeOutput(output)
+        return output
 
     def callR(self, directory_of_file, call_file):
         cmd = 'Rscript ' + directory_of_file + "/" + call_file
@@ -188,3 +157,24 @@ class ThirdPartyProgramCaller(object):
         if not os.path.isdir(new_directory):
             os.mkdir(new_directory)
         os.chdir(new_directory)
+
+    def reshapeOutput(self,output):
+        if len(output) == 1:
+            try:
+                output = int(output[0])
+                return output
+            except TypeError as type_error:
+                self.log.error(type_error)
+                return self.response_type(-1)
+        else:
+            try:
+                t = int(output[0])
+                n = int(output[1])
+                output = output[2:]
+                output = [float(i) for i in output]
+                assert ((n * t) == len(output))
+                response_vector = np.array(output).reshape((t,n))#reconstruct the origianl matrix
+                return response_vector
+            except TypeError as type_error:
+                self.log.error(type_error)
+                return []
