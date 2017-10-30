@@ -5,6 +5,9 @@ import logging
 from sklearn import svm
 from sklearn.svm import SVC
 import numpy as np
+import random
+
+from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 
 
 class SupportVectorMachineTrainer(object):
@@ -17,8 +20,10 @@ class SupportVectorMachineTrainer(object):
         self.matrix = similarity_matrix
         self.third_party_response = third_party_response
 
-    def trainSupportVectorMachineForSIM1(self, training_set, kernel_type):
-        multi_classifier_model = svm.SVC(kernel=kernel_type)
+    def trainSupportVectorMachineForSIM1(self, training_set):
+        c_value = random.uniform(0, 10)
+        kernel_type = SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION
+        multi_classifier_model = svm.SVC(kernel=kernel_type, C=c_value)
         sample_labels = []
         for label in range(0, int(len(training_set))):
             sample_labels.append(self.third_party_response[training_set.tolist()[label]])

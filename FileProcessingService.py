@@ -191,7 +191,10 @@ class FileProcessingService(object):
 
     def writeGenomesKeyFilesToDirectory(self, genomes, path):
         for genome in genomes.keys():
-            new_genome_file = open(path + "/" + genome + "_key." + self.file_type, "w")
+            key_file_extension = self.file_type
+            if key_file_extension == SupportedFileTypes.OCTAVE:
+                key_file_extension = SupportedFileTypes.MATLAB
+            new_genome_file = open(path + "/" + genome + "_key." + key_file_extension, "w")
             for value in genomes[genome].keys():
                 if self.file_type == SupportedFileTypes.MATLAB or SupportedFileTypes.OCTAVE:
                     new_genome_file.write(str(value) + "=" + str(genomes[genome][value]) + ";" + "\n")

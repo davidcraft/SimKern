@@ -55,7 +55,7 @@ class MatrixServiceIT(unittest.TestCase):
         assert len(training_matrix) is train_length and len(training_matrix[0]) is train_length
         self.validateSimilarityMatrix(training_matrix, train_length)
 
-        testing_matrix = matrix_service.splitSimilarityMatrixForTesting(similarity_matrix_as_matrix, testing_set, train_length)
+        testing_matrix = matrix_service.splitSimilarityMatrixForTestingAndValidation(similarity_matrix_as_matrix, testing_set, train_length)
         assert len(testing_matrix) is len(testing_set) and len(testing_matrix[0]) is train_length
         for i in range(0, len(testing_matrix)):
             for j in range(0, len(testing_matrix[i])):
