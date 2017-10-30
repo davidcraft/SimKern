@@ -1,5 +1,4 @@
-function [bestModel,bestM,bestMaxSplits] = tuneCkRfClassificationHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices)
-numTrees = 500;
+function [bestModel,bestM,bestMaxSplits] = tuneCkRfClassificationHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
 numCategories = 25;
 [mGrid,maxSplitsGrid] = ndgrid(mValues,maxSplitsValues);
 for i_m = 1:numel(mValues)
@@ -7,7 +6,7 @@ for i_m = 1:numel(mValues)
         
         % train RF
         
-        rfModel{i_m,i_maxSplits} = TreeBagger(numTrees,trainData.sm,trainData.outcome,'Method','classification', ...
+        rfModel{i_m,i_maxSplits} = TreeBagger(numeroTrees,trainData.sm,trainData.outcome,'Method','classification', ...
             'NumPredictorsToSample',mGrid(i_m,i_maxSplits),'MaxNumSplits',maxSplitsGrid(i_m,i_maxSplits),'CategoricalPredictors',false(1,size(trainData.sm,2)),'MaxNumCategories',numCategories);
         
         %use RF for prediction for testing set:

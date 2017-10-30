@@ -16,5 +16,4 @@ end
 % return best C & model
 bestC = cValues(maxInd);
 bestModel = linSvmModel{maxInd};
-
 end

@@ -11,7 +11,7 @@ tic
 % - create outer loop that requires a path to data files for each rep
 
 % load libsvm
-addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22')
+addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows')
 %% read in data
 
 %read full similarity matrix
@@ -49,11 +49,13 @@ classificationBoolean = true;
 splitRatios = [0.5 0.25 0.25];
 subsamplingRatios = [0.2 0.4 0.6 0.8 1];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
+debuggingBoolean = false;
+numeroTrees = 2;
 %% the actual experiment
 for i_reps = 1:1
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
-    categoricalIndices);
+    categoricalIndices,numeroTrees,debuggingBoolean);
 end
 totalRunningTime = toc
 %% plotting
