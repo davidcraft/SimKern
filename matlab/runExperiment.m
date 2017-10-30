@@ -1,5 +1,4 @@
 function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(unstandardizedFeatures,outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,categoricalIndices)
-addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows')
 [features] = standardizeFeatures(unstandardizedFeatures,categoricalIndices);
 [dummycodedFeatures] = dummycodeCategoricalFeatures(features,categoricalIndices);
 [trainData,validationData,testData] = splitData(features,dummycodedFeatures,sm,outcome,splitRatios,classificationBoolean);

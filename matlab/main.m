@@ -2,10 +2,6 @@ clear
 clc
 tic
 % NOTES:
-% - linear svm training takes much longer than rbf svm??
-% - are there cases where rbf svm regression predicts same value? saw it a few times
-% - currently, number of trees set to 50 (to make debugging faster)
-% - currently, searching fewer hyperparameter values (to make debugging faster)
 
 % TO DO
 % - consider replacing R2 by MSE
