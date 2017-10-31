@@ -1,4 +1,4 @@
-function [bestModel,bestC] = tuneLinSvmClassificationHyperparameters(trainData,validationData,cValues)
+function [bestModel,bestC,bestAccuracy] = tuneLinSvmClassificationHyperparameters(trainData,validationData,cValues)
 %NOTE: code structure is different than for algorithms with multiple
 % hyperparameters! e.g., no grid. Compare tuneRbfSvmClassificationHyperparameters()
 for i_c = 1:numel(cValues)
@@ -12,9 +12,8 @@ for i_c = 1:numel(cValues)
     [accuracy(i_c)] = computeAccuracy(validationData.outcome,predictions{i_c});
 end
 % find model with best performance metric
-[~ ,maxInd] = max(accuracy);
+[bestAccuracy,maxInd] = max(accuracy);
 % return best C & model
 bestC = cValues(maxInd);
 bestModel = linSvmModel{maxInd};
-
 end

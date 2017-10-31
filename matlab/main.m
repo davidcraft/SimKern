@@ -4,13 +4,14 @@ tic
 % NOTES:
 
 % TO DO
+% - save final models separately to avoid massive .mat files
 % - consider replacing R2 by MSE
 % - consider incremental subsampling (always adding on top of the current
 % set)
 % - create outer loop that requires a path to data files for each rep
 
 % load libsvm
-addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22')
+addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows')
 %% read in data
 
 %read full similarity matrix
@@ -33,26 +34,28 @@ y=csvread(yfile);
 y=y';
 
 %% if you want to turn the case into a ternary classification
-outcome(y < quantile(y,1/3)) = 1;
-outcome( (y >= quantile(y,1/3)) & (y < quantile(y,2/3)) ) = 2;
-outcome(y >= quantile(y,2/3)) = 3;
-outcome = outcome'; % libsvm expects column vectors
-classificationBoolean = true;
+% outcome(y < quantile(y,1/3)) = 1;
+% outcome( (y >= quantile(y,1/3)) & (y < quantile(y,2/3)) ) = 2;
+% outcome(y >= quantile(y,2/3)) = 3;
+% outcome = outcome'; % libsvm expects column vectors
+% classificationBoolean = true;
 %% if you want to turn the case into a binary classification
 % outcome = (y>= median(y)) + 0;
 % classificationBoolean = true;
 %% if you want to use regression
-% outcome = y; % regression
-% classificationBoolean = false;
+outcome = y; % regression
+classificationBoolean = false;
 %% experiment parameters
 splitRatios = [0.5 0.25 0.25];
 subsamplingRatios = [0.2 0.4 0.6 0.8 1];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
+debuggingBoolean = true; % set to true if you want to use fewer hyperparameters to speed up the process
+numeroTrees = 50; % number of trees for all RFs
 %% the actual experiment
-for i_reps = 1:1
+for i_reps = 1:10
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
-    categoricalIndices);
+    categoricalIndices,numeroTrees,debuggingBoolean);
 end
 totalRunningTime = toc
 %% plotting
