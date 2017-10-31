@@ -102,6 +102,7 @@ class ThirdPartyProgramCaller(object):
         (out, err) = proc.communicate()
         self.log.info("Output result from file %s: %s", call_file, out)
         output = out.strip()
+        output = output.split()
         output = self.reshapeOutput(output)
         return output
 
