@@ -24,13 +24,9 @@ class MatrixService(object):
         return similarity_matrix
 
     def generateResponseMatrix(self):
-        response_matrix = []
-        results_by_genome = []
-        for result in self.simulation_result.values():
-            results_by_genome.append(result)
-            if len(results_by_genome) >= self.number_of_trials:
-                response_matrix.append(results_by_genome)
-                results_by_genome = []
+        response_list = self.generateResponseList()
+        response_list= np.array(response_list)
+        response_matrix = response_list.reshape(self.number_of_trials,-1)
         self.writeDataFile(response_matrix, "Sim1Responses.csv")
 
     def generateIndexMatrix(self):
