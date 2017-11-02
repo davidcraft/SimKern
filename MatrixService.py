@@ -25,7 +25,7 @@ class MatrixService(object):
 
     def generateResponseMatrix(self):
         response_list = self.generateResponseList()
-        response_list= np.array(response_list)
+        response_list = np.array(response_list)
         response_matrix = response_list.reshape(self.number_of_trials,-1)
         self.writeDataFile(response_matrix, "Sim1Responses.csv")
 
@@ -116,10 +116,11 @@ class MatrixService(object):
     def writeDataFile(self, matrix, file_name):
         path = os.getcwd()
         self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
+        n, m = matrix.shape
         with open(file_name, 'w') as csv_file:
             try:
                 data_writer = csv.writer(csv_file)
-                for i in range(0, self.number_of_genomes):
+                for i in range(0, n):
                     data_writer.writerow(matrix[i])
             finally:
                 csv_file.close()
