@@ -1,6 +1,9 @@
 function [dummycodedData] = dummycodeCategoricalFeatures(data,categoricalIndices)
-% dummy code the categorical features and put them at the front of the
-% feature matrix
+% dummy code/one-hot encode the categorical features and put them at the front of the
+% feature matrix.
+% Note: for regression with a constant variable, one of the columns will have
+% to be deleted for each variable in order to avoid rank deficiency/'the
+% dummy variable trap'.
 
 if any(categoricalIndices) % only apply dummy coding if there are categorical variables
     categoricalFeatures = data(:,categoricalIndices);
