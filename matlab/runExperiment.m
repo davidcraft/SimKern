@@ -15,12 +15,12 @@ function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(...
 % classificationBoolean: a boolean that is true if it is a classification
 % problem and false if it is a regression problem
 % subsamplingRatios: a vector with values between 0 and 1. it has one entry
-% for each time you want to train all models with a random subsample of 
+% for each time you want to train all models with a random subsample of
 % the training set with the provided percentage of the training data
 % categoricalIndices: a vector of logicals indicating which variables in
 % standardizedFeatures are categorical features
 % numeroTrees: the number of trees learned by rf and custom kernel rf
-% debuggingBoolean: a boolean which is true if you want to use a smaller 
+% debuggingBoolean: a boolean which is true if you want to use a smaller
 % grid to search the hyperparameter space
 % OUTPUTS:
 % a struct for each classifier containing information for each instance of the
@@ -31,17 +31,17 @@ function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(...
 % evaluation on the validation data
 % .bestTuningPerfMetric: the performance metric for the chosen model on the
 % validation set (the best in hyperparameter tuning)
-% .perfMetric: the performance metric on the test set 
+% .perfMetric: the performance metric on the test set
 
 % see .m files of functions for code annotations
 [features] = standardizeFeatures(unstandardizedFeatures,categoricalIndices);
 [dummycodedFeatures] = dummycodeCategoricalFeatures(features,categoricalIndices);
 [trainData,validationData,testData] = splitData(features,dummycodedFeatures,sm,outcome,splitRatios,classificationBoolean);
 
-% repeat hyperparameter tuning and evaluation on test set for each 
+% repeat hyperparameter tuning and evaluation on test set for each
 % subsampling iteration of the trainingset
 for i_subsampling = 1:numel(subsamplingRatios)
-    display(['Subsampling iteration ' num2str(i_subsampling) ' of ' num2str(numel(subsamplingRatios)) '.'])
+    disp(['Subsampling iteration ' num2str(i_subsampling) ' of ' num2str(numel(subsamplingRatios)) '.'])
     [subsampledTrainData,subsampledValidationData,subsampledTestData] = applySubsampling(trainData,validationData,testData,subsamplingRatios(i_subsampling),classificationBoolean);
     
     if debuggingBoolean
@@ -80,58 +80,48 @@ for i_subsampling = 1:numel(subsamplingRatios)
     %% choosing model with best HPs on validation data
     if classificationBoolean
         [rf.bestModel{i_subsampling},rf.bestM(i_subsampling),rf.bestMaxSplits(i_subsampling),rf.bestTuningPerfMetric(i_subsampling)] = tuneRfClassificationHyperparameters(subsampledTrainData,subsampledValidationData,mValuesNaive,maxSplitsValues,categoricalIndices,numeroTrees);
-        display(['Tuned RF: m = ' num2str(rf.bestM(i_subsampling)) ', maxSplits = ' num2str(rf.bestMaxSplits(i_subsampling)) ' with accuracy = ' num2str(rf.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned RF: m = ' num2str(rf.bestM(i_subsampling)) ', maxSplits = ' num2str(rf.bestMaxSplits(i_subsampling)) ' with accuracy = ' num2str(rf.bestTuningPerfMetric(i_subsampling)) '.'])
         [linSvm.bestModel{i_subsampling},linSvm.bestC(i_subsampling),linSvm.bestTuningPerfMetric(i_subsampling)] = tuneLinSvmClassificationHyperparameters(subsampledTrainData,subsampledValidationData,cValues);
-        display(['Tuned linSVM: C = ' num2str(linSvm.bestC(i_subsampling)) ' with accuracy = ' num2str(linSvm.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned linSVM: C = ' num2str(linSvm.bestC(i_subsampling)) ' with accuracy = ' num2str(linSvm.bestTuningPerfMetric(i_subsampling)) '.'])
         [rbfSvm.bestModel{i_subsampling},rbfSvm.bestC(i_subsampling),rbfSvm.bestGamma(i_subsampling),rbfSvm.bestTuningPerfMetric(i_subsampling)] = tuneRbfSvmClassificationHyperparameters(subsampledTrainData,subsampledValidationData,cValues,gammaValues);
-        display(['Tuned rbfSVM: C = ' num2str(rbfSvm.bestC(i_subsampling)) ', gamma = ' num2str(rbfSvm.bestGamma(i_subsampling)) ' with accuracy = ' num2str(rbfSvm.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned rbfSVM: C = ' num2str(rbfSvm.bestC(i_subsampling)) ', gamma = ' num2str(rbfSvm.bestGamma(i_subsampling)) ' with accuracy = ' num2str(rbfSvm.bestTuningPerfMetric(i_subsampling)) '.'])
         [ckSvm.bestModel{i_subsampling},ckSvm.bestC(i_subsampling),ckSvm.bestTuningPerfMetric(i_subsampling)] = tuneCkSvmClassificationHyperparameters(subsampledTrainData,subsampledValidationData,cValues);
-        display(['Tuned ckSVM: C = ' num2str(ckSvm.bestC(i_subsampling)) ' with accuracy = ' num2str(ckSvm.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned ckSVM: C = ' num2str(ckSvm.bestC(i_subsampling)) ' with accuracy = ' num2str(ckSvm.bestTuningPerfMetric(i_subsampling)) '.'])
         [ckRf.bestModel{i_subsampling},ckRf.bestM(i_subsampling),ckRf.bestMaxSplits(i_subsampling),ckRf.bestTuningPerfMetric(i_subsampling)] = tuneCkRfClassificationHyperparameters(subsampledTrainData,subsampledValidationData,mValuesCk,maxSplitsValues,categoricalIndices,numeroTrees);
-        display(['Tuned ckRF: m = ' num2str(ckRf.bestM(i_subsampling)) ', maxSplits = ' num2str(ckRf.bestMaxSplits(i_subsampling)) ' with accuracy = ' num2str(ckRf.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned ckRF: m = ' num2str(ckRf.bestM(i_subsampling)) ', maxSplits = ' num2str(ckRf.bestMaxSplits(i_subsampling)) ' with accuracy = ' num2str(ckRf.bestTuningPerfMetric(i_subsampling)) '.'])
     else
         [rf.bestModel{i_subsampling},rf.bestM(i_subsampling),rf.bestMaxSplits(i_subsampling),rf.bestTuningPerfMetric(i_subsampling)] = tuneRfRegressionHyperparameters(subsampledTrainData,subsampledValidationData,mValuesNaive,maxSplitsValues,categoricalIndices,numeroTrees);
-        display(['Tuned RF: m = ' num2str(rf.bestM(i_subsampling)) ', maxSplits = ' num2str(rf.bestMaxSplits(i_subsampling)) ' with R^2 = ' num2str(rf.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned RF: m = ' num2str(rf.bestM(i_subsampling)) ', maxSplits = ' num2str(rf.bestMaxSplits(i_subsampling)) ' with R^2 = ' num2str(rf.bestTuningPerfMetric(i_subsampling)) '.'])
         [linSvm.bestModel{i_subsampling},linSvm.bestC(i_subsampling),linSvm.bestEpsilon(i_subsampling),linSvm.bestTuningPerfMetric(i_subsampling)] = tuneLinSvmRegressionHyperparameters(subsampledTrainData,subsampledValidationData,cValues,epsilonValues);
-        display(['Tuned linSVM: C = ' num2str(linSvm.bestC(i_subsampling)) ', epsilon = ' num2str(linSvm.bestEpsilon(i_subsampling)) ' with R^2 = ' num2str(linSvm.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned linSVM: C = ' num2str(linSvm.bestC(i_subsampling)) ', epsilon = ' num2str(linSvm.bestEpsilon(i_subsampling)) ' with R^2 = ' num2str(linSvm.bestTuningPerfMetric(i_subsampling)) '.'])
         [rbfSvm.bestModel{i_subsampling},rbfSvm.bestC(i_subsampling),rbfSvm.bestGamma(i_subsampling),rbfSvm.bestEpsilon(i_subsampling),rbfSvm.bestTuningPerfMetric(i_subsampling)] = tuneRbfSvmRegressionHyperparameters(subsampledTrainData,subsampledValidationData,cValues,gammaValues,epsilonValues);
-        display(['Tuned rbfSVM: C = ' num2str(rbfSvm.bestC(i_subsampling)) ', gamma = ' num2str(rbfSvm.bestGamma(i_subsampling)) ', epsilon = ' num2str(rbfSvm.bestEpsilon(i_subsampling)) ' with R^2 = ' num2str(rbfSvm.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned rbfSVM: C = ' num2str(rbfSvm.bestC(i_subsampling)) ', gamma = ' num2str(rbfSvm.bestGamma(i_subsampling)) ', epsilon = ' num2str(rbfSvm.bestEpsilon(i_subsampling)) ' with R^2 = ' num2str(rbfSvm.bestTuningPerfMetric(i_subsampling)) '.'])
         [ckSvm.bestModel{i_subsampling},ckSvm.bestC(i_subsampling),ckSvm.bestEpsilon(i_subsampling),ckSvm.bestTuningPerfMetric(i_subsampling)] = tuneCkSvmRegressionHyperparameters(subsampledTrainData,subsampledValidationData,cValues,epsilonValues);
-        display(['Tuned ckSVM: C = ' num2str(ckSvm.bestC(i_subsampling)) ', epsilon = ' num2str(ckSvm.bestEpsilon(i_subsampling)) ' with R^2 = ' num2str(ckSvm.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned ckSVM: C = ' num2str(ckSvm.bestC(i_subsampling)) ', epsilon = ' num2str(ckSvm.bestEpsilon(i_subsampling)) ' with R^2 = ' num2str(ckSvm.bestTuningPerfMetric(i_subsampling)) '.'])
         [ckRf.bestModel{i_subsampling},ckRf.bestM(i_subsampling),ckRf.bestMaxSplits(i_subsampling),ckRf.bestTuningPerfMetric(i_subsampling)] = tuneCkRfRegressionHyperparameters(subsampledTrainData,subsampledValidationData,mValuesCk,maxSplitsValues,categoricalIndices,numeroTrees);
-        display(['Tuned ckRF: m = ' num2str(ckRf.bestM(i_subsampling)) ', maxSplits = ' num2str(ckRf.bestMaxSplits(i_subsampling)) ' with R^2 = ' num2str(ckRf.bestTuningPerfMetric(i_subsampling)) '.'])
+        disp(['Tuned ckRF: m = ' num2str(ckRf.bestM(i_subsampling)) ', maxSplits = ' num2str(ckRf.bestMaxSplits(i_subsampling)) ' with R^2 = ' num2str(ckRf.bestTuningPerfMetric(i_subsampling)) '.'])
     end
     %% predicting on test data
+    % choose correct string for console output
+    if classificationBoolean
+        perfMetricString = 'accuracy';
+    else
+        perfMetricString = 'R^2';
+    end
     [rf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,rf.bestModel{i_subsampling},'rf',classificationBoolean);
-    if classificationBoolean
-    display(['RF test accuracy = ' num2str(rf.perfMetric(i_subsampling)) '.' ])
-    else
-    display(['RF test R^2 = ' num2str(rf.perfMetric(i_subsampling)) '.' ])
-    end
+    disp(['RF test ' perfMetricString ' = ' num2str(rf.perfMetric(i_subsampling)) '.' ])
+    
     [linSvm.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,linSvm.bestModel{i_subsampling},'linSvm',classificationBoolean);
-    if classificationBoolean
-    display(['linSVM test accuracy = ' num2str(linSvm.perfMetric(i_subsampling)) '.' ])
-    else
-    display(['linSVM test R^2 = ' num2str(linSvm.perfMetric(i_subsampling)) '.' ])
-    end
+    disp(['linSVM test ' perfMetricString ' = ' num2str(linSvm.perfMetric(i_subsampling)) '.' ])
+    
     [rbfSvm.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,rbfSvm.bestModel{i_subsampling},'rbfSvm',classificationBoolean);
-    if classificationBoolean
-    display(['rbfSVM test accuracy = ' num2str(rbfSvm.perfMetric(i_subsampling)) '.' ])
-    else
-    display(['rbfSVM test R^2 = ' num2str(rbfSvm.perfMetric(i_subsampling)) '.' ])
-    end
+    disp(['rbfSVM test ' perfMetricString ' = ' num2str(rbfSvm.perfMetric(i_subsampling)) '.' ])
+    
     [ckSvm.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckSvm.bestModel{i_subsampling},'ckSvm',classificationBoolean);
-    if classificationBoolean
-    display(['ckSVM test accuracy = ' num2str(ckSvm.perfMetric(i_subsampling)) '.' ])
-    else
-    display(['ckSVM test R^2 = ' num2str(ckSvm.perfMetric(i_subsampling)) '.' ])
-    end
+    disp(['ckSVM test ' perfMetricString ' = ' num2str(ckSvm.perfMetric(i_subsampling)) '.' ])
+    
     [ckRf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckRf.bestModel{i_subsampling},'ckRf',classificationBoolean);
-    if classificationBoolean
-    display(['ckRF test accuracy = ' num2str(ckRf.perfMetric(i_subsampling)) '.' ])
-    else
-    display(['ckRF test R^2 = ' num2str(ckRf.perfMetric(i_subsampling)) '.' ])
-    end
+    disp(['ckRF test ' perfMetricString ' = ' num2str(ckRf.perfMetric(i_subsampling)) '.' ])
 end
 
 end
