@@ -40,7 +40,7 @@ if RP.ARF_muta == 0
     x0(P_ARF) = 0.1;
 end
     x0(O_CELLCYCLING) = 1;
-	x0(P_ECDK2) = 1.5;
+	x0(P_ECDK2) = 3;
 	x0(O_RADIATION) = 1;
 
 

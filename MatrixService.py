@@ -108,7 +108,8 @@ class MatrixService(object):
         """take two sim1 output and return a rescaled version """
         max1 = np.amax(matrix1, axis=0, keepdims=True)
         max2 = np.amax(matrix2, axis=0, keepdims=True)
-        max_vector = np.maximum(max1, max2)  # TODO Cache the value to improve effieciency
+        max_vector = np.maximum(max1, max2)
+        max_vector = np.maximum(max_vector, 1e-8)  # TODO Cache the value to improve effieciency
         new_matrix1 = matrix1/max_vector
         new_matrix2 = matrix2/max_vector
         return new_matrix1, new_matrix2
@@ -116,7 +117,7 @@ class MatrixService(object):
     def writeDataFile(self, matrix, file_name):
         path = os.getcwd()
         self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
-        n, m = matrix.shape
+        n = len(matrix)
         with open(file_name, 'w') as csv_file:
             try:
                 data_writer = csv.writer(csv_file)
