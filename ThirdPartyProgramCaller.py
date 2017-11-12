@@ -7,6 +7,8 @@ import logging
 import numpy as np
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
+from Utilities.SafeCastUtil import SafeCastUtil
+from Utilities.OperatingSystemUtil import OperatingSystemUtil
 
 
 class ThirdPartyProgramCaller(object):
@@ -30,7 +32,7 @@ class ThirdPartyProgramCaller(object):
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
         directory_of_files = self.files_directory + "/GenomeFiles"
-        self.changeWorkingDirectory(directory_of_files)
+        OperatingSystemUtil.changeWorkingDirectory(directory_of_files)
         outputs = collections.OrderedDict()
         if self.file_type == SupportedFileTypes.MATLAB:
             try:
@@ -39,8 +41,7 @@ class ThirdPartyProgramCaller(object):
             except ImportError as error:
                 self.log.warn("Unable to find MATLAB API hook. Starting program once per trial file.\n%s", error)
                 for file in self.file_list:
-                    self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
-                    self.counter = self.counter + 1
+                    self.logAndIncrementProgress()
                     file_result = self.callMATLAB(directory_of_files, file)
                     outputs[file.split(".")[0]] = file_result
                     if self.number_of_trials != 0:
@@ -49,8 +50,7 @@ class ThirdPartyProgramCaller(object):
                         self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.R:
             for file in self.file_list:
-                self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
-                self.counter = self.counter + 1
+                self.logAndIncrementProgress()
                 file_result = self.callR(directory_of_files, file)
                 outputs[file.split(".")[0]] = file_result
                 if self.number_of_trials != 0:
@@ -59,8 +59,7 @@ class ThirdPartyProgramCaller(object):
                     self.writeSim1Matrix(outputs)
         elif self.file_type == SupportedFileTypes.OCTAVE:
             for file in self.file_list:
-                self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
-                self.counter = self.counter + 1
+                self.logAndIncrementProgress()
                 file_result = self.callOctave(directory_of_files, file)
                 outputs[file.split(".")[0]] = file_result
                 if self.number_of_trials != 0:
@@ -77,14 +76,18 @@ class ThirdPartyProgramCaller(object):
             sim1matrix_service.generateSimilarityMatrix('final')
             if self.response_type == SupportedThirdPartyResponses.FLOAT or self.response_type == SupportedThirdPartyResponses.INTEGER:
                 sim1matrix_service.generateResponseMatrix()
-        self.changeWorkingDirectory(current_directory)
+        OperatingSystemUtil.changeWorkingDirectory(current_directory)
         return outputs
+
+    def logAndIncrementProgress(self):
+        self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
+        self.counter += 1
 
     def writeOutputFile(self, outputs, output_file_name):
         if type(outputs) != list:
             outputs = [outputs]
         path = os.getcwd()
-        self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
+        OperatingSystemUtil.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
         file_name = output_file_name + ".csv"
         with open(file_name, 'w') as csv_file:
             try:
@@ -106,14 +109,13 @@ class ThirdPartyProgramCaller(object):
         output = self.reshapeOutput(output)
         return output
 
-
     def callMatlabAPI(self, outputs):
         import matlab.engine
         self.log.info('Using the matlab api hook')
         eng = matlab.engine.start_matlab('-nojvm -nodisplay -nosplash -nodesktop')
         for file in self.file_list:
             file_name = file.split(".")[0]
-            eng.eval(file_name,nargout=0)
+            eng.eval(file_name, nargout=0)
             output = eng.workspace['output']
             output = np.array(output)
             outputs[file_name] = output
@@ -126,7 +128,6 @@ class ThirdPartyProgramCaller(object):
         eng.quit()
         return outputs
 
-
     def callMATLAB(self, directory_of_file, call_file):
         cmd = 'matlab -nojvm -nodisplay -nosplash -nodesktop <' + directory_of_file + "/" + call_file
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
@@ -134,8 +135,8 @@ class ThirdPartyProgramCaller(object):
 
         first = out.index("[")
         second = out.index("]")
-        self. log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
-        self.counter = self.counter + 1
+        self.logAndIncrementProgress()
+
         output = out[first + 1:second]
         output = output.strip()
         output = output.split()
@@ -149,8 +150,11 @@ class ThirdPartyProgramCaller(object):
 
         pos = out.index("]")
         output = out[pos + 2]
-        self.log.info(output + ": " + str(100 * self.counter / len(self.file_list)) + "% complete")
-        self.counter = self.counter + 1
+        if self.response_type == SupportedThirdPartyResponses.VECTOR:
+            avg_vector_split = out.split("%avg%")
+            return [SafeCastUtil.safeCast(sub, float) for sub in
+                    avg_vector_split if type(SafeCastUtil.safeCast(sub, float)) is float]
+
         return int(output)
 
     def writeSim1Matrix(self, outputs, min_num_of_trials=2):
@@ -160,16 +164,10 @@ class ThirdPartyProgramCaller(object):
             self.log.info('Writing similarity matrix based on %s trials.', str(current_trials))
             sim1matrix_service.generateSimilarityMatrix(str(current_trials))
 
-    def changeWorkingDirectory(self, new_directory):
-        if not os.path.isdir(new_directory):
-            os.mkdir(new_directory)
-        os.chdir(new_directory)
-
-    def reshapeOutput(self,output):
+    def reshapeOutput(self, output):
         if len(output) == 1:
             try:
-                output = int(output[0])
-                return output
+                return SafeCastUtil.safeCast(output[0], self.response_type)
             except TypeError as type_error:
                 self.log.error(type_error)
                 return self.response_type(-1)
@@ -180,8 +178,8 @@ class ThirdPartyProgramCaller(object):
                 output = output[2:]
                 output = [float(i) for i in output]
                 assert ((n * t) == len(output))
-                response_vector = np.array(output).reshape((t,n))#reconstruct the origianl matrix
-                return response_vector
+                response_vector = np.array(output).reshape((t, n))  # reconstruct the original matrix
+                return response_vector.tolist()
             except TypeError as type_error:
                 self.log.error(type_error)
                 return []

@@ -5,6 +5,7 @@ import csv
 import numpy
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
+from Utilities.OperatingSystemUtil import OperatingSystemUtil
 import collections
 
 
@@ -221,7 +222,7 @@ class FileProcessingService(object):
 
     def writeDataFile(self, genomes_matrix):
         current_directory = os.getcwd()
-        self.changeWorkingDirectory(self.path + "/GenomeFiles")
+        OperatingSystemUtil.changeWorkingDirectory(self.path + "/GenomeFiles")
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
                 data_writer = csv.writer(csv_file)
@@ -229,11 +230,4 @@ class FileProcessingService(object):
                     data_writer.writerow(genomes_matrix[i])
             finally:
                 csv_file.close()
-                self.changeWorkingDirectory(current_directory)
-
-    #TODO: repeated code with MatrixService. DRY it up.
-    def changeWorkingDirectory(self, new_directory):
-        if os.path.isdir(new_directory):
-            os.chdir(new_directory)
-        else:
-            os.mkdir(new_directory)
+                OperatingSystemUtil.changeWorkingDirectory(current_directory)

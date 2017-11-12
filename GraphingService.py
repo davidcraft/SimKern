@@ -1,6 +1,8 @@
 import matplotlib.pyplot as matplotlib
 import os
 
+from Utilities.OperatingSystemUtil import OperatingSystemUtil
+
 import logging
 
 
@@ -22,15 +24,9 @@ class GraphingService(object):
         basic_plot.show()
 
         current_path = os.getcwd()
-        self.changeWorkingDirectory(output_path)
+        OperatingSystemUtil.changeWorkingDirectory(output_path)
         basic_plot.savefig("SimilarityMatrixSVMPlot", bbox_inches='tight')
-        self.changeWorkingDirectory(current_path)
-
-    # TODO: repeated code with FileProcessingService. DRY it up.
-    def changeWorkingDirectory(self, new_directory):
-        if not os.path.isdir(new_directory):
-            os.mkdir(new_directory)
-        os.chdir(new_directory)
+        OperatingSystemUtil.changeWorkingDirectory(current_path)
 
 # Required Citation (BibTex/LaTex):
 # @Article{Hunter:2007,

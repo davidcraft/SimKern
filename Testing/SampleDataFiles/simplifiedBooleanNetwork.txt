@@ -20,3 +20,15 @@ Migration, EMT & ERK_pthw & AKT2 & Invasion & !AKT1 & !miRNA & !p63_73
 Metastasis, Migration
 DNAdamage, DNAdamage
 ECMicroenv, ECMicroenv
+DummyVariable1, DummyVariable1
+DummyVariable2, DummyVariable2
+DummyVariable3, DummyVariable3
+DummyVariable4, DummyVariable4
+DummyVariable5, DummyVariable5
+DummyVariable6, DummyVariable6
+DummyVariable7, DummyVariable7
+DummyVariable8, DummyVariable8
+DummyVariable9, DummyVariable9
+DummyVariable10, DummyVariable10
+DummyVariable11, DummyVariable11
+DummyVariable12, DummyVariable12

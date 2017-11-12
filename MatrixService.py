@@ -1,4 +1,6 @@
 from __future__ import division
+
+from Utilities.OperatingSystemUtil import OperatingSystemUtil
 import os
 import csv
 import numpy as np
@@ -116,7 +118,7 @@ class MatrixService(object):
 
     def writeDataFile(self, matrix, file_name):
         path = os.getcwd()
-        self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
+        OperatingSystemUtil.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
         n = len(matrix)
         with open(file_name, 'w') as csv_file:
             try:
@@ -126,12 +128,6 @@ class MatrixService(object):
             finally:
                 csv_file.close()
                 os.chdir(path)
-
-    #TODO: repeated code with FileProcessingService. DRY it up.
-    def changeWorkingDirectory(self, new_directory):
-        if not os.path.isdir(new_directory):
-            os.mkdir(new_directory)
-        os.chdir(new_directory)
 
     @staticmethod
     def splitSimilarityMatrixForTraining(similarity_matrix, training_set):

@@ -13,6 +13,7 @@ from ThirdPartyProgramCaller import ThirdPartyProgramCaller
 from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
 from GraphingService import GraphingService
+from Utilities.SafeCastUtil import SafeCastUtil
 
 log = logging.getLogger(__name__)
 logging.basicConfig()
@@ -25,7 +26,7 @@ def main():
     if len(arguments) == 0:
         promptUserForInput()
 
-    elif safeCast(arguments[0], int) == 0:  # SIM0
+    elif SafeCastUtil.safeCast(arguments[0], int) == 0:  # SIM0
         log.info("SIM0 genome creation requested...")
         if len(arguments) is not 4:
             log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
@@ -40,7 +41,7 @@ def main():
                  number_of_genomes, input_file, path)
         createGenomesSIM0(file_extension, input_file, path, number_of_genomes)
 
-    elif safeCast(arguments[0], int) == 1:  # SIM1
+    elif SafeCastUtil.safeCast(arguments[0], int) == 1:  # SIM1
         log.info("SIM1 genome creation requested...")
         if len(arguments) is not 5:
             log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
@@ -57,7 +58,7 @@ def main():
                  number_of_genomes, number_of_trials, input_file, path)
         createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials)
 
-    elif safeCast(arguments[0], int) == 2:
+    elif SafeCastUtil.safeCast(arguments[0], int) == 2:
         log.info("Machine Learning on SIM0 data requested...")
         if len(arguments) is not 4:
             log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
@@ -68,7 +69,7 @@ def main():
         genomes_matrix_file = arguments[2]
         analysis = arguments[3]
         performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
-    elif safeCast(arguments[0], int) == 3:
+    elif SafeCastUtil.safeCast(arguments[0], int) == 3:
         log.info("Machine Learning on SIM1 data requested...")
         if len(arguments) is not 3:
             log.info("Program expects 3 arguments: an integer expressing the desired action from the main menu, "
@@ -89,8 +90,8 @@ def promptUserForInput():
                               "\t2: Perform machine learning with existing SIM0 data\n"
                               "\t3: Perform machine learning with existing SIM1 data\n"
                               "\tQ: Quit\n")
-    simulation_as_int = safeCast(simulation_to_run, int)
-    simulation_as_string = safeCast(simulation_to_run, str, "Q")
+    simulation_as_int = SafeCastUtil.safeCast(simulation_to_run, int)
+    simulation_as_string = SafeCastUtil.safeCast(simulation_to_run, str, "Q")
     if simulation_as_int == 0:
         input_file = recursivelyPromptUser("Enter path of input file:\n", str)
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
@@ -120,16 +121,10 @@ def promptUserForInput():
         promptUserForInput()
 
 
-def safeCast(val, to_type, default=None):
-    try:
-        return to_type(val)
-    except (ValueError, TypeError):
-        return default
-
 
 def recursivelyPromptUser(message, return_type):
     response = input(message)
-    cast_response = safeCast(response, return_type)
+    cast_response = SafeCastUtil.safeCast(response, return_type)
     if cast_response is None:
         print("Invalid command, looking for an input of type %.\n", return_type)
         recursivelyPromptUser(message, return_type)
