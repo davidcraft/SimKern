@@ -10,7 +10,6 @@ from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachin
 from Sim1FileProcessingService import Sim1FileProcessingService
 from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
-from SupportedThirdPartyResponses import SupportedThirdPartyResponses
 from MatrixService import MatrixService
 from GraphingService import GraphingService
 from Utilities.SafeCastUtil import SafeCastUtil
@@ -22,41 +21,43 @@ log.setLevel(logging.INFO)
 
 def main():
     arguments = sys.argv[1:]
-    # TODO: Also accept third party response type as an input
     if len(arguments) == 0:
         promptUserForInput()
 
     elif SafeCastUtil.safeCast(arguments[0], int) == 0:  # SIM0
         log.info("SIM0 genome creation requested...")
-        if len(arguments) is not 4:
-            log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
-                     "a master SIM0 file, an integer representing number of genomes to create, "
+        if len(arguments) is not 5:
+            log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
+                     "a master SIM0 file, an integer representing number of genomes to create, an expected response"
+                     " type, and a path to store generated files\n")
+            return
+        input_file = arguments[1]
+        number_of_genomes = arguments[2]
+        response_type = arguments[3]
+        output_path = arguments[4]
+        file_extension = input_file.split(".")[1]
+        log.info("Starting SIM0 genome creation K=%s genomes, from file %s, being output to %s/GenomeFiles with "
+                 "expected response type %s.", number_of_genomes, input_file, output_path, response_type)
+        createGenomesSIM0(file_extension, input_file, output_path, number_of_genomes, response_type)
+
+    elif SafeCastUtil.safeCast(arguments[0], int) == 1:  # SIM1
+        log.info("SIM1 genome creation requested...")
+        if len(arguments) is not 6:
+            log.info("Program expects 6 arguments: an integer expressing the desired action from the main menu, "
+                     "a master SIM1 file, an integer representing number of genomes to create (K), another "
+                     "integer representing trials for each genome (R), an expected response type, "
                      "and a path to store generated files\n")
             return
         input_file = arguments[1]
         number_of_genomes = arguments[2]
-        path = arguments[3]
-        file_extension = input_file.split(".")[1]
-        log.info("Starting SIM0 genome creation K=%s genomes, from file %s, being output to %s/GenomeFiles.",
-                 number_of_genomes, input_file, path)
-        createGenomesSIM0(file_extension, input_file, path, number_of_genomes)
-
-    elif SafeCastUtil.safeCast(arguments[0], int) == 1:  # SIM1
-        log.info("SIM1 genome creation requested...")
-        if len(arguments) is not 5:
-            log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
-                     "a master SIM1 file, an integer representing number of genomes to create (K), another "
-                     "integer representing trials for each genome (R) and a path to store generated files\n")
-            return
-        input_file = arguments[1]
-        number_of_genomes = arguments[2]
         number_of_trials = arguments[3]
-        path = arguments[4]
+        response_type = arguments[4]
+        output_path = arguments[5]
         file_extension = input_file.split(".")[1]
         log.info("Starting SIM1 genome creation K=%s genomes, and R=%s trials from file %s,"
                  " being output to %s/GenomeFiles.",
-                 number_of_genomes, number_of_trials, input_file, path)
-        createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials)
+                 number_of_genomes, number_of_trials, input_file, output_path)
+        createGenomesSIM1(file_extension, input_file, output_path, number_of_genomes, number_of_trials, response_type)
 
     elif SafeCastUtil.safeCast(arguments[0], int) == 2:
         log.info("Machine Learning on SIM0 data requested...")
@@ -97,14 +98,16 @@ def promptUserForInput():
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
         file_extension = input_file.split(".")[1]
-        createGenomesSIM0(file_extension, input_file, path, permutations)
+        response_type = recursivelyPromptUser("Enter expected third party response type:\n", str)
+        createGenomesSIM0(file_extension, input_file, path, permutations, response_type)
     elif simulation_as_int == 1:
         input_file = recursivelyPromptUser("Enter path of input file:\n", str)
         file_extension = input_file.split(".")[1]
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         number_of_trials = recursivelyPromptUser("Enter number of trials for each genome (R) as an integer:\n", int)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
-        createGenomesSIM1(file_extension, input_file, path, permutations, number_of_trials)
+        response_type = recursivelyPromptUser("Enter expected third party response type:\n", str)
+        createGenomesSIM1(file_extension, input_file, path, permutations, number_of_trials, response_type)
     elif simulation_as_int == 2:
         output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
         genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
@@ -121,7 +124,6 @@ def promptUserForInput():
         promptUserForInput()
 
 
-
 def recursivelyPromptUser(message, return_type):
     response = input(message)
     cast_response = SafeCastUtil.safeCast(response, return_type)
@@ -132,12 +134,12 @@ def recursivelyPromptUser(message, return_type):
         return response
 
 
-def createGenomesSIM0(file_extension, input_file, path, number_of_genomes):
+def createGenomesSIM0(file_extension, input_file, path, number_of_genomes, response_type):
     with open(input_file) as data_file:
         try:
             genomes = processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_genomes)
             third_party_result = callThirdPartyService(file_extension, path, genomes[0], True, number_of_genomes,
-                                                       number_of_trials=0)
+                                                       0, response_type)
             log.info("Results of third party call: %s", third_party_result)
         except ValueError as valueError:
             log.error(valueError)
@@ -151,10 +153,10 @@ def processInputFileAndCreateGenomes(data_file, file_extension, path, number_of_
     return file_parsing_service.createGenomes()
 
 
-def callThirdPartyService(file_extension, path, file_list, record_output, number_of_genomes, number_of_trials):
-    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list,
-                                                         SupportedThirdPartyResponses.FLOAT, number_of_genomes,
-                                                         number_of_trials)
+def callThirdPartyService(file_extension, path, file_list, record_output, number_of_genomes, number_of_trials,
+                          response_type):
+    third_party_caller_service = ThirdPartyProgramCaller(path, file_extension, file_list, response_type,
+                                                         number_of_genomes, number_of_trials)
     return third_party_caller_service.callThirdPartyProgram(record_output)
 
 
@@ -163,12 +165,12 @@ def trainRandomForestClassifier(genomes, third_party_result, percent_train):
     return random_forest_trainer.trainRandomForestClassifier(percent_train)
 
 
-def createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials):
+def createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials, response_type):
     with open(input_file) as data_file:
         try:
             trial_files = createTrialFiles(data_file, file_extension, number_of_genomes, number_of_trials, path)
             third_party_result = callThirdPartyService(file_extension, path, trial_files, False,
-                                                       number_of_genomes, number_of_trials)
+                                                       number_of_genomes, number_of_trials, response_type)
             log.info("Results of third party call: %s", third_party_result)
         except ValueError as valueError:
             log.error(valueError)
@@ -236,60 +238,63 @@ def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type
 
 
 def performMachineLearningOnSIM1(output_file, similarity_matrix_file):
-    training_percents = [.1, .25, .5, .75, .9]
+    training_percents = [.2, .4, .6, .8, 1]
     responses = readCSVFile(output_file)
     similarity_matrix = readCSVFile(similarity_matrix_file)
     results_by_percent_train = {}
 
+    num_genomes = len(similarity_matrix)
+    order = numpy.random.permutation(num_genomes)
+
+    train_length = int(0.5 * num_genomes)  # half the similarity matrix
+    validation_and_testing_length = int(num_genomes / 4)  # 1/4 the similarity matrix.
+
+    training_set = order[0:train_length]
+    validation_set = order[train_length: (train_length + validation_and_testing_length)]
+    testing_set = order[(train_length + validation_and_testing_length): num_genomes]
+
+    training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
+    validation_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, validation_set, train_length)
+    testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set, train_length)
+
     for training_percent in training_percents:
-        accuracies_by_permutation = trainAndTestSimilarityMatrix(similarity_matrix, training_percent, responses)
-        results_by_percent_train[training_percent] = accuracies_by_permutation
+        total_accuracies = []
+        num_permutations = 100
+        for permutation in range(0, num_permutations):
+            most_accurate_model = None
+            most_accurate_model_score = 0
+
+            # further split training matrix.
+            sub_order = numpy.random.permutation(train_length)
+            sub_train_length = int(training_percent * train_length)
+            sub_training_set = sub_order[0:sub_train_length]
+            split_train_training_matrix = MatrixService.splitSimilarityMatrixForTraining(numpy.array(training_matrix), sub_training_set)
+
+            trimmed_validation_matrix = MatrixService.trimMatrixForTesting(sub_train_length, validation_matrix)
+            trimmed_testing_matrix = MatrixService.trimMatrixForTesting(sub_train_length, testing_matrix)
+
+            for hyperparameter_optimization in range(-2, 6):  # c_val hyperparameter optimization
+                trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(split_train_training_matrix, responses)
+                c_val = 10**hyperparameter_optimization
+                model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(sub_training_set, c_val)
+                model_score = predictAverageAccuracy(model, responses, trimmed_validation_matrix, validation_set)
+                if model_score <= most_accurate_model_score:
+                    continue
+                most_accurate_model = model
+                most_accurate_model_score = model_score
+            average_accuracy = predictAverageAccuracy(most_accurate_model, responses, trimmed_testing_matrix, testing_set)
+            log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
+            total_accuracies.append(average_accuracy)
+
+        results_by_percent_train[training_percent] = total_accuracies
         log.info("Total accuracy for all rounds of matrix permutations with %s percent split: %s",
-                 training_percent * 100, numpy.round(numpy.average(accuracies_by_permutation), 2))
+                 training_percent * 100, numpy.round(numpy.average(total_accuracies), 2))
     log.debug("Accuracies by training percent: %s", results_by_percent_train)
     plotMachineLearningResultsByPercentTrain(results_by_percent_train, similarity_matrix_file)
 
 
 def readCSVFile(file):
     return numpy.loadtxt(open(file, "rb"), delimiter=",")
-
-
-def trainAndTestSimilarityMatrix(similarity_matrix, training_percent, responses):
-    num_genomes = len(similarity_matrix)
-    total_accuracies = []
-    num_permutations = 100
-    num_optimizations = 10
-    for permutation in range(0, num_permutations):
-        most_accurate_model = None
-        most_accurate_model_score = 0
-        testing_set = None
-        testing_matrix = None
-        for hyperparameter_optimization in range(0, num_optimizations):
-            order = numpy.random.permutation(num_genomes)
-            train_length = int(training_percent * num_genomes)
-            validation_length = int((num_genomes - train_length) / 4)  # 25% of testing set.
-
-            training_set = order[0:train_length]
-            validation_set = order[train_length: (train_length + validation_length)]
-            testing_set = order[(train_length + validation_length):len(order)]
-
-            training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
-            validation_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
-                                                                                           validation_set, train_length)
-            testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
-                                                                                        testing_set, train_length)
-
-            trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(training_matrix, responses)
-            model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(training_set)
-            model_score = predictAverageAccuracy(model, responses, validation_matrix, validation_set)
-            if model_score <= most_accurate_model_score:
-                continue
-            most_accurate_model = model
-            most_accurate_model_score = model_score
-        average_accuracy = predictAverageAccuracy(most_accurate_model, responses, testing_matrix, testing_set)
-        log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
-        total_accuracies.append(average_accuracy)
-    return total_accuracies
 
 
 def predictAverageAccuracy(model, responses, testing_matrix, testing_set):

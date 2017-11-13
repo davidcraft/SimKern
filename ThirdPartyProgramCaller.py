@@ -119,10 +119,9 @@ class ThirdPartyProgramCaller(object):
             output = eng.workspace['output']
             output = np.array(output)
             outputs[file_name] = output
-            self.counter = self.counter + 1
-            self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
+            self.logAndIncrementProgress()
             if self.number_of_trials != 0:
-                output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' +file_name
+                output_file_name = self.SIM1OUTPUT_FILE_NAME + '_' + file_name
                 self.writeOutputFile(output, output_file_name)
                 self.writeSim1Matrix(outputs)
         eng.quit()
@@ -149,13 +148,12 @@ class ThirdPartyProgramCaller(object):
         (out, err) = proc.communicate()
 
         pos = out.index("]")
-        output = out[pos + 2]
+        output = SafeCastUtil.safeCast(out[pos + 2], float)
         if self.response_type == SupportedThirdPartyResponses.VECTOR:
             avg_vector_split = out.split("%avg%")
-            return [SafeCastUtil.safeCast(sub, float) for sub in
-                    avg_vector_split if type(SafeCastUtil.safeCast(sub, float)) is float]
-
-        return int(output)
+            return [output, [SafeCastUtil.safeCast(sub, float) for sub in
+                    avg_vector_split if type(SafeCastUtil.safeCast(sub, float)) is float]]
+        return output
 
     def writeSim1Matrix(self, outputs, min_num_of_trials=2):
         current_trials = (self.counter//self.number_of_genomes)

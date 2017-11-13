@@ -149,3 +149,13 @@ class MatrixService(object):
                 new_matrix_row.append(similarity_matrix[testing_set[i], j])
             testing_matrix.append(new_matrix_row)
         return testing_matrix
+
+    @staticmethod
+    def trimMatrixForTesting(sub_train_length, testing_matrix):
+        trimmed_matrix = []
+        for trim in range(0, len(testing_matrix)):
+            if len(testing_matrix[trim]) > sub_train_length:
+                trimmed_matrix.append(testing_matrix[trim][0:sub_train_length])
+            else:
+                trimmed_matrix.append(testing_matrix[trim])
+        return trimmed_matrix
