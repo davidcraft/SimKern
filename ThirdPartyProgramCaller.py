@@ -24,10 +24,13 @@ class ThirdPartyProgramCaller(object):
         self.files_directory = files_directory
         self.file_type = file_type
         self.file_list = file_list
-        self.response_type = response_type
         self.counter = 0
         self.number_of_genomes = int(number_of_genomes)
         self.number_of_trials = int(number_of_trials)
+        if type(response_type) is str:
+            self.response_type = eval(response_type)
+        else:
+            self.response_type = response_type
 
     def callThirdPartyProgram(self, should_write_sim0_output):
         current_directory = os.getcwd()
@@ -148,7 +151,7 @@ class ThirdPartyProgramCaller(object):
         (out, err) = proc.communicate()
 
         pos = out.index("]")
-        output = SafeCastUtil.safeCast(out[pos + 2], float)
+        output = SafeCastUtil.safeCast(out[pos + 2], self.response_type)
         if self.response_type == SupportedThirdPartyResponses.VECTOR:
             avg_vector_split = out.split("%avg%")
             return [output, [SafeCastUtil.safeCast(sub, float) for sub in
