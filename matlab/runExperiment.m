@@ -1,4 +1,4 @@
-function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(...
+function [linSvm,rbfSvm,rf,ckSvm,ckRf,nn,ckNn] = runExperiment(...
     unstandardizedFeatures,outcome,sm,splitRatios,classificationBoolean,...
     subsamplingRatios,categoricalIndices,numeroTrees,debuggingBoolean)
 % this function runs an analysis as outlined in Figure X of the manuscript.
@@ -122,6 +122,14 @@ for i_subsampling = 1:numel(subsamplingRatios)
     
     [ckRf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckRf.bestModel{i_subsampling},'ckRf',classificationBoolean);
     disp(['ckRF test ' perfMetricString ' = ' num2str(ckRf.perfMetric(i_subsampling)) '.' ])
+    
+    ckNn.bestModel{i_subsampling} = subsampledTrainData;
+    [ckNn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckNn.bestModel{i_subsampling},'ckNn',classificationBoolean);
+    disp(['ckNN test ' perfMetricString ' = ' num2str(ckNn.perfMetric(i_subsampling)) '.' ])
+    
+    nn.bestModel{i_subsampling} = subsampledTrainData;
+    [nn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,nn.bestModel{i_subsampling},'nn',classificationBoolean);
+    disp(['NN test ' perfMetricString ' = ' num2str(nn.perfMetric(i_subsampling)) '.' ])
 end
-
+% linSvm = NaN; % if you want to remove linSvm
 end
