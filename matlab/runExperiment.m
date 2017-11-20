@@ -108,6 +108,11 @@ for i_subsampling = 1:numel(subsamplingRatios)
     else
         perfMetricString = 'R^2';
     end
+    
+    nn.bestModel{i_subsampling} = subsampledTrainData;
+    [nn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,nn.bestModel{i_subsampling},'nn',classificationBoolean);
+    disp(['NN test ' perfMetricString ' = ' num2str(nn.perfMetric(i_subsampling)) '.' ])
+    
     [rf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,rf.bestModel{i_subsampling},'rf',classificationBoolean);
     disp(['RF test ' perfMetricString ' = ' num2str(rf.perfMetric(i_subsampling)) '.' ])
     
@@ -127,9 +132,6 @@ for i_subsampling = 1:numel(subsamplingRatios)
     [ckNn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckNn.bestModel{i_subsampling},'ckNn',classificationBoolean);
     disp(['ckNN test ' perfMetricString ' = ' num2str(ckNn.perfMetric(i_subsampling)) '.' ])
     
-    nn.bestModel{i_subsampling} = subsampledTrainData;
-    [nn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,nn.bestModel{i_subsampling},'nn',classificationBoolean);
-    disp(['NN test ' perfMetricString ' = ' num2str(nn.perfMetric(i_subsampling)) '.' ])
 end
 % linSvm = NaN; % if you want to remove linSvm
 end
