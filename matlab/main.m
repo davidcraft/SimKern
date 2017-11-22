@@ -51,11 +51,12 @@ subsamplingRatios = [0.05 0.1 0.2 0.3 0.6];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
 debuggingBoolean = false; % set to true if you want to use fewer hyperparameters to speed up the process
 numeroTrees = 50; % number of trees for all RFs
+numeroReps = 2;
 %% the actual experiment
-for i_reps = 1:10
-[linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps),nn(i_reps),ckNn(i_reps)] = runExperiment(unstandardizedFeatures,...
+for i_reps = 1:numeroReps
+[linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps),nn(i_reps),ckNn(i_reps),hyperparameters(i_reps)] = runExperiment(unstandardizedFeatures,...
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
-    categoricalIndices,numeroTrees,debuggingBoolean);
+    categoricalIndices,numeroTrees,debuggingBoolean,i_reps,numeroReps);
 end
 totalRunningTime = toc
 %% plotting
