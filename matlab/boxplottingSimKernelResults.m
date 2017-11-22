@@ -1,4 +1,4 @@
-function boxplottingSimKernelResults(nn,rbfSvm,rf,ckSvm,linSvm,ckRf,ckNn,classificationBoolean)
+function boxplottingSimKernelResults(nn,rbfSvm,rf,ckSvm,linSvm,ckRf,ckNn,classificationBoolean,subsamplingRatios,splitRatios,outcome)
 nnResult = cat(1,nn(:).perfMetric); 
 rbfResult = cat(1,rbfSvm(:).perfMetric);
 rfResult = cat(1,rf(:).perfMetric);
@@ -44,5 +44,18 @@ line([1.875 1.875],[-100 100],'Color','k')
 line([2.875 2.875],[-100 100],'Color','k')
 line([3.875 3.875],[-100 100],'Color','k')
 line([4.875 4.875],[-100 100],'Color','k')
+
+numeroTrainSamples = length(outcome) * splitRatios(1) * subsamplingRatios;
+numeroValidationSamples = length(outcome) * splitRatios(2);
+numeroTestSamples = length(outcome) * splitRatios(3);
+
+% title(['Subsampling ratios: ' num2str(subsamplingRatios,'%1g') ...
+%     '. Training data:' num2str(numeroTrainSamples,'%1g') ...
+%     '. Validation data = ' num2str(numeroValidationSamples,'%1g') ...
+%     '. Test Data = ' num2str(numeroTestSamples,'%1g') '.'])
+title({['Subsampling ratios: ' num2str(subsamplingRatios,'%1g') '.'], ...
+    ['Training samples: ' num2str(numeroTrainSamples,'%1g') '.'],...
+    ['Validation samples: ' num2str(numeroValidationSamples,'%1g') '.'], ...
+    ['Test samples: ' num2str(numeroTestSamples,'%1g') '.']})
 
 end

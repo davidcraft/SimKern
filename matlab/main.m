@@ -60,5 +60,5 @@ for i_reps = 1:numeroReps
 end
 totalRunningTime = toc
 %% plotting
-boxplottingSimKernelResults(nn,rbfSvm,rf,ckSvm,linSvm,ckRf,ckNn,classificationBoolean);
+boxplottingSimKernelResults(nn,rbfSvm,rf,ckSvm,linSvm,ckRf,ckNn,classificationBoolean,subsamplingRatios,splitRatios,outcome);
  save('../../data/flower_results')
