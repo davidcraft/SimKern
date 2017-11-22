@@ -154,8 +154,8 @@ class ThirdPartyProgramCaller(object):
         output = SafeCastUtil.safeCast(out[pos + 2], self.response_type)
         if self.response_type == SupportedThirdPartyResponses.VECTOR:
             avg_vector_split = out.split("%avg%")
-            return [output, [SafeCastUtil.safeCast(sub, float) for sub in
-                    avg_vector_split if type(SafeCastUtil.safeCast(sub, float)) is float]]
+            return [SafeCastUtil.safeCast(sub, float) for sub in
+                    avg_vector_split if type(SafeCastUtil.safeCast(sub, float)) is float]
         return output
 
     def writeSim1Matrix(self, outputs, min_num_of_trials=2):

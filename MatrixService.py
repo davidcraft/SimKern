@@ -21,9 +21,12 @@ class MatrixService(object):
     def generateSimilarityMatrix(self, output_trials=''):
         response_list = self.generateResponseList()
         index_matrix = self.generateIndexMatrix()
-        similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, weight_vector=None)
-        self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
-        return similarity_matrix
+        if len(response_list) == 0:
+            return []
+        else:
+            similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, weight_vector=None)
+            self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
+            return similarity_matrix
 
     def generateResponseMatrix(self):
         response_list = self.generateResponseList()
