@@ -1,17 +1,11 @@
 import logging
 import sys
 
-import numpy
-
 
 from FileProcessingService import FileProcessingService
-from RandomForest.RandomForestTrainer import RandomForestTrainer
-from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from Sim1FileProcessingService import Sim1FileProcessingService
-from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from ThirdPartyProgramCaller import ThirdPartyProgramCaller
-from MatrixService import MatrixService
-from GraphingService import GraphingService
+from MachineLearningDataProcessingService import MachineLearningDataProcessingService
 from Utilities.SafeCastUtil import SafeCastUtil
 
 log = logging.getLogger(__name__)
@@ -69,7 +63,7 @@ def main():
         output_file = arguments[1]
         genomes_matrix_file = arguments[2]
         analysis = arguments[3]
-        performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
+        performSIM0Analysis(analysis, genomes_matrix_file, output_file)
     elif SafeCastUtil.safeCast(arguments[0], int) == 3:
         log.info("Machine Learning on SIM1 data requested...")
         if len(arguments) is not 3:
@@ -79,7 +73,7 @@ def main():
             return
         output_file = arguments[1]
         similarity_matrix = arguments[2]
-        performMachineLearningOnSIM1(output_file, similarity_matrix)
+        performSIM1Analysis(output_file, similarity_matrix)
     return
 
 
@@ -111,12 +105,13 @@ def promptUserForInput():
     elif simulation_as_int == 2:
         output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
         genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
-        analysis_type = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type:\n", str)
-        performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type)
+        analysis = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type:\n", str)
+
+        performSIM0Analysis(analysis, genomes_matrix_file, output_file)
     elif simulation_as_int == 3:
         output_file = recursivelyPromptUser("Enter path of Sim1Responses.csv file:\n", str)
         similarity_matrix = recursivelyPromptUser("Enter path of .CSV file representing the similarity matrix:\n", str)
-        performMachineLearningOnSIM1(output_file, similarity_matrix)
+        performSIM1Analysis(output_file, similarity_matrix)
     elif simulation_as_string == "Q":
         return
     else:
@@ -160,11 +155,6 @@ def callThirdPartyService(file_extension, path, file_list, record_output, number
     return third_party_caller_service.callThirdPartyProgram(record_output)
 
 
-def trainRandomForestClassifier(genomes, third_party_result, percent_train):
-    random_forest_trainer = RandomForestTrainer(genomes[1], third_party_result)
-    return random_forest_trainer.trainRandomForestClassifier(percent_train)
-
-
 def createGenomesSIM1(file_extension, input_file, path, number_of_genomes, number_of_trials, response_type):
     with open(input_file) as data_file:
         try:
@@ -188,145 +178,14 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     return trial_files
 
 
-def generateMatrices(number_of_genomes, number_of_trials, third_party_program_output):
-    matrix_service = MatrixService(third_party_program_output, number_of_genomes, number_of_trials)
-    genomes_by_trial_matrix = matrix_service.generateIndexMatrix()
-    log.info("Successfully created genomes by trial matrix: %s\n", genomes_by_trial_matrix)
-
-    kernel_matrix = matrix_service.generateSimilarityMatrix()
-    log.info("Successfully created kernel similarity matrix: %s\n", kernel_matrix)
-
-    return genomes_by_trial_matrix, kernel_matrix
+def performSIM1Analysis(output_file, similarity_matrix):
+    data_processor = MachineLearningDataProcessingService()
+    data_processor.performMachineLearningOnSIM1(output_file, similarity_matrix)
 
 
-def performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis_type):
-    responses = readCSVFile(output_file)
-    matrix = readCSVFile(genomes_matrix_file)
-
-    num_permutations = 10
-    training_percent = .5
-
-    num_examples = len(matrix)
-    num_genomes = len(matrix[0])
-    which = numpy.arange(num_genomes)
-    results = []
-    for i in range(0, num_permutations):
-        order = numpy.random.permutation(num_examples)
-        new_matrix = matrix[order[:, None], which].tolist()
-        new_responses = responses[order].tolist()
-
-        # TODO: Refactor these trainers so they don't need to be re-instantiated with each new permutation
-        rf_trainer = RandomForestTrainer(new_matrix, new_responses)
-
-        if analysis_type == 'REGRESSION':  # TODO: Make this an enum maybe?
-            rf_results = rf_trainer.trainRandomForestRegressor(training_percent)
-            results += rf_results[1]
-        else:
-            rf_results = rf_trainer.trainRandomForestClassifier(training_percent)
-            svm_trainer = SupportVectorMachineTrainer(new_matrix, new_responses)
-            svm_results = svm_trainer.trainSupportVectorMachineForSIM0(SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION,
-                                                                       training_percent)
-            results += rf_results[1] + svm_results[1]
-
-    if analysis_type == 'REGRESSION':
-        results = numpy.array(results).reshape((num_permutations, 3))
-    else:
-        results = numpy.array(results).reshape((num_permutations, 6))
-    results = numpy.mean(results, axis=0)
-
-    print("Final Accuracies:", results.tolist(), training_percent, num_permutations)
-
-
-def performMachineLearningOnSIM1(output_file, similarity_matrix_file):
-    training_percents = [.2, .4, .6, .8, 1]
-    responses = readCSVFile(output_file)
-    similarity_matrix = readCSVFile(similarity_matrix_file)
-    results_by_percent_train = {}
-
-    num_genomes = len(similarity_matrix)
-    order = numpy.random.permutation(num_genomes)
-
-    train_length = int(0.5 * num_genomes)  # half the similarity matrix
-    validation_and_testing_length = int(num_genomes / 4)  # 1/4 the similarity matrix.
-
-    training_set = order[0:train_length]
-    validation_set = order[train_length: (train_length + validation_and_testing_length)]
-    testing_set = order[(train_length + validation_and_testing_length): num_genomes]
-
-    training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
-    validation_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, validation_set, train_length)
-    testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set, train_length)
-
-    for training_percent in training_percents:
-        total_accuracies = []
-        num_permutations = 100
-        for permutation in range(0, num_permutations):
-            most_accurate_model = None
-            most_accurate_model_score = 0
-
-            # further split training matrix.
-            sub_order = numpy.random.permutation(train_length)
-            sub_train_length = int(training_percent * train_length)
-            sub_training_set = sub_order[0:sub_train_length]
-            split_train_training_matrix = MatrixService.splitSimilarityMatrixForTraining(numpy.array(training_matrix), sub_training_set)
-
-            trimmed_validation_matrix = MatrixService.trimMatrixForTesting(sub_train_length, validation_matrix)
-            trimmed_testing_matrix = MatrixService.trimMatrixForTesting(sub_train_length, testing_matrix)
-
-            for hyperparameter_optimization in range(-2, 6):  # c_val hyperparameter optimization
-                trials_by_genome_SVM_trainer = SupportVectorMachineTrainer(split_train_training_matrix, responses)
-                c_val = 10**hyperparameter_optimization
-                model = trials_by_genome_SVM_trainer.trainSupportVectorMachineForSIM1(sub_training_set, c_val)
-                model_score = predictAverageAccuracy(model, responses, trimmed_validation_matrix, validation_set)
-                if model_score <= most_accurate_model_score:
-                    continue
-                most_accurate_model = model
-                most_accurate_model_score = model_score
-            average_accuracy = predictAverageAccuracy(most_accurate_model, responses, trimmed_testing_matrix, testing_set)
-            log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
-            total_accuracies.append(average_accuracy)
-
-        results_by_percent_train[training_percent] = total_accuracies
-        log.info("Total accuracy for all rounds of matrix permutations with %s percent split: %s",
-                 training_percent * 100, numpy.round(numpy.average(total_accuracies), 2))
-    log.debug("Accuracies by training percent: %s", results_by_percent_train)
-    plotMachineLearningResultsByPercentTrain(results_by_percent_train, similarity_matrix_file)
-
-
-def readCSVFile(file):
-    return numpy.loadtxt(open(file, "rb"), delimiter=",")
-
-
-def predictAverageAccuracy(model, responses, testing_matrix, testing_set):
-    if model is None:
-        return 0
-    predictions = model.predict(testing_matrix)
-    accuracies = []
-    for i in range(0, len(predictions)):
-        genome = testing_set[i]
-        real_response = responses[genome]
-        prediction = predictions[i]
-        accuracy = 0
-        if real_response == prediction:
-            accuracy = 1
-        accuracies.append(accuracy)
-        log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction, real_response)
-    average_accuracy = numpy.average(accuracies)
-    log.debug("Average Accuracy for C-value %s: %s", model.C, average_accuracy)
-    return average_accuracy
-
-
-def plotMachineLearningResultsByPercentTrain(results_by_percent_train, csv_file_location):
-    try:
-        output_path = ""
-        csv_path_split = csv_file_location.split("/")
-        for i in range(1, len(csv_path_split) - 1):
-            output_path += "/" + csv_path_split[i]
-
-        graphing_service = GraphingService()
-        graphing_service.makeMultiBarPlot(results_by_percent_train, output_path)
-    except Exception as exception:
-        log.error("Unable to create or save graphs due to: %s", exception)
+def performSIM0Analysis(analysis, genomes_matrix_file, output_file):
+    data_processor = MachineLearningDataProcessingService()
+    data_processor.performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
 
 
 if __name__ == "__main__":

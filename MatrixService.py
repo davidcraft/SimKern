@@ -162,3 +162,10 @@ class MatrixService(object):
             else:
                 trimmed_matrix.append(testing_matrix[trim])
         return trimmed_matrix
+
+    @staticmethod
+    def splitGenomeMatrix(genome_matrix, training_set):
+        split_matrix = []
+        for i in range(0, len(training_set)):
+            split_matrix.append(genome_matrix[training_set[i]])
+        return split_matrix

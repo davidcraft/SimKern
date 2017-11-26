@@ -15,17 +15,19 @@ class GraphingService(object):
     def __init__(self):
         pass
 
-    def makeMultiBarPlot(self, data, output_path):
+    DEFAULT_PLOT_TITLE = "MachineLearningMultiBarPlot"
+
+    def makeMultiBarPlot(self, data, output_path, title):
         basic_plot = matplotlib.figure()
         matplotlib.boxplot(data.values(), labels=data.keys())
-        matplotlib.title("Similarity Matrix SVM Multi-Classifier Results By Percent Train")
+        matplotlib.title(title)
         matplotlib.xlabel("% Train")
         matplotlib.ylabel("Accuracy distribution")
         basic_plot.show()
 
         current_path = os.getcwd()
         OperatingSystemUtil.changeWorkingDirectory(output_path)
-        basic_plot.savefig("SimilarityMatrixSVMPlot", bbox_inches='tight')
+        basic_plot.savefig(self.DEFAULT_PLOT_TITLE, bbox_inches='tight')
         OperatingSystemUtil.changeWorkingDirectory(current_path)
 
 # Required Citation (BibTex/LaTex):
