@@ -42,11 +42,14 @@ class MachineLearningDataProcessingService(object):
         if analysis_type == "CLASSIFICATION":
             rf_classifier_results = self.runRandomForestClassifier(responses, testing_matrix, testing_set, train_length,
                                                                    training_matrix, validation_matrix, validation_set)
-            self.plotMachineLearningResultsByPercentTrain(rf_classifier_results, genomes_matrix_file, "RF results")
 
             svm_classifier_results = self.runSVMClassifier(responses, testing_matrix, testing_set, train_length,
                                                            training_matrix, validation_matrix, validation_set)
-            self.plotMachineLearningResultsByPercentTrain(svm_classifier_results, genomes_matrix_file, "SVM results")
+            full_results = {
+                "RF_CLASSIFIER": rf_classifier_results,
+                "SVM_CLASSIFIER": svm_classifier_results
+            }
+            self.plotResultsByMultipleAnalyses(full_results, genomes_matrix_file, "SVM and RF Classifier SIM0 Results")
         else:
             rf_regressor_results = self.runRandomForestRegressor(responses, testing_matrix, testing_set, train_length,
                                                                  training_matrix, validation_matrix, validation_set)
@@ -245,5 +248,16 @@ class MachineLearningDataProcessingService(object):
                 output_path += "/" + csv_path_split[i]
             graphingService = GraphingService()
             graphingService.makeMultiBarPlot(results_by_percent_train, output_path, title)
+        except Exception as exception:
+            self.log.error("Unable to create or save graphs due to: %s", exception)
+
+    def plotResultsByMultipleAnalyses(self, full_results, csv_file_location, title):
+        try:
+            output_path = ""
+            csv_path_split = csv_file_location.split("/")
+            for i in range(1, len(csv_path_split) - 1):
+                output_path += "/" + csv_path_split[i]
+            graphingService = GraphingService()
+            graphingService.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, title)
         except Exception as exception:
             self.log.error("Unable to create or save graphs due to: %s", exception)

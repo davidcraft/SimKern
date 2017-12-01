@@ -19,7 +19,7 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
 
     def tearDown(self):
         if self.current_working_dir != "/":
-            os.remove(self.current_working_dir + "/SampleDataFiles/" + GraphingService.DEFAULT_PLOT_TITLE + ".png")
+            os.remove(self.current_working_dir + "/SampleDataFiles/" + GraphingService.DEFAULT_PLOT_FILENAME + ".png")
 
     def testSIM0ClassifierAnalysis(self):
         machine_learning_processor = MachineLearningDataProcessingService()
@@ -40,4 +40,4 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
 
     def assertPlotPNGCreatedSuccessfully(self):
         assert len([file for file in os.listdir(self.current_working_dir + "/SampleDataFiles")
-                    if file == GraphingService.DEFAULT_PLOT_TITLE + ".png"]) == 1
+                    if file == GraphingService.DEFAULT_PLOT_FILENAME + ".png"]) == 1
