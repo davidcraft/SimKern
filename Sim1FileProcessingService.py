@@ -4,13 +4,16 @@ import os
 import re
 import collections
 
+from Utilities.SafeCastUtil import SafeCastUtil
+
 
 class Sim1FileProcessingService(FileProcessingService):
 
     GENOMES_KEY_FILE_REGEX = re.compile(r'genome(\d+)?')
+    DEFAULT_NUM_TRIALS = 100
 
     def __init__(self, u_file_instance, file_type, number_of_genomes, number_of_trials, path=os.getcwd()):
-        self.number_of_trials = int(number_of_trials)
+        self.number_of_trials = SafeCastUtil.safeCast(number_of_trials, int, self.DEFAULT_NUM_TRIALS)
         # Note r_trials is analogous to permutations
         FileProcessingService.__init__(self, u_file_instance, file_type, number_of_genomes, path)
 

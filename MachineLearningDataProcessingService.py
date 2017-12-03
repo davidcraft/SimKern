@@ -17,7 +17,7 @@ class MachineLearningDataProcessingService(object):
     def __init__(self):
         pass
 
-    NUM_PERMUTATIONS = 100
+    NUM_PERMUTATIONS = 10
     TRAINING_PERCENTS = [.2, .4, .6, .8, 1]
 
     def performMachineLearningOnSIM0(self, output_file, genomes_matrix_file, analysis_type):

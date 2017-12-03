@@ -6,6 +6,7 @@ import numpy
 from SupportedFileTypes import SupportedFileTypes
 from SupportedDistributions import SupportedDistributions
 from Utilities.OperatingSystemUtil import OperatingSystemUtil
+from Utilities.SafeCastUtil import SafeCastUtil
 import collections
 
 
@@ -17,12 +18,14 @@ class FileProcessingService(object):
     DEFAULT_GAUSSIAN_STANDARD_DEVIATION = 0.1
     OUTPUT_FILE_NAME = "Sim0GenomesMatrix.csv"
 
+    DEFAULT_NUM_GENOMES = 10
+
     num_generated_coefficients = 0
 
     def __init__(self, data_file, file_type, number_of_genomes, path):
         self.data_file = data_file
         self.file_type = file_type
-        self.number_of_genomes = int(number_of_genomes)
+        self.number_of_genomes = SafeCastUtil.safeCast(number_of_genomes, int, self.DEFAULT_NUM_GENOMES)
         self.path = path
 
     def createGenomes(self):
@@ -111,17 +114,13 @@ class FileProcessingService(object):
             return distribution_name
 
     def extractParameters(self, target_sequence):
-        if self.file_type == SupportedFileTypes.R:
-            if "(" in target_sequence and ")" in target_sequence:
-                regex = re.compile(r'\(.+\)')
-                search_result = regex.search(target_sequence)
-                sequence = target_sequence[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
-                return [param.strip() for param in sequence.split(",")]
-            else:
-                regex = re.compile(r'\d+')
-                return [substring for substring in re.findall(regex, target_sequence.split("name=")[0])]
+        if 'mutate(' in target_sequence and ")" in target_sequence:
+            regex = re.compile(r'\(.+\)')
+            search_result = regex.search(target_sequence)
+            sequence = target_sequence[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
+            return [param.strip() for param in sequence.split(",")]
         elif self.file_type == SupportedFileTypes.MATLAB or SupportedFileTypes.OCTAVE:
-            pattern = re.compile('-?\ *\.?[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')  # now supports scientific notation
+            pattern = re.compile('-? *\.?[0-9]+\.?[0-9]*(?:[Ee] *-? *[0-9]+)?')  # now supports scientific notation
             return [param.strip() for param in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
@@ -152,41 +151,44 @@ class FileProcessingService(object):
             raise ValueError('Unsupported distribution: ' + distribution)
 
     def generateRandomValueFromUniformDistribution(self, mini, maxi):
-        return random.uniform(float(mini), float(maxi))
+        return random.uniform(SafeCastUtil.safeCast(mini, float, -1), SafeCastUtil.safeCast(maxi, float, 1))
 
     def generateRandomValueFromGaussianDistribution(self, mu, sigma):
-        return random.gauss(float(mu), float(sigma))
+        return random.gauss(SafeCastUtil.safeCast(mu, float, 0), SafeCastUtil.safeCast(sigma, float, 1))
 
     def generateRandomValueFromDiscreteDistribution(self, values):
-        return float(random.choice(values))
+        return SafeCastUtil.safeCast(random.choice(values), float, 0)
 
     def generateRandomValueFromGammaDistribution(self, k, theta):
-        return random.gammavariate(float(k), float(theta))
+        return random.gammavariate(SafeCastUtil.safeCast(k, float, 1), SafeCastUtil.safeCast(theta, float, 1))
 
     def generateRandomValueFromLogNormalDistribution(self, mu, sigma):
-        return random.lognormvariate(float(mu), float(sigma))
+        return random.lognormvariate(SafeCastUtil.safeCast(mu, float, 0), SafeCastUtil.safeCast(sigma, float, 1))
 
     def generateRandomValueFromBinomialDistribution(self, n, p):
-        return numpy.random.binomial(int(n), float(p))
+        return numpy.random.binomial(SafeCastUtil.safeCast(n, int, 100), SafeCastUtil.safeCast(p, float, 0.5))
 
     def generateRandomValueFromPoissonDistribution(self, k):
-        return numpy.random.poisson(int(k))
+        return numpy.random.poisson(SafeCastUtil.safeCast(k, int, 1))
 
-    # Only supported for R
     def pickBoolean(self, probability_of_zero):
         val = random.uniform(0, 1)
-        if val < float(probability_of_zero):
+        if val < SafeCastUtil.safeCast(probability_of_zero, float, 0.6):
             return 0
         else:
             return 1
 
     # Only supported for R
     def pickMutation(self, node, probability_of_knock_out, probability_of_over_expression):
+        #TODO: Potentially remove support for $mutate$
+        knockout = SafeCastUtil.safeCast(probability_of_knock_out, float, 0.5)
+        over_express = SafeCastUtil.safeCast(probability_of_over_expression, float, 0.5)
+        node_name = SafeCastUtil.safeCast(node, str, "")
         val = random.uniform(0, 1)
-        if val < float(probability_of_knock_out):
-            return "fixGenes( network, " + '"' + str(node) + '"' + ", 0)"
-        elif float(probability_of_knock_out) < val < (float(probability_of_over_expression) + float(probability_of_knock_out)):
-            return "fixGenes( network, " + '"' + str(node) + '"' + ", 1)"
+        if val < SafeCastUtil.safeCast(probability_of_knock_out, float, 0.5):
+            return "fixGenes( network, " + '"' + node_name + '"' + ", 0)"
+        elif knockout < val < over_express + knockout:
+            return "fixGenes( network, " + '"' + node_name + '"' + ", 1)"
         else:
             return ""
 
