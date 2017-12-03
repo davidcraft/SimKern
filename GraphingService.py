@@ -2,6 +2,7 @@ import matplotlib.pyplot as matplotlib
 import os
 
 from Utilities.OperatingSystemUtil import OperatingSystemUtil
+from Utilities.SafeCastUtil import SafeCastUtil
 
 import logging
 
@@ -16,10 +17,10 @@ class GraphingService(object):
         pass
 
     DEFAULT_PLOT_FILENAME = "MachineLearningMultiBarPlot"
-    COLOR_PROGRESSION = ['r', 'g', 'b']
+    COLOR_PROGRESSION = ['red', 'green', 'blue', 'purple', 'orange']
 
     def makeMultiBarPlotWithMultipleAnalysis(self, full_data, output_path, title):
-        #TODO: Color code and label plots
+        #TODO: Add labels
         basic_plot = matplotlib.figure()
 
         full_data_sorted_by_percentage = self.sortByPercentage(full_data)
@@ -30,10 +31,11 @@ class GraphingService(object):
         for percentage in full_data_sorted_by_percentage.keys():
             data = full_data_sorted_by_percentage[percentage].values()
             keys = full_data_sorted_by_percentage[percentage].keys()
-            positions = list(range(location_on_plot, location_on_plot + len(keys)))
+            positions = SafeCastUtil.safeCast(range(location_on_plot, location_on_plot + len(keys)), list)
+            plot = matplotlib.boxplot(data, positions=positions, widths=0.6)
 
-            matplotlib.boxplot(data, positions=positions, widths=0.6)
-            x_ticks.append(location_on_plot + (len(keys) / 2))
+            self.color_by_analysis(keys, plot)
+
             location_on_plot += 4
 
         matplotlib.title(title)
@@ -44,13 +46,27 @@ class GraphingService(object):
 
         matplotlib.xlim(0, location_on_plot - 2)
         matplotlib.xlabel("% Train")
-        matplotlib.xticks(x_ticks, full_data_sorted_by_percentage.keys())
+        matplotlib.xticks(x_ticks, [SafeCastUtil.safeCast(k*100, int) for k in full_data_sorted_by_percentage.keys()])
         basic_plot.show()
 
         current_path = os.getcwd()
         OperatingSystemUtil.changeWorkingDirectory(output_path)
         basic_plot.savefig(self.DEFAULT_PLOT_FILENAME, bbox_inches='tight')
         OperatingSystemUtil.changeWorkingDirectory(current_path)
+
+    def color_by_analysis(self, keys, plot):
+        for element in ['boxes', 'whiskers', 'fliers', 'means', 'medians', 'caps']:
+            if len(keys) != 0 and len(plot[element]) % len(keys) == 0:
+                color_split = SafeCastUtil.safeCast(len(plot[element]) / len(keys), int)
+                i = 0
+                color_index = 0
+                while i < len(plot[element]):
+                    if i == color_split:
+                        color_index += 1
+                        if color_split >= len(self.COLOR_PROGRESSION):
+                            color_index = 0
+                    matplotlib.setp(plot[element][i], color=self.COLOR_PROGRESSION[color_index])
+                    i += 1
 
     def sortByPercentage(self, full_data):
         by_percentage = {}
