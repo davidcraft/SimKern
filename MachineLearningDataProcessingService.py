@@ -1,7 +1,6 @@
 import logging
 import numpy
 
-
 from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from MatrixService import MatrixService
@@ -9,7 +8,6 @@ from GraphingService import GraphingService
 
 
 class MachineLearningDataProcessingService(object):
-
     log = logging.getLogger(__name__)
     logging.basicConfig()
     log.setLevel(logging.INFO)
@@ -46,14 +44,17 @@ class MachineLearningDataProcessingService(object):
             svm_classifier_results = self.runSVMClassifier(responses, testing_matrix, testing_set, train_length,
                                                            training_matrix, validation_matrix, validation_set)
             full_results = {
-                "RF_CLASSIFIER": rf_classifier_results,
-                "SVM_CLASSIFIER": svm_classifier_results
+                "RF CLASSIFIER": rf_classifier_results,
+                "SVM CLASSIFIER": svm_classifier_results
             }
-            self.plotResultsByMultipleAnalyses(full_results, genomes_matrix_file, "SVM and RF Classifier SIM0 Results")
+            self.plotResults(full_results, genomes_matrix_file, "SVM and RF Classifier SIM0 Results")
         else:
             rf_regressor_results = self.runRandomForestRegressor(responses, testing_matrix, testing_set, train_length,
                                                                  training_matrix, validation_matrix, validation_set)
-            self.plotMachineLearningResultsByPercentTrain(rf_regressor_results, genomes_matrix_file, "RF results")
+            full_results = {
+                "RF REGRESSOR": rf_regressor_results,
+            }
+            self.plotResults(full_results, genomes_matrix_file, "RF Regressor SIM0 Results")
 
     def runRandomForestClassifier(self, responses, testing_matrix, testing_set, train_length, training_matrix,
                                   validation_matrix, validation_set):
@@ -181,10 +182,13 @@ class MachineLearningDataProcessingService(object):
         testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set,
                                                                                     train_length)
 
-        results_by_percent_train = self.runKernelizedSVM(responses, testing_matrix, testing_set, train_length,
-                                                         training_matrix, validation_matrix, validation_set)
-        self.plotMachineLearningResultsByPercentTrain(results_by_percent_train, similarity_matrix_file,
-                                                      "Similarity Matrix SVM Multi-Classifier Results By Percent Train")
+        kernelized_svm = self.runKernelizedSVM(responses, testing_matrix, testing_set, train_length,
+                                               training_matrix, validation_matrix, validation_set)
+        full_results = {
+            "KERNELIZED SVM": kernelized_svm
+        }
+
+        self.plotResults(full_results, similarity_matrix_file, "SIM1 Kernelized SVM")
 
     def runKernelizedSVM(self, responses, testing_matrix, testing_set, train_length, training_matrix, validation_matrix,
                          validation_set):
@@ -248,25 +252,29 @@ class MachineLearningDataProcessingService(object):
 
         kernel_training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
         kernel_validation_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
-                                                                                            validation_set, train_length)
-        kernel_testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set,
-                                                                                         train_length)
+                                                                                              validation_set,
+                                                                                              train_length)
+        kernel_testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
+                                                                                           testing_set,
+                                                                                           train_length)
 
-        rf_SIM0_classifier_results = self.runRandomForestClassifier(responses, genomic_testing_matrix, testing_set,
-                                                                    train_length, genomic_training_matrix,
-                                                                    genomic_validation_matrix, validation_set)
+        rf_genomic_classifier_results = self.runRandomForestClassifier(responses, genomic_testing_matrix, testing_set,
+                                                                       train_length, genomic_training_matrix,
+                                                                       genomic_validation_matrix, validation_set)
 
-        svm_SIM0_classifier_results = self.runSVMClassifier(responses, genomic_testing_matrix, testing_set, train_length,
-                                                            genomic_training_matrix, genomic_validation_matrix, validation_set)
+        svm_genomic_classifier_results = self.runSVMClassifier(responses, genomic_testing_matrix, testing_set,
+                                                               train_length, genomic_training_matrix,
+                                                               genomic_validation_matrix, validation_set)
 
-        svm_SIM1_classifier_results = self.runKernelizedSVM(responses, kernel_testing_matrix, testing_set, train_length,
-                                                            kernel_training_matrix, kernel_validation_matrix, validation_set)
+        svm_kernel_classifier_results = self.runKernelizedSVM(responses, kernel_testing_matrix, testing_set,
+                                                              train_length, kernel_training_matrix,
+                                                              kernel_validation_matrix, validation_set)
         full_results = {
-            "RF_CLASSIFIER": rf_SIM0_classifier_results,
-            "SVM_CLASSIFIER": svm_SIM0_classifier_results,
-            "SVM_SIM1_CLASSIFIER": svm_SIM1_classifier_results
+            "RF SIM0 CLASSIFIER": rf_genomic_classifier_results,
+            "SVM SIM0 CLASSIFIER": svm_genomic_classifier_results,
+            "SVM SIM1 CLASSIFIER": svm_kernel_classifier_results
         }
-        self.plotResultsByMultipleAnalyses(full_results, genomes_matrix_file, "SIM0 SIM1 Combined Results")
+        self.plotResults(full_results, genomes_matrix_file, "SIM0 SIM1 Combined Results")
 
     def readCSVFile(self, file):
         return numpy.loadtxt(open(file, "rb"), delimiter=",")
@@ -281,31 +289,22 @@ class MachineLearningDataProcessingService(object):
             real_response = responses[genome]
             prediction = predictions[i]
             accuracy = 0
-            if (is_classifier and real_response == prediction) or numpy.abs(prediction - real_response) <= numpy.std(responses):
+            if (is_classifier and real_response == prediction) or numpy.abs(prediction - real_response) <= numpy.std(
+                    responses):
                 accuracy = 1
             accuracies.append(accuracy)
-            self.log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction, real_response)
+            self.log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,
+                           real_response)
         average_accuracy = numpy.average(accuracies)
         return average_accuracy
 
-    def plotMachineLearningResultsByPercentTrain(self, results_by_percent_train, csv_file_location, title):
+    def plotResults(self, full_results, csv_file_location, title):
         try:
             output_path = ""
             csv_path_split = csv_file_location.split("/")
             for i in range(1, len(csv_path_split) - 1):
                 output_path += "/" + csv_path_split[i]
-            graphingService = GraphingService()
-            graphingService.makeMultiBarPlot(results_by_percent_train, output_path, title)
-        except Exception as exception:
-            self.log.error("Unable to create or save graphs due to: %s", exception)
-
-    def plotResultsByMultipleAnalyses(self, full_results, csv_file_location, title):
-        try:
-            output_path = ""
-            csv_path_split = csv_file_location.split("/")
-            for i in range(1, len(csv_path_split) - 1):
-                output_path += "/" + csv_path_split[i]
-            graphingService = GraphingService()
-            graphingService.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, title)
+            graphing_service = GraphingService()
+            graphing_service.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, title)
         except Exception as exception:
             self.log.error("Unable to create or save graphs due to: %s", exception)

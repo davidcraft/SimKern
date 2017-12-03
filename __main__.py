@@ -118,7 +118,6 @@ def promptUserForInput():
         output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
         genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
         analysis = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type:\n", str)
-
         performSIM0Analysis(analysis, genomes_matrix_file, output_file)
     elif simulation_as_int == 3:
         output_file = recursivelyPromptUser("Enter path of Sim1Responses.csv file:\n", str)

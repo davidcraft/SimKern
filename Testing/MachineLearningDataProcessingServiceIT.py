@@ -44,7 +44,6 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
                                                                self.sample_similarity_matrix)
         self.assertPlotPNGCreatedSuccessfully()
 
-
     def assertPlotPNGCreatedSuccessfully(self):
         assert len([file for file in os.listdir(self.current_working_dir + "/SampleDataFiles")
                     if file == GraphingService.DEFAULT_PLOT_FILENAME + ".png"]) == 1

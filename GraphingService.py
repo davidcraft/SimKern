@@ -1,4 +1,5 @@
 import matplotlib.pyplot as matplotlib
+import matplotlib.patches as mpatches
 import os
 
 from Utilities.OperatingSystemUtil import OperatingSystemUtil
@@ -20,7 +21,6 @@ class GraphingService(object):
     COLOR_PROGRESSION = ['red', 'green', 'blue', 'purple', 'orange']
 
     def makeMultiBarPlotWithMultipleAnalysis(self, full_data, output_path, title):
-        #TODO: Add labels
         basic_plot = matplotlib.figure()
 
         full_data_sorted_by_percentage = self.sortByPercentage(full_data)
@@ -33,9 +33,8 @@ class GraphingService(object):
             keys = full_data_sorted_by_percentage[percentage].keys()
             positions = SafeCastUtil.safeCast(range(location_on_plot, location_on_plot + len(keys)), list)
             plot = matplotlib.boxplot(data, positions=positions, widths=0.6)
-
             self.color_by_analysis(keys, plot)
-
+            x_ticks.append(location_on_plot + (len(keys) / 2))
             location_on_plot += 4
 
         matplotlib.title(title)
@@ -44,15 +43,27 @@ class GraphingService(object):
         matplotlib.ylim(0, 1)
         matplotlib.ylabel("Accuracy distribution")
 
-        matplotlib.xlim(0, location_on_plot - 2)
+        matplotlib.xlim(0, location_on_plot - 1)
         matplotlib.xlabel("% Train")
         matplotlib.xticks(x_ticks, [SafeCastUtil.safeCast(k*100, int) for k in full_data_sorted_by_percentage.keys()])
+        self.createLegend(full_data)
+
         basic_plot.show()
 
         current_path = os.getcwd()
         OperatingSystemUtil.changeWorkingDirectory(output_path)
         basic_plot.savefig(self.DEFAULT_PLOT_FILENAME, bbox_inches='tight')
         OperatingSystemUtil.changeWorkingDirectory(current_path)
+
+    def sortByPercentage(self, full_data):
+        by_percentage = {}
+        for analysis_type in full_data.keys():
+            for percentage_data in full_data[analysis_type].keys():
+                if percentage_data not in by_percentage.keys():
+                    by_percentage[percentage_data] = {analysis_type: full_data[analysis_type][percentage_data]}
+                else:
+                    by_percentage[percentage_data][analysis_type] = full_data[analysis_type][percentage_data]
+        return by_percentage
 
     def color_by_analysis(self, keys, plot):
         for element in ['boxes', 'whiskers', 'fliers', 'means', 'medians', 'caps']:
@@ -61,23 +72,23 @@ class GraphingService(object):
                 i = 0
                 color_index = 0
                 while i < len(plot[element]):
-                    if i == color_split:
+                    if i % color_split == 0 and i > 0:
                         color_index += 1
                         if color_split >= len(self.COLOR_PROGRESSION):
                             color_index = 0
                     matplotlib.setp(plot[element][i], color=self.COLOR_PROGRESSION[color_index])
                     i += 1
 
-    def sortByPercentage(self, full_data):
-        by_percentage = {}
-        for analysis_type in full_data.keys():
-            for percentage_data in full_data[analysis_type].keys():
-                # results_by_percentage = {analysis_type: full_data[analysis_type][percentage_data]}
-                if percentage_data not in by_percentage.keys():
-                    by_percentage[percentage_data] = {analysis_type: full_data[analysis_type][percentage_data]}
-                else:
-                    by_percentage[percentage_data][analysis_type] = full_data[analysis_type][percentage_data]
-        return by_percentage
+    def createLegend(self, full_data):
+        patches = []
+        color_index = 0
+        for key in full_data.keys():
+            if color_index >= len(self.COLOR_PROGRESSION):
+                color_index = 0
+            patch = mpatches.Patch(color=self.COLOR_PROGRESSION[color_index], label=key)
+            patches.append(patch)
+            color_index += 1
+        matplotlib.legend(handles=patches, loc=4)
 
     def makeMultiBarPlot(self, data, output_path, title):
         basic_plot = matplotlib.figure()
