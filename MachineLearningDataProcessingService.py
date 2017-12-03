@@ -28,8 +28,8 @@ class MachineLearningDataProcessingService(object):
 
         order = numpy.random.permutation(num_genomes)
 
-        train_length = int(0.5 * num_genomes)  # half the similarity matrix
-        validation_and_testing_length = int(num_genomes / 4)  # 1/4 the similarity matrix.
+        train_length = int(0.5 * num_genomes)
+        validation_and_testing_length = int(num_genomes / 4)
 
         training_set = order[0:train_length]
         validation_set = order[train_length: (train_length + validation_and_testing_length)]
@@ -164,7 +164,6 @@ class MachineLearningDataProcessingService(object):
     def performMachineLearningOnSIM1(self, output_file, similarity_matrix_file):
         responses = self.readCSVFile(output_file)
         similarity_matrix = self.readCSVFile(similarity_matrix_file)
-        results_by_percent_train = {}
 
         num_genomes = len(similarity_matrix)
         order = numpy.random.permutation(num_genomes)
@@ -182,6 +181,14 @@ class MachineLearningDataProcessingService(object):
         testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set,
                                                                                     train_length)
 
+        results_by_percent_train = self.runKernelizedSVM(responses, testing_matrix, testing_set, train_length,
+                                                         training_matrix, validation_matrix, validation_set)
+        self.plotMachineLearningResultsByPercentTrain(results_by_percent_train, similarity_matrix_file,
+                                                      "Similarity Matrix SVM Multi-Classifier Results By Percent Train")
+
+    def runKernelizedSVM(self, responses, testing_matrix, testing_set, train_length, training_matrix, validation_matrix,
+                         validation_set):
+        results_by_percent_train = {}
         for training_percent in self.TRAINING_PERCENTS:
             total_accuracies = []
             for permutation in range(0, self.NUM_PERMUTATIONS):
@@ -215,10 +222,51 @@ class MachineLearningDataProcessingService(object):
 
             results_by_percent_train[training_percent] = total_accuracies
             self.log.info("Total accuracy for all rounds of matrix permutations with %s percent split: %s",
-                           training_percent * 100, numpy.round(numpy.average(total_accuracies), 2))
+                          training_percent * 100, numpy.round(numpy.average(total_accuracies), 2))
         self.log.debug("Accuracies by training percent: %s", results_by_percent_train)
-        self.plotMachineLearningResultsByPercentTrain(results_by_percent_train, similarity_matrix_file,
-                                                      "Similarity Matrix SVM Multi-Classifier Results By Percent Train")
+        return results_by_percent_train
+
+    def performFullSIM0SIM1Analysis(self, output_file, genomes_matrix_file, similarity_matrix_file):
+        responses = self.readCSVFile(output_file)
+        genomes_matrix = self.readCSVFile(genomes_matrix_file)
+        similarity_matrix = self.readCSVFile(similarity_matrix_file)
+
+        num_genomes = len(genomes_matrix)
+
+        order = numpy.random.permutation(num_genomes)
+
+        train_length = int(0.5 * num_genomes)
+        validation_and_testing_length = int(num_genomes / 4)
+
+        training_set = order[0:train_length]
+        validation_set = order[train_length: (train_length + validation_and_testing_length)]
+        testing_set = order[(train_length + validation_and_testing_length): num_genomes]
+
+        genomic_training_matrix = MatrixService.splitGenomeMatrix(genomes_matrix, training_set)
+        genomic_validation_matrix = MatrixService.splitGenomeMatrix(genomes_matrix, validation_set)
+        genomic_testing_matrix = MatrixService.splitGenomeMatrix(genomes_matrix, testing_set)
+
+        kernel_training_matrix = MatrixService.splitSimilarityMatrixForTraining(similarity_matrix, training_set)
+        kernel_validation_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix,
+                                                                                            validation_set, train_length)
+        kernel_testing_matrix = MatrixService.splitSimilarityMatrixForTestingAndValidation(similarity_matrix, testing_set,
+                                                                                         train_length)
+
+        rf_SIM0_classifier_results = self.runRandomForestClassifier(responses, genomic_testing_matrix, testing_set,
+                                                                    train_length, genomic_training_matrix,
+                                                                    genomic_validation_matrix, validation_set)
+
+        svm_SIM0_classifier_results = self.runSVMClassifier(responses, genomic_testing_matrix, testing_set, train_length,
+                                                            genomic_training_matrix, genomic_validation_matrix, validation_set)
+
+        svm_SIM1_classifier_results = self.runKernelizedSVM(responses, kernel_testing_matrix, testing_set, train_length,
+                                                            kernel_training_matrix, kernel_validation_matrix, validation_set)
+        full_results = {
+            "RF_CLASSIFIER": rf_SIM0_classifier_results,
+            "SVM_CLASSIFIER": svm_SIM0_classifier_results,
+            "SVM_SIM1_CLASSIFIER": svm_SIM1_classifier_results
+        }
+        self.plotResultsByMultipleAnalyses(full_results, genomes_matrix_file, "SIM0 SIM1 Combined Results")
 
     def readCSVFile(self, file):
         return numpy.loadtxt(open(file, "rb"), delimiter=",")

@@ -38,6 +38,13 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
         machine_learning_processor.performMachineLearningOnSIM1(self.sample_output, self.sample_similarity_matrix)
         self.assertPlotPNGCreatedSuccessfully()
 
+    def testSIM0SIM1CombinedClassifierAnalysis(self):
+        machine_learning_processor = MachineLearningDataProcessingService()
+        machine_learning_processor.performFullSIM0SIM1Analysis(self.sample_output, self.sample_genomes_matrix,
+                                                               self.sample_similarity_matrix)
+        self.assertPlotPNGCreatedSuccessfully()
+
+
     def assertPlotPNGCreatedSuccessfully(self):
         assert len([file for file in os.listdir(self.current_working_dir + "/SampleDataFiles")
                     if file == GraphingService.DEFAULT_PLOT_FILENAME + ".png"]) == 1

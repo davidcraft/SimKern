@@ -74,6 +74,17 @@ def main():
         output_file = arguments[1]
         similarity_matrix = arguments[2]
         performSIM1Analysis(output_file, similarity_matrix)
+    elif SafeCastUtil.safeCast(arguments[0], int) == 4:
+        log.info("Machine Learning on both SIM0 and SIM1 data requested...")
+        if len(arguments) is not 4:
+            log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
+                     "a file Sim0Output.csv file expressing the third party program results of SIM0 ,the accompanying "
+                     "Sim0GenomesMatrix file and a Sim1SimilarityMatrix.csv file.")
+            return
+        output_file = arguments[1]
+        genomes_matrix_file = arguments[2]
+        similarity_matrix = arguments[3]
+        performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix)
     return
 
 
@@ -84,6 +95,7 @@ def promptUserForInput():
                               "\t1: SIM1 - create R permutations of K genomes\n"
                               "\t2: Perform machine learning with existing SIM0 data\n"
                               "\t3: Perform machine learning with existing SIM1 data\n"
+                              "\t4: Perform machine learning with both SIM0 and SIM1 data\n"
                               "\tQ: Quit\n")
     simulation_as_int = SafeCastUtil.safeCast(simulation_to_run, int)
     simulation_as_string = SafeCastUtil.safeCast(simulation_to_run, str, "Q")
@@ -112,6 +124,11 @@ def promptUserForInput():
         output_file = recursivelyPromptUser("Enter path of Sim1Responses.csv file:\n", str)
         similarity_matrix = recursivelyPromptUser("Enter path of .CSV file representing the similarity matrix:\n", str)
         performSIM1Analysis(output_file, similarity_matrix)
+    elif simulation_as_int == 4:
+        output_file = recursivelyPromptUser("Enter path of Sim1Responses.csv file:\n", str)
+        genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
+        similarity_matrix = recursivelyPromptUser("Enter path of .CSV file representing the similarity matrix:\n", str)
+        performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix)
     elif simulation_as_string == "Q":
         return
     else:
@@ -178,15 +195,19 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     return trial_files
 
 
+def performSIM0Analysis(analysis, genomes_matrix_file, output_file):
+    data_processor = MachineLearningDataProcessingService()
+    data_processor.performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
+
+
 def performSIM1Analysis(output_file, similarity_matrix):
     data_processor = MachineLearningDataProcessingService()
     data_processor.performMachineLearningOnSIM1(output_file, similarity_matrix)
 
 
-def performSIM0Analysis(analysis, genomes_matrix_file, output_file):
+def performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix):
     data_processor = MachineLearningDataProcessingService()
-    data_processor.performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
-
+    data_processor.performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix)
 
 if __name__ == "__main__":
     main()
