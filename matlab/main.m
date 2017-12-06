@@ -33,7 +33,7 @@ yfile = 'C:\Users\timo.deist\Documents\sim0sim1\data\flower\Sim0Output.csv';
 y=csvread(yfile);
 y=y';
 outcome = y;
-classificationBoolean = true;
+classificationBoolean = false;
 
 %% if you want to turn the case into a ternary classification
 % outcome(y < quantile(y,1/3)) = 1;
