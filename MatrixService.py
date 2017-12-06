@@ -7,6 +7,7 @@ import numpy as np
 class MatrixService(object):
     
     OUTPUT_FILE_NAME = "Sim1SimilarityMatrix"
+    SIM1_OUTPUT_FILE_NAME = "Sim1Responses.csv"
     OUTPUT_FOLDER_NAME = "/SimilarityMatrix"
 
     #TODO Add the inputs for weight_vector
@@ -18,8 +19,13 @@ class MatrixService(object):
 
     def generateSimilarityMatrix(self, output_trials=''):
         response_list = self.generateResponseList()
+        if (type(response_list[0]) == int) or (type(response_list[0]) == float):
+            output_type = 'scalar'
+        else:
+            output_type = 'vector'
+            response_list = np.array(response_list)
         index_matrix = self.generateIndexMatrix()
-        similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, weight_vector=None)
+        similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, output_type,weight_vector=None)
         self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
         return similarity_matrix
 
@@ -27,7 +33,7 @@ class MatrixService(object):
         response_list = self.generateResponseList()
         response_list = np.array(response_list)
         response_matrix = response_list.reshape(self.number_of_trials,-1)
-        self.writeDataFile(response_matrix, "Sim1Responses.csv")
+        self.writeDataFile(response_matrix, self.SIM1_OUTPUT_FILE_NAME)
 
     def generateIndexMatrix(self):
         """return a matrix with the dimensions as number of trials * (number of genomes *
@@ -42,12 +48,12 @@ class MatrixService(object):
             response_list.append(self.simulation_result[file])
         return response_list
 
-    def computeSimilarityScores(self, response_list, index_matrix, weight_vector):
+    def computeSimilarityScores(self, response_list, index_matrix, output_type,weight_vector):
         kernel = [None]*self.number_of_genomes
         for i in range(0, self.number_of_genomes):
             kernel[i] = [None]*self.number_of_genomes
             kernel[i][i] = 1
-        if type(response_list[0]) == np.ndarray:
+        if output_type == 'vector':
             for i in range(0, self.number_of_genomes - 1):
                 for j in range(i + 1, self.number_of_genomes):
                     total_score = 0
@@ -60,7 +66,7 @@ class MatrixService(object):
                     score = total_score / self.number_of_trials
                     kernel[i][j] = score
                     kernel[j][i] = score
-        else:
+        if output_type == 'scalar':
             valid_trial_list = self.getValidTrials(response_list, index_matrix)
             for i in range(0, self.number_of_genomes - 1):
                 for j in range(i + 1, self.number_of_genomes):

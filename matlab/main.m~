@@ -57,7 +57,7 @@ categoricalIndices(end-1) = true;
 debuggingBoolean = true; % set to true if you want to use fewer hyperparameters to speed up the process
 numeroTrees = 50; % number of trees for all RFs
 %% the actual experiment
-for i_reps = 1:10 % number of repetitions 
+for i_reps = 1:10
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
     categoricalIndices,numeroTrees,debuggingBoolean);

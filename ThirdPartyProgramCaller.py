@@ -115,7 +115,6 @@ class ThirdPartyProgramCaller(object):
             file_name = file.split(".")[0]
             eng.eval(file_name,nargout=0)
             output = eng.workspace['output']
-            output = np.array(output)
             outputs[file_name] = output
             self.counter = self.counter + 1
             self.log.info(str(100 * self.counter / len(self.file_list)) + "% complete")
