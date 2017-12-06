@@ -1,4 +1,6 @@
 from __future__ import division
+
+from Utilities.OperatingSystemUtil import OperatingSystemUtil
 import os
 import csv
 import numpy as np
@@ -28,6 +30,7 @@ class MatrixService(object):
         similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, output_type,weight_vector=None)
         self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
         return similarity_matrix
+
 
     def generateResponseMatrix(self):
         response_list = self.generateResponseList()
@@ -122,7 +125,7 @@ class MatrixService(object):
 
     def writeDataFile(self, matrix, file_name):
         path = os.getcwd()
-        self.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
+        OperatingSystemUtil.changeWorkingDirectory(path + self.OUTPUT_FOLDER_NAME)
         n = len(matrix)
         with open(file_name, 'w') as csv_file:
             try:
@@ -132,12 +135,6 @@ class MatrixService(object):
             finally:
                 csv_file.close()
                 os.chdir(path)
-
-    #TODO: repeated code with FileProcessingService. DRY it up.
-    def changeWorkingDirectory(self, new_directory):
-        if not os.path.isdir(new_directory):
-            os.mkdir(new_directory)
-        os.chdir(new_directory)
 
     @staticmethod
     def splitSimilarityMatrixForTraining(similarity_matrix, training_set):
@@ -159,3 +156,20 @@ class MatrixService(object):
                 new_matrix_row.append(similarity_matrix[testing_set[i], j])
             testing_matrix.append(new_matrix_row)
         return testing_matrix
+
+    @staticmethod
+    def trimMatrixForTesting(sub_train_length, testing_matrix):
+        trimmed_matrix = []
+        for trim in range(0, len(testing_matrix)):
+            if len(testing_matrix[trim]) > sub_train_length:
+                trimmed_matrix.append(testing_matrix[trim][0:sub_train_length])
+            else:
+                trimmed_matrix.append(testing_matrix[trim])
+        return trimmed_matrix
+
+    @staticmethod
+    def splitGenomeMatrix(genome_matrix, training_set):
+        split_matrix = []
+        for i in range(0, len(training_set)):
+            split_matrix.append(genome_matrix[training_set[i]])
+        return split_matrix

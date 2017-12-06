@@ -8,8 +8,10 @@ function [dummycodedData] = dummycodeCategoricalFeatures(data,categoricalIndices
 if any(categoricalIndices) % only apply dummy coding if there are categorical variables
     categoricalFeatures = data(:,categoricalIndices);
     
-    if any(any(categoricalFeatures == 0)) % if categorical features contain 0s
-        categoricalFeatures = categoricalFeatures + 1; % shift all categories by 1
+    if any(any(categoricalFeatures <= 0)) % if categorical features contain 0s or negative numbers
+        
+        % shift all categories by their smallest number + 1 so that all are positive;
+        categoricalFeatures = categoricalFeatures + abs((min(min(categoricalFeatures)))) + 1;
     end
     
     dummycodedFeatures = dummyvar(categoricalFeatures);

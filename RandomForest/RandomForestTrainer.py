@@ -36,6 +36,18 @@ class RandomForestTrainer(object):
 
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
 
+    def trainRandomForestClassifierNew(self, training_set, hyperparameter_optimization):
+        model = RandomForestClassifier(n_estimators=hyperparameter_optimization)
+        sample_labels = []
+        for label in range(0, int(len(training_set))):
+            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
+        if len(numpy.unique(sample_labels)) <= 1:
+            return None
+        model.fit(self.genomes_array, sample_labels)
+        self.log.debug("Successful creation of Random Forest classifier model: %s\n", model)
+        return model
+
+
     def trainRandomForestRegressor(self, pct_train):
         if type(self.third_party_response) != list:
             response_as_list = list(self.third_party_response.values())
@@ -55,6 +67,17 @@ class RandomForestTrainer(object):
 
         self.log.info("Variable importances: %s", str(model.feature_importances_))
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
+
+    def trainRandomForestRegressorNew(self, training_set, hyperparameter_optimization):
+        model = RandomForestRegressor(n_estimators=hyperparameter_optimization)
+        sample_labels = []
+        for label in range(0, int(len(training_set))):
+            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
+        if len(numpy.unique(sample_labels)) <= 1:
+            return None
+        model.fit(self.genomes_array, sample_labels)
+        self.log.debug("Successful creation of Random Forest regressor model: %s\n", model)
+        return model
 
     def splitData(self, responses, data, pct_train):
         num_samples = len(data)

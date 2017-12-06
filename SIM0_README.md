@@ -75,15 +75,10 @@ To immediately run the SIM0 environment, call the __main__.py file with three ar
 
 `output_path` -> output path that saves the network simulations. Cannot be root.
 
-SIM0 will then return a classification list/array of of length equal to the input number_of_genomes
-with elements either 0 or 1. If any of the simulations produce questionable values or fail to run,
-a value of -1 will appear instead of a 0 or 1.
-
-Finally a random forest classifier model will then be produced. It will have a number of features
-equal to the number of replaced coefficients in the original simulation file. Details of this model
-will be expressed on the command line.
-
 ### OUTPUT FILES
+SIM0 will then return a classification list/array of of length equal to the input number_of_genomes
+with elements corresponding to the results from the third party program calls.
+
 In addition to the returned classification list/array, a new directory named
 `GenomeFiles` will be created containing the different files pertaining to each classification.
 Each produced genome also contains a key file which will detail the coefficients replaced for each.

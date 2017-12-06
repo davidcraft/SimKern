@@ -55,34 +55,18 @@ categoricalIndices(1) = true;
 categoricalIndices(end-1) = true;
 %Turn this off when it works.
 debuggingBoolean = true; % set to true if you want to use fewer hyperparameters to speed up the process
+
 numeroTrees = 50; % number of trees for all RFs
+numeroReps = 2;
 %% the actual experiment
-for i_reps = 1:10 % number of repetitions 
+
+for i_reps = 1:10 % number of repetitions
 [linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),ckSvm(i_reps),ckRf(i_reps)] = runExperiment(unstandardizedFeatures,...
+
     outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
-    categoricalIndices,numeroTrees,debuggingBoolean);
+    categoricalIndices,numeroTrees,debuggingBoolean,i_reps,numeroReps);
 end
 totalRunningTime = toc
 %% plotting
-rbfResult = cat(1,rbfSvm(:).perfMetric);
-rfResult = cat(1,rf(:).perfMetric);
-ckResult = cat(1,ckSvm(:).perfMetric);
-linResult = cat(1,linSvm(:).perfMetric);
-ckRfResult = cat(1,ckRf(:).perfMetric);
-clf
-hold on
-
-boxplot([linResult rbfResult rfResult ckResult ckRfResult],'position', [1 2 3 4 5 1.1 2.1 3.1 4.1 5.1 1.2 2.2 3.2 4.2 5.2 1.3 2.3 3.3 4.3 5.3 1.4 2.4 3.4 4.4 5.4],...
-    'labels',{'lin' 'lin' 'lin' 'lin' 'lin' 'rbf' 'rbf' 'rbf' 'rbf' 'rbf' 'rf' 'rf' 'rf' 'rf' 'rf' 'ck' 'ck' 'ck' 'ck' 'ck' 'ckrf' 'ckrf' 'ckrf' 'ckrf' 'ckrf'})
-xlabel('Subsampling ratio')
-if classificationBoolean
-    ylabel('Accuracy')
-else
-    ylabel('R^2')
-end
-line([1.7 1.7],[-100 100],'Color','k')
-line([2.7 2.7],[-100 100],'Color','k')
-line([3.7 3.7],[-100 100],'Color','k')
-line([4.7 4.7],[-100 100],'Color','k')
-
- save('flower_1rep_dump')
+boxplottingSimKernelResults(nn,rbfSvm,rf,ckSvm,linSvm,ckRf,ckNn,classificationBoolean,subsamplingRatios,splitRatios,outcome);
+ save('../../data/flower_results')

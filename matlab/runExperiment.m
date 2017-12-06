@@ -1,6 +1,6 @@
-function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(...
+function [linSvm,rbfSvm,rf,ckSvm,ckRf,nn,ckNn,hyperparameters] = runExperiment(...
     unstandardizedFeatures,outcome,sm,splitRatios,classificationBoolean,...
-    subsamplingRatios,categoricalIndices,numeroTrees,debuggingBoolean)
+    subsamplingRatios,categoricalIndices,numeroTrees,debuggingBoolean,iterationNumber,numeroReps)
 % this function runs an analysis as outlined in Figure X of the manuscript.
 % INPUTS:
 % unstandardizedFeatures: a matrix of features (rows are samples, columns
@@ -41,7 +41,7 @@ function [linSvm,rbfSvm,rf,ckSvm,ckRf] = runExperiment(...
 % repeat hyperparameter tuning and evaluation on test set for each
 % subsampling iteration of the trainingset
 for i_subsampling = 1:numel(subsamplingRatios)
-    disp(['Subsampling iteration ' num2str(i_subsampling) ' of ' num2str(numel(subsamplingRatios)) '.'])
+    disp(['Simulation iteration ' num2str(iterationNumber) ' of ' num2str(numeroReps) '. ' 'Subsampling iteration ' num2str(i_subsampling) ' of ' num2str(numel(subsamplingRatios)) '.'])
     [subsampledTrainData,subsampledValidationData,subsampledTestData] = applySubsampling(trainData,validationData,testData,subsamplingRatios(i_subsampling),classificationBoolean);
     
     if debuggingBoolean
@@ -108,6 +108,11 @@ for i_subsampling = 1:numel(subsamplingRatios)
     else
         perfMetricString = 'R^2';
     end
+    
+    nn.bestModel{i_subsampling} = subsampledTrainData;
+    [nn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,nn.bestModel{i_subsampling},'nn',classificationBoolean);
+    disp(['NN test ' perfMetricString ' = ' num2str(nn.perfMetric(i_subsampling)) '.' ])
+    
     [rf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,rf.bestModel{i_subsampling},'rf',classificationBoolean);
     disp(['RF test ' perfMetricString ' = ' num2str(rf.perfMetric(i_subsampling)) '.' ])
     
@@ -122,6 +127,18 @@ for i_subsampling = 1:numel(subsamplingRatios)
     
     [ckRf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckRf.bestModel{i_subsampling},'ckRf',classificationBoolean);
     disp(['ckRF test ' perfMetricString ' = ' num2str(ckRf.perfMetric(i_subsampling)) '.' ])
+    
+    ckNn.bestModel{i_subsampling} = subsampledTrainData;
+    [ckNn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckNn.bestModel{i_subsampling},'ckNn',classificationBoolean);
+    disp(['ckNN test ' perfMetricString ' = ' num2str(ckNn.perfMetric(i_subsampling)) '.' ])
+    
 end
-
+% linSvm = NaN; % if you want to remove linSvm
+% store hyperparameters in struct to pass outside the function
+hyperparameters.cValues = cValues;
+hyperparameters.epsilonValues = epsilonValues;
+hyperparameters.gammaValues = gammaValues;
+hyperparameters.mValuesNaive = mValuesNaive;
+hyperparameters.mValuesCk = mValuesCk;
+hyperparameters.maxSplits = maxSplitsValues;
 end

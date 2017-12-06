@@ -1,0 +1,96 @@
+load linearProgrammingModelVariables
+
+c(1) = $uniform(0,10)$;
+c(2) = 0.5;
+c(3) = 0.5;
+c(4) = 0.5;
+c(5) = 0.5;
+c(6) = 0.5;
+c(7) = 0.5;
+c(8) = 0.5;
+c(9) = 0.5;
+c(10) = $uniform(0,10)$;
+c(11) = 0.5;
+c(12) = 0.5;
+c(13) = 0.5;
+c(14) = 0.5;
+c(15) = 0.5;
+c(16) = 0.5;
+c(17) = 0.5;
+c(18) = 0.5;
+c(19) = 0.5;
+c(20) = $uniform(0,10)$;
+c(21) = 0.5;
+c(22) = 0.5;
+c(23) = 0.5;
+c(24) = 0.5;
+c(25) = 0.5;
+c(26) = 0.5;
+c(27) = 0.5;
+c(28) = 0.5;
+c(29) = 0.5;
+c(30) = $uniform(0,10)$;
+c(31) = 0.5;
+c(32) = 0.5;
+c(33) = 0.5;
+c(34) = 0.5;
+c(35) = 0.5;
+c(36) = 0.5;
+c(37) = 0.5;
+c(38) = 0.5;
+c(39) = 0.5;
+c(40) = $uniform(0,10)$;
+c(41) = 0.5;
+c(42) = 0.5;
+c(43) = 0.5;
+c(44) = 0.5;
+c(45) = 0.5;
+c(46) = 0.5;
+c(47) = 0.5;
+c(48) = 0.5;
+c(49) = 0.5;
+c(50) = $uniform(0,10)$;
+c(51) = 0.5;
+c(52) = 0.5;
+c(53) = 0.5;
+c(54) = 0.5;
+c(55) = 0.5;
+c(56) = 0.5;
+c(57) = 0.5;
+c(58) = 0.5;
+c(59) = 0.5;
+c(60) = $uniform(0,10)$;
+c(61) = 0.5;
+c(62) = 0.5;
+c(63) = 0.5;
+c(64) = 0.5;
+c(65) = 0.5;
+c(66) = 0.5;
+c(67) = 0.5;
+c(68) = 0.5;
+c(69) = 0.5;
+c(70) = $uniform(0,10)$;
+c(71) = 0.5;
+c(72) = 0.5;
+c(73) = 0.5;
+c(74) = 0.5;
+c(75) = 0.5;
+c(76) = 0.5;
+c(77) = 0.5;
+c(78) = $uniform(0,10)$;
+c(79) = $uniform(0,10)$;
+c(80) = $uniform(0,10)$;
+
+
+
+%solve the optimization: (code copied from nf.m)
+LB=zeros(numArcs,1);
+if useOctave
+	ctype = repmat('S',length(b),1);
+	[xopt fval exitflag] = glpk(c,A,b, LB,[],ctype);
+else
+	[xopt fval exitflag] = linprog(c,[],[],A,b, LB);
+end
+
+%and display the classification: which of the output arcs took the flow
+disp(find(xopt(outputArcNums))); %Outputs 1, 2, or 3.
