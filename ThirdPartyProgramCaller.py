@@ -120,7 +120,6 @@ class ThirdPartyProgramCaller(object):
             file_name = file.split(".")[0]
             eng.eval(file_name, nargout=0)
             output = eng.workspace['output']
-            output = np.array(output)
             outputs[file_name] = output
             self.logAndIncrementProgress()
             if self.number_of_trials != 0:
