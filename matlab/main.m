@@ -49,12 +49,11 @@ classificationBoolean = true;
 % classificationBoolean = false;
 %% experiment parameters
 splitRatios = [0.5 0.25 0.25];
-<<<<<<< HEAD
-subsamplingRatios = [0.05 0.1 0.6];
+subsamplingRatios = [0.1:0.1:1];
 categoricalIndices = logical([1 zeros(1,size(unstandardizedFeatures,2) - 1)]);
-debuggingBoolean = true; % set to true if you want to use fewer hyperparameters to speed up the process
+debuggingBoolean = false; % set to true if you want to use fewer hyperparameters to speed up the process
 numeroTrees = 50; % number of trees for all RFs
-numeroReps = 2;
+numeroReps = 10;
 %% the actual experiment
 for i_reps = 1:numeroReps
 [nn(i_reps),linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),skSvm(i_reps),skRf(i_reps),skNn(i_reps),hyperparameters(i_reps)] = runExperiment(unstandardizedFeatures,...
