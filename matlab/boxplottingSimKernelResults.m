@@ -1,49 +1,65 @@
-function boxplottingSimKernelResults(nn,rbfSvm,rf,ckSvm,linSvm,ckRf,ckNn,classificationBoolean,subsamplingRatios,splitRatios,outcome)
+function boxplottingSimKernelResults(nn,rbfSvm,rf,skSvm,linSvm,skRf,skNn,classificationBoolean,subsamplingRatios,splitRatios,outcome)
 nnResult = cat(1,nn(:).perfMetric); 
 rbfResult = cat(1,rbfSvm(:).perfMetric);
 rfResult = cat(1,rf(:).perfMetric);
-ckSvmResult = cat(1,ckSvm(:).perfMetric);
+skSvmResult = cat(1,skSvm(:).perfMetric);
 % linResult = cat(1,nn(:).perfMetric); %%%%%%%%%%%%
 linResult = cat(1,linSvm(:).perfMetric); %%%%%%%%%%%%
-ckRfResult = cat(1,ckRf(:).perfMetric);
-ckNnResult = cat(1,ckNn(:).perfMetric);
+skRfResult = cat(1,skRf(:).perfMetric);
+skNnResult = cat(1,skNn(:).perfMetric);
+
+numeroSubsamples = numel(subsamplingRatios);
 
 % compute equal spacing between algorithm bars within a subsampling
 % iteration
 x = linspace(0,1,9);
-    
+
+nnLabels = cell(1,numeroSubsamples);
+nnLabels(:) = {'nn'};
+linSvmLabels = cell(1,numeroSubsamples);
+linSvmLabels(:) = {'linSvm'};
+rbfSvmLabels = cell(1,numeroSubsamples);
+rbfSvmLabels(:) = {'rbfSvm'};
+rfLabels = cell(1,numeroSubsamples);
+rfLabels(:) = {'rf'};
+skSvmLabels = cell(1,numeroSubsamples);
+skSvmLabels(:) = {'skSvm'};
+skRfLabels = cell(1,numeroSubsamples);
+skRfLabels(:) = {'skRf'};
+skNnLabels = cell(1,numeroSubsamples);
+skNnLabels(:) = {'skNn'};
+
+
+plotLabels = [nnLabels linSvmLabels rbfSvmLabels rfLabels skSvmLabels skRfLabels skNnLabels];
+
 clf
 hold on
 grid on
-boxplot([nnResult linResult rbfResult rfResult ckSvmResult ckRfResult ckNnResult],...
+boxplot([nnResult linResult rbfResult rfResult skSvmResult skRfResult skNnResult],...
     'PlotStyle','compact',...
     'FactorSeparator',1,...
     'position',...
-    [1:5 ...
-    x(2)+(1:5)...
-    x(3)+(1:5) ...
-    x(4)+(1:5) ...
-    x(5)+(1:5),...
-    x(6)+(1:5),...
-    x(7)+(1:5)],...
+    [1:numeroSubsamples ...
+    x(2)+(1:numeroSubsamples)...
+    x(3)+(1:numeroSubsamples) ...
+    x(4)+(1:numeroSubsamples) ...
+    x(5)+(1:numeroSubsamples),...
+    x(6)+(1:numeroSubsamples),...
+    x(7)+(1:numeroSubsamples)],...
     'labels',...
-{'nn' 'nn' 'nn' 'nn' 'nn'...
-'linSvm' 'linSvm' 'linSvm' 'linSvm' 'linSvm'...
-'rbfSvm' 'rbfSvm' 'rbfSvm' 'rbfSvm' 'rbfSvm'...
-'rf' 'rf' 'rf' 'rf' 'rf'...
-'skSvm' 'skSvm' 'skSvm' 'skSvm' 'skSvm'...
-'skRf' 'skRf' 'skRf' 'skRf' 'skRf'...
-'skNn' 'skNn' 'skNn' 'skNn' 'skNn'})
+    plotLabels)
+
 xlabel('Subsampling ratio')
 if classificationBoolean
     ylabel('Accuracy')
 else
     ylabel('R^2')
 end
-line([1.875 1.875],[-100 100],'Color','k')
-line([2.875 2.875],[-100 100],'Color','k')
-line([3.875 3.875],[-100 100],'Color','k')
-line([4.875 4.875],[-100 100],'Color','k')
+
+for i_subsamples = 1:numeroSubsamples
+    line([(i_subsamples+ 0.875) (i_subsamples+ 0.875)],[-100 100],'Color','k')
+end
+
 
 numeroTrainSamples = length(outcome) * splitRatios(1) * subsamplingRatios;
 numeroValidationSamples = length(outcome) * splitRatios(2);
