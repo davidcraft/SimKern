@@ -1,6 +1,7 @@
 from __future__ import division
 
 from Utilities.OperatingSystemUtil import OperatingSystemUtil
+from Utilities.SafeCastUtil import SafeCastUtil
 import os
 import csv
 import numpy as np
@@ -27,7 +28,7 @@ class MatrixService(object):
             output_type = 'vector'
             response_list = np.array(response_list)
         index_matrix = self.generateIndexMatrix()
-        similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, output_type,weight_vector=None)
+        similarity_matrix = self.computeSimilarityScores(response_list, index_matrix, output_type, weight_vector=None)
         self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
         return similarity_matrix
 
@@ -51,7 +52,7 @@ class MatrixService(object):
             response_list.append(self.simulation_result[file])
         return response_list
 
-    def computeSimilarityScores(self, response_list, index_matrix, output_type,weight_vector):
+    def computeSimilarityScores(self, response_list, index_matrix, output_type, weight_vector):
         kernel = [None]*self.number_of_genomes
         for i in range(0, self.number_of_genomes):
             kernel[i] = [None]*self.number_of_genomes
@@ -65,7 +66,7 @@ class MatrixService(object):
                         index2 = index_matrix[k][j]
                         matrix1 = response_list[index1]
                         matrix2 = response_list[index2]
-                        total_score += self.computeSimilarityBetweenVectors(matrix1,matrix2,weight_vector)
+                        total_score += self.computeSimilarityBetweenVectors(matrix1, matrix2, weight_vector)
                     score = total_score / self.number_of_trials
                     kernel[i][j] = score
                     kernel[j][i] = score
@@ -101,16 +102,16 @@ class MatrixService(object):
                     break
         return valid_trial_list
 
-    def computeSimilarityBetweenVectors(self, matrix1,matrix2,weight_vector):
+    def computeSimilarityBetweenVectors(self, matrix1, matrix2, weight_vector):
         """compute the similarity score between two vectors/matrix,
         the weight must be a 1*n vector where n is the number of entities
         """
-        num_of_entities,num_of_time_points = matrix1.shape
+        num_of_entities, num_of_time_points = SafeCastUtil.getMatrixShapeNullSafe(matrix1)
         matrix1, matrix2 = self.rescaleVector(matrix1, matrix2)
         if weight_vector is None:
             similarity = 1 - 1/(num_of_entities * num_of_time_points)*np.sum((matrix1 - matrix2)**2)
         else:
-            similarity = 1 - 1/(num_of_entities * num_of_time_points)*np.sum(np.dot(weight_vector,(matrix1 - matrix2)**2))
+            similarity = 1 - 1/(num_of_entities * num_of_time_points)*np.sum(np.dot(weight_vector, (matrix1 - matrix2)**2))
         return similarity
 
     def rescaleVector(self, matrix1, matrix2):
