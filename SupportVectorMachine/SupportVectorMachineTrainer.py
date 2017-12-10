@@ -19,9 +19,8 @@ class SupportVectorMachineTrainer(object):
         self.matrix = similarity_matrix
         self.third_party_response = third_party_response
 
-    def trainSupportVectorMachineMultiClassifier(self, training_set, c_value):
-        kernel_type = SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION
-        multi_classifier_model = svm.SVC(kernel=kernel_type, C=c_value)
+    def trainSupportVectorMachineMultiClassifier(self, training_set, kernel_type, c_value, gamma):
+        multi_classifier_model = svm.SVC(kernel=kernel_type, C=c_value, gamma=gamma)
         sample_labels = []
         for label in range(0, int(len(training_set))):
             sample_labels.append(self.third_party_response[training_set.tolist()[label]])
@@ -30,6 +29,17 @@ class SupportVectorMachineTrainer(object):
         multi_classifier_model.fit(self.matrix, sample_labels)
         self.log.debug("Successful creation of classifier model: %s\n", multi_classifier_model)
         return multi_classifier_model
+
+    def trainSupportVectorMachineRegressor(self, training_set, kernel_type, c_value, gamma, epsilon):
+        regression_model = svm.SVR(kernel=kernel_type, C=c_value, gamma=gamma, epsilon=epsilon)
+        sample_labels = []
+        for label in range(0, int(len(training_set))):
+            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
+        if len(np.unique(sample_labels)) <= 1:
+            return None
+        regression_model.fit(self.matrix, sample_labels)
+        self.log.debug("Successful creation of classifier model: %s\n", regression_model)
+        return regression_model
 
     def trainSupportVectorMachineForSIM0(self, kernel_type, pct_train):
         # Supported kernel types include "linear," "poly," "rbf," "sigmoid," and "precomputed"

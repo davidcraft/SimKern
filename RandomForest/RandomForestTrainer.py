@@ -3,6 +3,7 @@ from __future__ import division
 import logging
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import RandomForestRegressor
+from Utilities.SafeCastUtil import SafeCastUtil
 import numpy
 
 
@@ -36,8 +37,10 @@ class RandomForestTrainer(object):
 
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
 
-    def trainRandomForestClassifierNew(self, training_set, hyperparameter_optimization):
-        model = RandomForestClassifier(n_estimators=hyperparameter_optimization)
+    def trainRandomForestClassifierNew(self, training_set, m_val, max_depth):
+        tree_depth = SafeCastUtil.safeCast(numpy.ceil(max_depth), int)
+        estimators = SafeCastUtil.safeCast(numpy.floor(m_val), int)
+        model = RandomForestClassifier(n_estimators=estimators, max_depth=tree_depth)
         sample_labels = []
         for label in range(0, int(len(training_set))):
             sample_labels.append(self.third_party_response[training_set.tolist()[label]])
@@ -46,7 +49,6 @@ class RandomForestTrainer(object):
         model.fit(self.genomes_array, sample_labels)
         self.log.debug("Successful creation of Random Forest classifier model: %s\n", model)
         return model
-
 
     def trainRandomForestRegressor(self, pct_train):
         if type(self.third_party_response) != list:
@@ -68,8 +70,10 @@ class RandomForestTrainer(object):
         self.log.info("Variable importances: %s", str(model.feature_importances_))
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
 
-    def trainRandomForestRegressorNew(self, training_set, hyperparameter_optimization):
-        model = RandomForestRegressor(n_estimators=hyperparameter_optimization)
+    def trainRandomForestRegressorNew(self, training_set, m_val, max_depth):
+        tree_depth = SafeCastUtil.safeCast(numpy.ceil(max_depth), int)
+        estimators = SafeCastUtil.safeCast(numpy.floor(m_val), int)
+        model = RandomForestRegressor(n_estimators=estimators, max_depth=tree_depth)
         sample_labels = []
         for label in range(0, int(len(training_set))):
             sample_labels.append(self.third_party_response[training_set.tolist()[label]])
