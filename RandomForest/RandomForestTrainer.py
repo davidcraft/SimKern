@@ -4,6 +4,7 @@ import logging
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import RandomForestRegressor
 from Utilities.SafeCastUtil import SafeCastUtil
+from SupportedAnalysisTypes import SupportedAnalysisTypes
 import numpy
 
 
@@ -18,6 +19,23 @@ class RandomForestTrainer(object):
         self.genomes_array = genomes_array
         self.third_party_response = third_party_response
 
+    def trainRandomForest(self, training_set, m_val, max_depth, analysis_type):
+        max_leaf_nodes = numpy.maximum(2, SafeCastUtil.safeCast(numpy.ceil(max_depth), int))
+        max_features = SafeCastUtil.safeCast(numpy.floor(m_val), int)
+        if analysis_type == SupportedAnalysisTypes.CLASSIFICATION:
+            model = RandomForestClassifier(n_estimators=100, max_leaf_nodes=max_leaf_nodes, max_features=max_features)
+        else:
+            model = RandomForestRegressor(n_estimators=100, max_leaf_nodes=max_leaf_nodes, max_features=max_features)
+        sample_labels = []
+        for label in range(0, int(len(training_set))):
+            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
+        if len(numpy.unique(sample_labels)) <= 1:
+            return None
+        model.fit(self.genomes_array, sample_labels)
+        self.log.debug("Successful creation of Random Forest classifier model: %s\n", model)
+        return model
+
+    # TODO: Remove this old code and fix up old ITs referencing it.
     def trainRandomForestClassifier(self, pct_train):
         if type(self.third_party_response) != list:
             response_as_list = self.third_party_response.values()
@@ -37,18 +55,7 @@ class RandomForestTrainer(object):
 
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
 
-    def trainRandomForestClassifierNew(self, training_set, m_val, max_depth):
-        tree_depth = SafeCastUtil.safeCast(numpy.ceil(max_depth), int)
-        estimators = SafeCastUtil.safeCast(numpy.floor(m_val), int)
-        model = RandomForestClassifier(n_estimators=estimators, max_depth=tree_depth)
-        sample_labels = []
-        for label in range(0, int(len(training_set))):
-            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
-        if len(numpy.unique(sample_labels)) <= 1:
-            return None
-        model.fit(self.genomes_array, sample_labels)
-        self.log.debug("Successful creation of Random Forest classifier model: %s\n", model)
-        return model
+
 
     def trainRandomForestRegressor(self, pct_train):
         if type(self.third_party_response) != list:
@@ -69,19 +76,6 @@ class RandomForestTrainer(object):
 
         self.log.info("Variable importances: %s", str(model.feature_importances_))
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
-
-    def trainRandomForestRegressorNew(self, training_set, m_val, max_depth):
-        tree_depth = SafeCastUtil.safeCast(numpy.ceil(max_depth), int)
-        estimators = SafeCastUtil.safeCast(numpy.floor(m_val), int)
-        model = RandomForestRegressor(n_estimators=estimators, max_depth=tree_depth)
-        sample_labels = []
-        for label in range(0, int(len(training_set))):
-            sample_labels.append(self.third_party_response[training_set.tolist()[label]])
-        if len(numpy.unique(sample_labels)) <= 1:
-            return None
-        model.fit(self.genomes_array, sample_labels)
-        self.log.debug("Successful creation of Random Forest regressor model: %s\n", model)
-        return model
 
     def splitData(self, responses, data, pct_train):
         num_samples = len(data)

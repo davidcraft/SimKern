@@ -90,10 +90,7 @@ class MachineLearningDataProcessingService(object):
         for mval in [1, (1 + numpy.sqrt(p)) / 2, numpy.sqrt(p), (numpy.sqrt(p) + p) / 2, p]:
             for max_depth in [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1]:
                 rf_trainer = RandomForestTrainer(training_matrix, responses)
-                if analysis_type == SupportedAnalysisTypes.CLASSIFICATION:
-                    model = rf_trainer.trainRandomForestClassifierNew(training_set, mval, max_depth*n)
-                else:
-                    model = rf_trainer.trainRandomForestRegressorNew(training_set, mval, max_depth*n)
+                model = rf_trainer.trainRandomForest(training_set, mval, max_depth*n, analysis_type)
                 model_score = self.predictModelAccuracy(model, responses, validation_matrix,
                                                         validation_set, analysis_type)
                 if model_score <= most_accurate_model_score:
