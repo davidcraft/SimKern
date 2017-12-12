@@ -1,0 +1,29 @@
+Requires R with package BoolNet installed.
+
+
+
+
+Data generation (sim 0) run:
+
+python __main__.py 0 /path/to/Boolean/boolsim0.r.t 1000 int /path/to/Boolean
+
+
+
+Simulations to generate similarity kernel (sim 1) run:
+
+python __main__.py 1 /path/to/Boolean/boolsim1.r.u 1000 100 int /path/to/Boolean
+
+
+
+
+
+-------------------------------------------------------------------------------
+
+The paper that this model is from: Mathematical Modelling of Molecular Pathways
+Enabling Tumour Cell Invasion and Migration,  Cohen, et al.
+http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004571
+
+and the original ginsim model: http://ginsim.org/node/191
+
+
+

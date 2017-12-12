@@ -1,0 +1,20 @@
+Requires matlab (and ideally the python matlab process hook provided by MathWorks)
+Note, python 3.5 for compatibility with the matlab python process hook.
+Also note, files f4.m and variableDefinition4.m need to be in GenomeFiles (so they
+exist in two places).
+
+
+
+
+Data generation (sim 0) run:
+
+python3.5 __main__.py 0 /path/to/Radiation/v4.m.t 1000 int /path/to/Radiation
+
+
+
+Simulations to generate similarity kernel (sim 1) run:
+
+python3.5 __main__.py 1 /path/to/Radiation/v4allVec.m.u 1000 20 list /path/to/Radiation
+
+(for a sim 1 run that uses only 3 important compartments / differential equations to
+compute similarity matrix, use v4plus.m.u instead; results in a better kernel)

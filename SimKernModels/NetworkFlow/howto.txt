@@ -1,0 +1,13 @@
+Requires octave (could be easily converted to matlab).
+
+
+Data generation (sim 0) run:
+
+python __main__.py 0 /path/to/NetworkFlow/GenomeFiles/SIM0MasterFile.octave 500 int /path/to/NetworkFlow
+
+
+
+Simulations to generate similarity kernel (sim 1) run:
+
+python __main__.py 1 /path/to/NetworkFlow/GenomeFiles/SIM1MasterFileVECTOR.octave 500 10 int /path/to/NetworkFlow
+
