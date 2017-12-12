@@ -1,0 +1,3 @@
+class SupportedAnalysisTypes:
+    CLASSIFICATION = "CLASSIFICATION"
+    REGRESSION = "REGRESSION"

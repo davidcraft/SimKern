@@ -1,0 +1,24 @@
+Requires matlab (and ideally the python matlab process hook provided by MathWorks)
+Note, python 3.5 for compatibility with the matlab python process hook.
+Also note, files ode_equations.m and ode_equation_FT_leaf.m need to be in GenomeFiles
+(they exist in two places).
+
+Finally, need to adjust the hard coded paths found near top of the .t and .u files.
+
+
+
+Data generation (sim 0) run:
+
+python3.5 __main__.py 0 /path/to/Flowering/floweringModel.m.t 500 float /path/to/Flowering
+
+
+
+Simulations to generate similarity kernel (sim 1) run:
+
+python3.5 __main__.py 1 /path/to/Flowering/floweringModel.m.u 500 10 list /path/to/Flowering
+
+(for a sim 1 run that uses only 3 important compartments / differential equations to
+compute similarity matrix, use v4plus.m.u instead; results in a better kernel)
+
+Note a sim 1 model with larger standard deviations, thus farther from the sim 0 model, is provided
+in floweringModelWorse.m.u.

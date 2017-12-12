@@ -90,19 +90,6 @@ class GraphingService(object):
             color_index += 1
         matplotlib.legend(handles=patches, loc=4)
 
-    def makeMultiBarPlot(self, data, output_path, title):
-        basic_plot = matplotlib.figure()
-        matplotlib.boxplot(data.values(), labels=data.keys())
-        matplotlib.title(title)
-        matplotlib.xlabel("% Train")
-        matplotlib.ylabel("Accuracy distribution")
-        basic_plot.show()
-
-        current_path = os.getcwd()
-        OperatingSystemUtil.changeWorkingDirectory(output_path)
-        basic_plot.savefig(self.DEFAULT_PLOT_FILENAME, bbox_inches='tight')
-        OperatingSystemUtil.changeWorkingDirectory(current_path)
-
 # Required Citation (BibTex/LaTex):
 # @Article{Hunter:2007,
 #   Author    = {Hunter, J. D.},

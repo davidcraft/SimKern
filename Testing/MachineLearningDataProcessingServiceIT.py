@@ -4,6 +4,7 @@ import os
 
 from MachineLearningDataProcessingService import MachineLearningDataProcessingService
 from GraphingService import GraphingService
+from SupportedAnalysisTypes import SupportedAnalysisTypes
 
 
 class MachineLearningDataProcessingServiceIT(unittest.TestCase):
@@ -22,27 +23,44 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
             os.remove(self.current_working_dir + "/SampleDataFiles/" + GraphingService.DEFAULT_PLOT_FILENAME + ".png")
 
     def testSIM0ClassifierAnalysis(self):
-        machine_learning_processor = MachineLearningDataProcessingService()
+        machine_learning_processor = MachineLearningDataProcessingService(1)
         machine_learning_processor.performMachineLearningOnSIM0(self.sample_output, self.sample_genomes_matrix,
-                                                                "CLASSIFICATION")
+                                                                SupportedAnalysisTypes.CLASSIFICATION)
         self.assertPlotPNGCreatedSuccessfully()
 
-    def testSIM0RegressionAnalysis(self):
-        machine_learning_processor = MachineLearningDataProcessingService()
-        machine_learning_processor.performMachineLearningOnSIM0(self.sample_output, self.sample_genomes_matrix,
-                                                                "REGRESSION")
-        self.assertPlotPNGCreatedSuccessfully()
+    # Need a good dataset to test this on, otherwise it takes forever SVM regression fitting.
+    # def testSIM0RegressionAnalysis(self):
+    #     machine_learning_processor = MachineLearningDataProcessingService(1)
+    #     machine_learning_processor.performMachineLearningOnSIM0(self.sample_output, self.sample_genomes_matrix,
+    #                                                             SupportedAnalysisTypes.REGRESSION)
+    #     self.assertPlotPNGCreatedSuccessfully()
 
     def testSIM1ClassifierAnalysis(self):
-        machine_learning_processor = MachineLearningDataProcessingService()
-        machine_learning_processor.performMachineLearningOnSIM1(self.sample_output, self.sample_similarity_matrix)
+        machine_learning_processor = MachineLearningDataProcessingService(1)
+        machine_learning_processor.performMachineLearningOnSIM1(self.sample_output, self.sample_similarity_matrix,
+                                                                SupportedAnalysisTypes.CLASSIFICATION)
+        self.assertPlotPNGCreatedSuccessfully()
+
+    def testSIM1RegressionAnalysis(self):
+        machine_learning_processor = MachineLearningDataProcessingService(1)
+        machine_learning_processor.performMachineLearningOnSIM1(self.sample_output, self.sample_similarity_matrix,
+                                                                SupportedAnalysisTypes.REGRESSION)
         self.assertPlotPNGCreatedSuccessfully()
 
     def testSIM0SIM1CombinedClassifierAnalysis(self):
-        machine_learning_processor = MachineLearningDataProcessingService()
+        machine_learning_processor = MachineLearningDataProcessingService(1)
         machine_learning_processor.performFullSIM0SIM1Analysis(self.sample_output, self.sample_genomes_matrix,
-                                                               self.sample_similarity_matrix)
+                                                               self.sample_similarity_matrix,
+                                                               SupportedAnalysisTypes.CLASSIFICATION)
         self.assertPlotPNGCreatedSuccessfully()
+
+    # Need a good dataset to test this on, otherwise it takes forever at SVM regression fitting.
+    # def testSIM0SIM1CombinedRegressionAnalysis(self):
+    #     machine_learning_processor = MachineLearningDataProcessingService(1)
+    #     machine_learning_processor.performFullSIM0SIM1Analysis(self.sample_output, self.sample_genomes_matrix,
+    #                                                            self.sample_similarity_matrix,
+    #                                                            SupportedAnalysisTypes.REGRESSION)
+    #     self.assertPlotPNGCreatedSuccessfully()
 
     def assertPlotPNGCreatedSuccessfully(self):
         assert len([file for file in os.listdir(self.current_working_dir + "/SampleDataFiles")
