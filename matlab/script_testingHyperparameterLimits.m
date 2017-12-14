@@ -1,69 +1,69 @@
 %% c
-x = hyperparameters(2).cValues;
+x = hps(2).cValues;
 for ii = 1: numeroReps
     disp(['Repetition: ' num2str(ii)])
     disp('linSvm')
-    y = linSvm(ii).bestC;
+    y = algs(ii).linSvm.bestC;
     [bla] = checkHyperparameterLimits(x,y);
     disp('rbfSvm')
-    y = rbfSvm(ii).bestC;
+    y = algs(ii).rbfSvm.bestC;
     [bla] = checkHyperparameterLimits(x,y);
     disp('skSvm')
-    y = skSvm(ii).bestC;
+    y = algs(ii).skSvm.bestC;
     [bla] = checkHyperparameterLimits(x,y);
 end
 
 %% epsilon
-x = hyperparameters(2).epsilonValues;
+x = hps(2).epsilonValues;
 for ii = 1: numeroReps
     disp(['Repetition: ' num2str(ii)])
     disp('linSvm')
-    y = linSvm(ii).bestEpsilon;
+    y = algs(ii).linSvm.bestEpsilon;
     [bla] = checkHyperparameterLimits(x,y);
     disp('rbfSvm')
     y = rbfSvm(ii).bestEpsilon;
     [bla] = checkHyperparameterLimits(x,y);
     disp('skSvm')
-    y = skSvm(ii).bestEpsilon;
+    y = algs(ii).skSvm.bestEpsilon;
     [bla] = checkHyperparameterLimits(x,y);
 end
 
 %% gamma
-x = hyperparameters(2).gammaValues;
+x = hps(2).gammaValues;
 for ii = 1: numeroReps
     disp(['Repetition: ' num2str(ii)])
     disp('rbfSvm')
-    y = rbfSvm(ii).bestGamma;
+    y = algs(ii).rbfSvm.bestGamma;
     [bla] = checkHyperparameterLimits(x,y);
 end
 
 %% max splits
-x = hyperparameters(2).maxSplits;
+x = hps(2).maxSplits;
 for ii = 1: numeroReps
     disp(['Repetition: ' num2str(ii)])
     disp('rf')
-    y = rf(ii).bestMaxSplits;
+    y = algs(ii).rf.bestMaxSplits;
     [bla] = checkHyperparameterLimits(x,y);
-    y = skRf(ii).bestMaxSplits;
+    y = algs(ii).skRf.bestMaxSplits;
     [bla] = checkHyperparameterLimits(x,y);
 end
 
 %% m values naive
 
-x = hyperparameters(2).mValuesNaive;
+x = hps(2).mValuesNaive;
 for ii = 1: numeroReps
     disp(['Repetition: ' num2str(ii)])
     disp('rf')
-    y = rf(ii).bestM;
+    y = algs(ii).rf.bestM;
     [bla] = checkHyperparameterLimits(x,y);
 end
 
 %% m values sk
-x = hyperparameters(2).mValuesCk;
+x = hps(2).mValuesCk;
 for ii = 1: numeroReps
     disp(['Repetition: ' num2str(ii)])
     disp('rf')
-    y = skRf(ii).bestM;
+    y = algs(ii).skRf.bestM;
     [bla] = checkHyperparameterLimits(x,y);
 end
 

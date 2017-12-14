@@ -1,9 +1,8 @@
 clear
 clc
 tic
-
 % load libsvm
-addpath('')
+addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows')
 %% read in data
 
 %read full similarity matrix
@@ -27,18 +26,17 @@ categoricalIndices(1) = true;
 categoricalIndices(33) = true;
 debuggingBoolean = false; % set to true if you want to use fewer hyperparameters to speed up the process
 classificationBoolean = true;
-numeroTrees = 100; % number of trees for all RFs
-numeroReps = 10;
+numeroTrees = 10; % number of trees for all RFs
+numeroReps = 3;
+randSeedSplitting = 1:numeroReps;
+randSeedSubsampling = 100 + reshape(1:(numeroReps*numel(subsamplingRatios)),numel(subsamplingRatios),numeroReps)';
 %% the actual experiment
 for i_reps = 1:numeroReps
-[nn(i_reps),linSvm(i_reps),rbfSvm(i_reps),rf(i_reps),skSvm(i_reps),skRf(i_reps),skNn(i_reps),hyperparameters(i_reps)] = runExperiment(unstandardizedFeatures,...
-    outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
-    categoricalIndices,numeroTrees,debuggingBoolean,i_reps,numeroReps);
+    [algs(i_reps),hps(i_reps),expInfo(i_reps)] = runExperiment(unstandardizedFeatures,...
+        outcome,sm,splitRatios,classificationBoolean,subsamplingRatios,...
+        categoricalIndices,numeroTrees,debuggingBoolean,i_reps,numeroReps,randSeedSplitting(i_reps),randSeedSubsampling(i_reps,:));
 end
 totalRunningTime = toc
-%% plotting
-boxplottingSimKernelResults(nn,rbfSvm,rf,skSvm,linSvm,skRf,skNn,classificationBoolean,subsamplingRatios,splitRatios,outcome);
-
 %% save results with time stamp
 timeStamp = datetime('now');
 timeStamp = datestr(timeStamp);
@@ -46,4 +44,4 @@ timeStamp = strrep(timeStamp,':','_');
 timeStamp = strrep(timeStamp,'-','_');
 timeStamp = strrep(timeStamp,' ','_');
 pathToMatFile = ['../../data/radiation_' timeStamp];
- save(pathToMatFile)
+save(pathToMatFile)

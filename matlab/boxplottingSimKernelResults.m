@@ -1,12 +1,14 @@
-function boxplottingSimKernelResults(nn,rbfSvm,rf,skSvm,linSvm,skRf,skNn,classificationBoolean,subsamplingRatios,splitRatios,outcome)
-nnResult = cat(1,nn(:).perfMetric); 
-rbfResult = cat(1,rbfSvm(:).perfMetric);
-rfResult = cat(1,rf(:).perfMetric);
-skSvmResult = cat(1,skSvm(:).perfMetric);
-% linResult = cat(1,nn(:).perfMetric); %%%%%%%%%%%%
-linResult = cat(1,linSvm(:).perfMetric); %%%%%%%%%%%%
-skRfResult = cat(1,skRf(:).perfMetric);
-skNnResult = cat(1,skNn(:).perfMetric);
+function boxplottingSimKernelResults(algs,expInfo,classificationBoolean,subsamplingRatios,splitRatios,outcome)
+for i_algs = 1:length(algs)
+    nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
+    linSvmResult(i_algs,:) = algs(i_algs).linSvm.perfMetric;
+    rbfSvmResult(i_algs,:) = algs(i_algs).rbfSvm.perfMetric;
+    rfResult(i_algs,:) = algs(i_algs).rf.perfMetric;
+    skSvmResult(i_algs,:) = algs(i_algs).skSvm.perfMetric;
+    skRfResult(i_algs,:) = algs(i_algs).skRf.perfMetric;
+    skNnResult(i_algs,:) = algs(i_algs).skNn.perfMetric;
+end
+
 
 numeroSubsamples = numel(subsamplingRatios);
 
@@ -35,7 +37,7 @@ plotLabels = [nnLabels linSvmLabels rbfSvmLabels rfLabels skSvmLabels skRfLabels
 clf
 hold on
 grid on
-boxplot([nnResult linResult rbfResult rfResult skSvmResult skRfResult skNnResult],...
+boxplot([nnResult linSvmResult rbfSvmResult rfResult skSvmResult skRfResult skNnResult],...
     'PlotStyle','compact',...
     'FactorSeparator',1,...
     'position',...
@@ -61,9 +63,9 @@ for i_subsamples = 1:numeroSubsamples
 end
 
 
-numeroTrainSamples = length(outcome) * splitRatios(1) * subsamplingRatios;
-numeroValidationSamples = length(outcome) * splitRatios(2);
-numeroTestSamples = length(outcome) * splitRatios(3);
+numeroTrainSamples = expInfo(1).numeroTrainSamples;
+numeroValidationSamples = expInfo(1).numeroValidationSamples;
+numeroTestSamples = expInfo(1).numeroTestSamples;
 
 % title(['Subsampling ratios: ' num2str(subsamplingRatios,'%1g') ...
 %     '. Training data:' num2str(numeroTrainSamples,'%1g') ...

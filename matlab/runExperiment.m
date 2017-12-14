@@ -1,6 +1,6 @@
-function [nn,linSvm,rbfSvm,rf,ckSvm,ckRf,ckNn,hyperparameters] = runExperiment(...
+function [algs,hps,expInfo] = runExperiment(...
     unstandardizedFeatures,outcome,sm,splitRatios,classificationBoolean,...
-    subsamplingRatios,categoricalIndices,numeroTrees,debuggingBoolean,iterationNumber,numeroReps)
+    subsamplingRatios,categoricalIndices,numeroTrees,debuggingBoolean,iterationNumber,numeroReps,randSeedSplitting,randSeedSubsampling)
 % this function runs an analysis as outlined in Figure X of the manuscript.
 % INPUTS:
 % unstandardizedFeatures: a matrix of features (rows are samples, columns
@@ -36,12 +36,14 @@ function [nn,linSvm,rbfSvm,rf,ckSvm,ckRf,ckNn,hyperparameters] = runExperiment(.
 % see .m files of functions for code annotations
 [features] = standardizeFeatures(unstandardizedFeatures,categoricalIndices);
 [dummycodedFeatures] = dummycodeCategoricalFeatures(features,categoricalIndices);
+rng(randSeedSplitting)
 [trainData,validationData,testData] = splitData(features,dummycodedFeatures,sm,outcome,splitRatios,classificationBoolean);
 
 % repeat hyperparameter tuning and evaluation on test set for each
 % subsampling iteration of the trainingset
 for i_subsampling = 1:numel(subsamplingRatios)
     disp(['Simulation iteration ' num2str(iterationNumber) ' of ' num2str(numeroReps) '. ' 'Subsampling iteration ' num2str(i_subsampling) ' of ' num2str(numel(subsamplingRatios)) '.'])
+    rng(randSeedSubsampling(i_subsampling))
     [subsampledTrainData,subsampledValidationData,subsampledTestData] = applySubsampling(trainData,validationData,testData,subsamplingRatios(i_subsampling),classificationBoolean);
     
     if debuggingBoolean
@@ -63,10 +65,10 @@ for i_subsampling = 1:numel(subsamplingRatios)
     else
         %% hyperparameters
         % all svms
-        cValues = 10.^[-2:5];
-        epsilonValues = [0.01 0.05 0.1 0.15 0.2];
+        cValues = 10.^[-8:2:8];
+        epsilonValues = [0.0001 0.001 0.01 0.05 0.1 0.15 0.2];
         % rbf svm
-        gammaValues = 10.^[-5:1];
+        gammaValues = 10.^[-9:1];
         % rfs (rf and custom kernel rf)
         n = numel(subsampledTrainData.outcome); % number of training samples
         p = size(subsampledTrainData.features,2); %number of features
@@ -76,6 +78,23 @@ for i_subsampling = 1:numel(subsamplingRatios)
         maxSplitsValues = floor([0.05 0.1 0.2 0.3 0.4 0.5 0.75 1] * n);
         maxSplitsValues = min(maxSplitsValues,n-1);
         maxSplitsValues = max(maxSplitsValues,1);
+        
+        
+        %% hyperparameters
+        % all svms
+        %         cValues = 10.^[-2:5];
+        %         epsilonValues = [0.01 0.05 0.1 0.15 0.2];
+        %         % rbf svm
+        %         gammaValues = 10.^[-5:1];
+        %         % rfs (rf and custom kernel rf)
+        %         n = numel(subsampledTrainData.outcome); % number of training samples
+        %         p = size(subsampledTrainData.features,2); %number of features
+        %         pCk = n; % number of rows/columns in similarity matrix
+        %         mValuesNaive = [1 floor((1 + sqrt(p))/2) floor(sqrt(p)) floor((sqrt(p) + p)/2) p];
+        %         mValuesCk = [1 floor((1 + sqrt(pCk))/2) floor(sqrt(pCk)) floor((sqrt(pCk) + pCk)/2) pCk];
+        %         maxSplitsValues = floor([0.05 0.1 0.2 0.3 0.4 0.5 0.75 1] * n);
+        %         maxSplitsValues = min(maxSplitsValues,n-1);
+        %         maxSplitsValues = max(maxSplitsValues,1);
     end
     %% choosing model with best HPs on validation data
     if classificationBoolean
@@ -132,13 +151,38 @@ for i_subsampling = 1:numel(subsamplingRatios)
     [ckNn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckNn.bestModel{i_subsampling},'ckNn',classificationBoolean);
     disp(['ckNN test ' perfMetricString ' = ' num2str(ckNn.perfMetric(i_subsampling)) '.' ])
     
+    expInfo.numeroTrainSamples(i_subsampling) = numel(subsampledTrainData.outcome);
+    expInfo.numeroValidationSamples(i_subsampling) = numel(subsampledValidationData.outcome);
+    expInfo.numeroTestSamples(i_subsampling) = numel(subsampledTestData.outcome);
+    
+    expInfo.subsampledTrainData{i_subsampling} = subsampledTrainData;
+    expInfo.subsampledValidationData{i_subsampling} = subsampledValidationData;
+    expInfo.subsampledTestData{i_subsampling} = subsampledTestData;
+    
 end
+
+expInfo.trainData = trainData;
+expInfo.validationData = validationData;
+expInfo.testData = testData;
+expInfo.randSeedSplitting = randSeedSplitting;
+expInfo.randSeedSubsampling = randSeedSubsampling;
+
 % linSvm = NaN; % if you want to remove linSvm
 % store hyperparameters in struct to pass outside the function
-hyperparameters.cValues = cValues;
-hyperparameters.epsilonValues = epsilonValues;
-hyperparameters.gammaValues = gammaValues;
-hyperparameters.mValuesNaive = mValuesNaive;
-hyperparameters.mValuesCk = mValuesCk;
-hyperparameters.maxSplits = maxSplitsValues;
+hps.cValues = cValues;
+hps.epsilonValues = epsilonValues;
+hps.gammaValues = gammaValues;
+hps.mValuesNaive = mValuesNaive;
+hps.mValuesCk = mValuesCk;
+hps.maxSplits = maxSplitsValues;
+
+algs.nn = nn;
+algs.linSvm = linSvm;
+algs.rbfSvm = rbfSvm;
+algs.rf = rf;
+algs.skSvm = ckSvm;
+algs.skRf = ckRf;
+algs.skNn = ckNn;
+
+
 end
