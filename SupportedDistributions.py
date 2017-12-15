@@ -7,4 +7,3 @@ class SupportedDistributions:
     BINOMIAL = "binomial"
     POISSON = "poisson"
     BOOLEAN = "boolean"
-    MUTATE = "mutate"
