@@ -8,6 +8,7 @@ from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from SupportedAnalysisTypes import SupportedAnalysisTypes
+from Utilities.SafeCastUtil import SafeCastUtil
 
 
 class MachineLearningDataProcessingService(object):
@@ -20,9 +21,10 @@ class MachineLearningDataProcessingService(object):
 
     TRAINING_PERCENTS = [.2, .4, .6, .8, 1]
 
-    def performMachineLearningOnSIM0(self, output_file, genomes_matrix_file, analysis_type):
+    def performMachineLearningOnSIM0(self, output_file, genomes_matrix_file, analysis_type, categorical_variables):
         responses = self.readCSVFile(output_file)
-        genome_matrix = self.readCSVFile(genomes_matrix_file)
+        genome_matrix = self.oneHotEncodeCategoricalVariables(self.readCSVFile(genomes_matrix_file),
+                                                              categorical_variables)
 
         num_genomes = len(genome_matrix)
 
@@ -240,9 +242,11 @@ class MachineLearningDataProcessingService(object):
         self.log.debug("Accuracies by training percent: %s", results_by_percent_train)
         return results_by_percent_train
 
-    def performFullSIM0SIM1Analysis(self, output_file, genomes_matrix_file, similarity_matrix_file, analysis_type):
+    def performFullSIM0SIM1Analysis(self, output_file, genomes_matrix_file, similarity_matrix_file, analysis_type,
+                                    categorical_variables):
         responses = self.readCSVFile(output_file)
-        genomes_matrix = self.readCSVFile(genomes_matrix_file)
+        genomes_matrix = self.oneHotEncodeCategoricalVariables(self.readCSVFile(genomes_matrix_file),
+                                                               categorical_variables)
         similarity_matrix = self.readCSVFile(similarity_matrix_file)
 
         num_genomes = len(genomes_matrix)
@@ -295,6 +299,44 @@ class MachineLearningDataProcessingService(object):
 
     def readCSVFile(self, file):
         return numpy.loadtxt(open(file, "rb"), delimiter=",")
+
+    def oneHotEncodeCategoricalVariables(self, genomes_matrix, categorical_variables):
+        if categorical_variables is None or len(categorical_variables) == 0:
+            return genomes_matrix
+        encoded_matrix = []  # List of lists
+        for genome in genomes_matrix:
+            encoded_matrix.append(list(genome))
+        sorted_deduped_variables = numpy.sort(numpy.unique(categorical_variables))[::-1]
+        for variable_raw in sorted_deduped_variables:
+            categorical_variable = SafeCastUtil.safeCast(variable_raw, int)
+            if categorical_variable is None:
+                self.log.warning("Aborting one-hot-encoding. Non-integer categorical variable index detected.")
+            if len(encoded_matrix[0]) > categorical_variable > 0:
+                assigned_values = []
+                for genome in encoded_matrix:
+                    value = genome[categorical_variable]
+                    if SafeCastUtil.safeCast(value, int) is None:
+                        self.log.warning("Aborting one-hot-encoding. Non integer value for categorical variable "
+                                         "detected.")
+                        return genomes_matrix
+                    if value not in assigned_values:
+                        assigned_values.append(value)
+                assigned_values = numpy.sort(assigned_values)
+
+                for matrix_row in range(0, len(encoded_matrix)):
+                    for feature_index in range(0, len(encoded_matrix[matrix_row])):
+                        if feature_index == categorical_variable:
+                            value_as_multiple_categories = []
+                            for assigned_value in assigned_values:
+                                boolean_value = 0
+                                if assigned_value == encoded_matrix[matrix_row][feature_index]:
+                                    boolean_value = 1
+                                value_as_multiple_categories.append(boolean_value)
+                            new_genome = numpy.concatenate((encoded_matrix[matrix_row][:categorical_variable],
+                                                            value_as_multiple_categories,
+                                                            encoded_matrix[matrix_row][categorical_variable + 1:]))
+                            encoded_matrix[matrix_row] = new_genome
+        return encoded_matrix
 
     def predictModelAccuracy(self, model, responses, testing_matrix, testing_set, analysis_type):
         if model is None:

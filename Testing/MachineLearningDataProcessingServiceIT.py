@@ -19,13 +19,21 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
         self.sample_similarity_matrix = self.current_working_dir + "/SampleDataFiles/BoolNetSimilarityMatrixSample.csv"
 
     def tearDown(self):
-        if self.current_working_dir != "/":
+        data_dir = [file for file in os.listdir(self.current_working_dir + "/SampleDataFiles")]
+        if self.current_working_dir != "/" and GraphingService.DEFAULT_PLOT_FILENAME + ".png" in data_dir:
             os.remove(self.current_working_dir + "/SampleDataFiles/" + GraphingService.DEFAULT_PLOT_FILENAME + ".png")
+
+    def testOneHotEncodingForSIM0(self):
+        machine_learning_processor = MachineLearningDataProcessingService(1)
+        genomes_matrix = machine_learning_processor.readCSVFile(self.sample_genomes_matrix)
+        variables = [3, 6, 4, 150, -10, 4]  # Should get deduped, reverse sorted, and the out of index ones ignored.
+        encoded_matrix = machine_learning_processor.oneHotEncodeCategoricalVariables(genomes_matrix, variables)
+        assert len(encoded_matrix[0]) != len(genomes_matrix[0])
 
     def testSIM0ClassifierAnalysis(self):
         machine_learning_processor = MachineLearningDataProcessingService(1)
         machine_learning_processor.performMachineLearningOnSIM0(self.sample_output, self.sample_genomes_matrix,
-                                                                SupportedAnalysisTypes.CLASSIFICATION)
+                                                                SupportedAnalysisTypes.CLASSIFICATION, None)
         self.assertPlotPNGCreatedSuccessfully()
 
     # Need a good dataset to test this on, otherwise it takes forever SVM regression fitting.
@@ -51,7 +59,7 @@ class MachineLearningDataProcessingServiceIT(unittest.TestCase):
         machine_learning_processor = MachineLearningDataProcessingService(1)
         machine_learning_processor.performFullSIM0SIM1Analysis(self.sample_output, self.sample_genomes_matrix,
                                                                self.sample_similarity_matrix,
-                                                               SupportedAnalysisTypes.CLASSIFICATION)
+                                                               SupportedAnalysisTypes.CLASSIFICATION, None)
         self.assertPlotPNGCreatedSuccessfully()
 
     # Need a good dataset to test this on, otherwise it takes forever at SVM regression fitting.
