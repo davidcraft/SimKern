@@ -9,6 +9,7 @@ from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachin
 from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from SupportedAnalysisTypes import SupportedAnalysisTypes
 from Utilities.SafeCastUtil import SafeCastUtil
+from sklearn.metrics import r2_score
 
 
 class MachineLearningDataProcessingService(object):
@@ -55,7 +56,7 @@ class MachineLearningDataProcessingService(object):
             "SVM " + analysis_type + " (RBF)": svm_results_rbf,
             "SVM " + analysis_type + " (LINEAR)": svm_results_linear
         }
-        self.plotResults(full_results, genomes_matrix_file, "SVM and RF " + analysis_type + " SIM0 Results")
+        self.plotResults(full_results, genomes_matrix_file, analysis_type,  "SVM and RF " + analysis_type + " SIM0 Results")
 
     def runRandomForest(self, responses, testing_matrix, testing_set, train_length, training_matrix,
                         validation_matrix, validation_set, analysis_type):
@@ -208,7 +209,7 @@ class MachineLearningDataProcessingService(object):
             "KERNELIZED SVM": kernelized_svm
         }
 
-        self.plotResults(full_results, similarity_matrix_file, "SIM1 Kernelized SVM")
+        self.plotResults(full_results, similarity_matrix_file, analysis_type, "SIM1 Kernelized SVM")
 
     def runKernelizedSVM(self, responses, testing_matrix, testing_set, train_length, training_matrix, validation_matrix,
                          validation_set, analysis_type):
@@ -295,7 +296,7 @@ class MachineLearningDataProcessingService(object):
             "SVM SIM0 " + analysis_type + " (LINEAR)": svm_genomic_results_linear,
             "SVM SIM1 " + analysis_type: svm_kernel_results
         }
-        self.plotResults(full_results, genomes_matrix_file, "SIM0 SIM1 Combined Results")
+        self.plotResults(full_results, genomes_matrix_file, analysis_type, "SIM0 SIM1 Combined Results")
 
     def readCSVFile(self, file):
         return numpy.loadtxt(open(file, "rb"), delimiter=",")
@@ -342,30 +343,36 @@ class MachineLearningDataProcessingService(object):
         if model is None:
             return 0
         predictions = model.predict(testing_matrix)
-        accuracies = []
-        for i in range(0, len(predictions)):
-            genome = testing_set[i]
-            real_response = responses[genome]
-            prediction = predictions[i]
-            accuracy = 0
-            if analysis_type == SupportedAnalysisTypes.CLASSIFICATION and real_response == prediction:
-                accuracy = 1
-            if analysis_type == SupportedAnalysisTypes.REGRESSION and\
-                            numpy.abs(prediction - real_response) <= numpy.std(responses):
-                accuracy = 1
-            accuracies.append(accuracy)
-            self.log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,
-                           real_response)
-        average_accuracy = numpy.average(accuracies)
-        return average_accuracy
+        if analysis_type == SupportedAnalysisTypes.REGRESSION:
+            real_responses = []
+            corresponding_predictions = []
+            for i in range(0, len(predictions)):
+                genome = testing_set[i]
+                real_responses.append(responses[genome])
+                corresponding_predictions.append(predictions[i])
+            return r2_score(real_responses, corresponding_predictions)
+        else:
+            accuracies = []
+            for i in range(0, len(predictions)):
+                genome = testing_set[i]
+                real_response = responses[genome]
+                prediction = predictions[i]
+                accuracy = 0
+                if real_response == prediction:
+                    accuracy = 1
+                accuracies.append(accuracy)
+                self.log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,
+                               real_response)
+            average_accuracy = numpy.average(accuracies)
+            return average_accuracy
 
-    def plotResults(self, full_results, csv_file_location, title):
+    def plotResults(self, full_results, csv_file_location, analysis_type, title):
         try:
             output_path = ""
             csv_path_split = csv_file_location.split("/")
             for i in range(1, len(csv_path_split) - 1):
                 output_path += "/" + csv_path_split[i]
             graphing_service = GraphingService()
-            graphing_service.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, title)
+            graphing_service.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, analysis_type, title)
         except Exception as exception:
             self.log.error("Unable to create or save graphs due to: %s", exception)
