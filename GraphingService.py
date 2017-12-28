@@ -4,6 +4,7 @@ import os
 
 from Utilities.OperatingSystemUtil import OperatingSystemUtil
 from Utilities.SafeCastUtil import SafeCastUtil
+from SupportedAnalysisTypes import SupportedAnalysisTypes
 
 import logging
 
@@ -20,7 +21,7 @@ class GraphingService(object):
     DEFAULT_PLOT_FILENAME = "MachineLearningMultiBarPlot"
     COLOR_PROGRESSION = ['red', 'green', 'blue', 'purple', 'orange']
 
-    def makeMultiBarPlotWithMultipleAnalysis(self, full_data, output_path, title):
+    def makeMultiBarPlotWithMultipleAnalysis(self, full_data, output_path, analysis_type, title):
         basic_plot = matplotlib.figure()
 
         full_data_sorted_by_percentage = self.sortByPercentage(full_data)
@@ -40,7 +41,10 @@ class GraphingService(object):
         matplotlib.title(title)
 
         # set axes limits and labels
-        matplotlib.ylim(0, 1)
+        if analysis_type == SupportedAnalysisTypes.CLASSIFICATION:
+            matplotlib.ylim(0, 1)
+        else:
+            matplotlib.ylim(-1, 1)
         matplotlib.ylabel("Accuracy distribution")
 
         matplotlib.xlim(0, location_on_plot - 1)

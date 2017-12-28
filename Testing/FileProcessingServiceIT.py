@@ -81,7 +81,7 @@ class FileProcessingServiceIT(unittest.TestCase):
         data_file = self.setTargetFile('SampleDataFiles', 'booleanModelTest.r.t')
         self.setupFileProcessingService(data_file, SupportedFileTypes.R)
 
-        data_file_for_sim1 = self.setTargetFile('SampleDataFiles', 'booleanTest.r.u')
+        data_file_for_sim1 = self.setTargetFile('SampleDataFiles', 'booleanModelIntegerResponseSIM1.r.u')
         self.setupFileProcessingServiceForSim1(data_file_for_sim1, SupportedFileTypes.R)
 
         number_of_genomes = self.sim1FileProcessingService.number_of_genomes
@@ -142,12 +142,6 @@ class FileProcessingServiceIT(unittest.TestCase):
         assert fp_service.extractCoefficientName(target_sequence_bool_default) == 'B_AKT2'
         assert fp_service.extractDistributionName(target_sequence_bool_default) == SupportedDistributions.BOOLEAN
         assert fp_service.extractParameters(target_sequence_bool_default) == ['0.5']
-
-        mutate_default = '$mutate(CTNNB1, 0, .304), name= M_CTNNB1$'
-        target_sequence_mutate_default = self.extractTargetSequencesFromLine(mutate_default)[0]
-        assert fp_service.extractCoefficientName(target_sequence_mutate_default) == 'M_CTNNB1'
-        assert fp_service.extractDistributionName(target_sequence_mutate_default) == SupportedDistributions.MUTATE
-        assert fp_service.extractParameters(target_sequence_mutate_default) == ['CTNNB1', '0', '.304']
 
     def testDollarSignSyntaxValuesCorrectlyExtractedForMATLAB(self):
         data_file = self.setTargetFile('SampleDataFiles', 'WNT_ERK_crosstalk.octave')
@@ -230,10 +224,6 @@ class FileProcessingServiceIT(unittest.TestCase):
 
         boolean_line = 'var boolean = $boolean(.5),name=boolean$;'
         self.assertAppropriateCoefficientValueParsed(fp_service, boolean_line, int)
-
-        if fp_service.file_type is SupportedFileTypes.R:
-            mutate_line = 'var mutate = $mutate(mutate,.3,.6),name=mutate$;'
-            self.assertAppropriateCoefficientValueParsed(fp_service, mutate_line, str)
 
     def assertAppropriateCoefficientValueParsed(self, fp_service, line, expected_type):
         target_sequence = self.extractTargetSequencesFromLine(line)[0]

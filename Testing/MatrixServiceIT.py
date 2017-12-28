@@ -76,3 +76,5 @@ class MatrixServiceIT(unittest.TestCase):
             for trial in range(0, len(genomes_by_trial_matrix[genome])):
                 integer_result = genomes_by_trial_matrix[genome][trial]
                 assert type(numpy.asscalar(integer_result)) is int
+
+    # TODO: Add tests for splitting matrix into training, testing and validation data.

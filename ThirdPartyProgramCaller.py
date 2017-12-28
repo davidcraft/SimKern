@@ -149,7 +149,11 @@ class ThirdPartyProgramCaller(object):
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = proc.communicate()
 
-        pos = out.index("]")
+        try:
+            pos = out.index("]")
+        except ValueError as value_error:
+            self.log.error("Error processing R file %s: %s. Returned output: %s", call_file, value_error, out)
+            return -1
         output = SafeCastUtil.safeCast(out[pos + 2], self.response_type)
         if self.response_type == SupportedThirdPartyResponses.VECTOR:
             avg_vector_split = out.split("%avg%")

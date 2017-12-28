@@ -114,14 +114,8 @@ class FileProcessingService(object):
             return distribution_name
 
     def extractParameters(self, target_sequence):
-        if 'mutate(' in target_sequence and ")" in target_sequence:
-            regex = re.compile(r'\(.+\)')
-            search_result = regex.search(target_sequence)
-            sequence = target_sequence[(search_result.regs[0][0] + 1):(search_result.regs[0][1] - 1)]
-            return [param.strip() for param in sequence.split(",")]
-        elif self.file_type == SupportedFileTypes.MATLAB or SupportedFileTypes.OCTAVE:
-            pattern = re.compile('-? *\.?[0-9]+\.?[0-9]*(?:[Ee] *-? *[0-9]+)?')  # now supports scientific notation
-            return [param.strip() for param in re.findall(pattern, target_sequence.split("name=")[0])]
+        pattern = re.compile('-? *\.?[0-9]+\.?[0-9]*(?:[Ee] *-? *[0-9]+)?')  # now supports scientific notation
+        return [param.strip() for param in re.findall(pattern, target_sequence.split("name=")[0])]
 
     def retrieveCoefficientValueFromDistribution(self, distribution, params):
         # Selection from a series of both discrete and continuous probability distributions
@@ -145,8 +139,6 @@ class FileProcessingService(object):
             return self.generateRandomValueFromPoissonDistribution(params[0])
         elif distribution == SupportedDistributions.BOOLEAN:
             return self.pickBoolean(params[0])
-        elif distribution == SupportedDistributions.MUTATE:
-            return self.pickMutation(params[0], params[1], params[2])
         else:
             raise ValueError('Unsupported distribution: ' + distribution)
 
@@ -177,20 +169,6 @@ class FileProcessingService(object):
             return 0
         else:
             return 1
-
-    # Only supported for R
-    def pickMutation(self, node, probability_of_knock_out, probability_of_over_expression):
-        #TODO: Potentially remove support for $mutate$
-        knockout = SafeCastUtil.safeCast(probability_of_knock_out, float, 0.5)
-        over_express = SafeCastUtil.safeCast(probability_of_over_expression, float, 0.5)
-        node_name = SafeCastUtil.safeCast(node, str, "")
-        val = random.uniform(0, 1)
-        if val < SafeCastUtil.safeCast(probability_of_knock_out, float, 0.5):
-            return "fixGenes( network, " + '"' + node_name + '"' + ", 0)"
-        elif knockout < val < over_express + knockout:
-            return "fixGenes( network, " + '"' + node_name + '"' + ", 1)"
-        else:
-            return ""
 
     def writeGenomesKeyFilesToDirectory(self, genomes, path):
         for genome in genomes.keys():

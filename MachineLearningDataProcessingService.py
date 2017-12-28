@@ -8,6 +8,8 @@ from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from SupportedAnalysisTypes import SupportedAnalysisTypes
+from Utilities.SafeCastUtil import SafeCastUtil
+from sklearn.metrics import r2_score
 
 
 class MachineLearningDataProcessingService(object):
@@ -20,9 +22,10 @@ class MachineLearningDataProcessingService(object):
 
     TRAINING_PERCENTS = [.2, .4, .6, .8, 1]
 
-    def performMachineLearningOnSIM0(self, output_file, genomes_matrix_file, analysis_type):
+    def performMachineLearningOnSIM0(self, output_file, genomes_matrix_file, analysis_type, categorical_variables):
         responses = self.readCSVFile(output_file)
-        genome_matrix = self.readCSVFile(genomes_matrix_file)
+        genome_matrix = self.oneHotEncodeCategoricalVariables(self.readCSVFile(genomes_matrix_file),
+                                                              categorical_variables)
 
         num_genomes = len(genome_matrix)
 
@@ -53,7 +56,7 @@ class MachineLearningDataProcessingService(object):
             "SVM " + analysis_type + " (RBF)": svm_results_rbf,
             "SVM " + analysis_type + " (LINEAR)": svm_results_linear
         }
-        self.plotResults(full_results, genomes_matrix_file, "SVM and RF " + analysis_type + " SIM0 Results")
+        self.plotResults(full_results, genomes_matrix_file, analysis_type,  "SVM and RF " + analysis_type + " SIM0 Results")
 
     def runRandomForest(self, responses, testing_matrix, testing_set, train_length, training_matrix,
                         validation_matrix, validation_set, analysis_type):
@@ -206,7 +209,7 @@ class MachineLearningDataProcessingService(object):
             "KERNELIZED SVM": kernelized_svm
         }
 
-        self.plotResults(full_results, similarity_matrix_file, "SIM1 Kernelized SVM")
+        self.plotResults(full_results, similarity_matrix_file, analysis_type, "SIM1 Kernelized SVM")
 
     def runKernelizedSVM(self, responses, testing_matrix, testing_set, train_length, training_matrix, validation_matrix,
                          validation_set, analysis_type):
@@ -240,9 +243,11 @@ class MachineLearningDataProcessingService(object):
         self.log.debug("Accuracies by training percent: %s", results_by_percent_train)
         return results_by_percent_train
 
-    def performFullSIM0SIM1Analysis(self, output_file, genomes_matrix_file, similarity_matrix_file, analysis_type):
+    def performFullSIM0SIM1Analysis(self, output_file, genomes_matrix_file, similarity_matrix_file, analysis_type,
+                                    categorical_variables):
         responses = self.readCSVFile(output_file)
-        genomes_matrix = self.readCSVFile(genomes_matrix_file)
+        genomes_matrix = self.oneHotEncodeCategoricalVariables(self.readCSVFile(genomes_matrix_file),
+                                                               categorical_variables)
         similarity_matrix = self.readCSVFile(similarity_matrix_file)
 
         num_genomes = len(genomes_matrix)
@@ -291,39 +296,83 @@ class MachineLearningDataProcessingService(object):
             "SVM SIM0 " + analysis_type + " (LINEAR)": svm_genomic_results_linear,
             "SVM SIM1 " + analysis_type: svm_kernel_results
         }
-        self.plotResults(full_results, genomes_matrix_file, "SIM0 SIM1 Combined Results")
+        self.plotResults(full_results, genomes_matrix_file, analysis_type, "SIM0 SIM1 Combined Results")
 
     def readCSVFile(self, file):
         return numpy.loadtxt(open(file, "rb"), delimiter=",")
+
+    def oneHotEncodeCategoricalVariables(self, genomes_matrix, categorical_variables):
+        if categorical_variables is None or len(categorical_variables) == 0:
+            return genomes_matrix
+        encoded_matrix = []  # List of lists
+        for genome in genomes_matrix:
+            encoded_matrix.append(list(genome))
+        sorted_deduped_variables = numpy.sort(numpy.unique(categorical_variables))[::-1]
+        for variable_raw in sorted_deduped_variables:
+            categorical_variable = SafeCastUtil.safeCast(variable_raw, int)
+            if categorical_variable is None:
+                self.log.warning("Aborting one-hot-encoding. Non-integer categorical variable index detected.")
+            if len(encoded_matrix[0]) > categorical_variable > 0:
+                assigned_values = []
+                for genome in encoded_matrix:
+                    value = genome[categorical_variable]
+                    if SafeCastUtil.safeCast(value, int) is None:
+                        self.log.warning("Aborting one-hot-encoding. Non integer value for categorical variable "
+                                         "detected.")
+                        return genomes_matrix
+                    if value not in assigned_values:
+                        assigned_values.append(value)
+                assigned_values = numpy.sort(assigned_values)
+
+                for matrix_row in range(0, len(encoded_matrix)):
+                    for feature_index in range(0, len(encoded_matrix[matrix_row])):
+                        if feature_index == categorical_variable:
+                            value_as_multiple_categories = []
+                            for assigned_value in assigned_values:
+                                boolean_value = 0
+                                if assigned_value == encoded_matrix[matrix_row][feature_index]:
+                                    boolean_value = 1
+                                value_as_multiple_categories.append(boolean_value)
+                            new_genome = numpy.concatenate((encoded_matrix[matrix_row][:categorical_variable],
+                                                            value_as_multiple_categories,
+                                                            encoded_matrix[matrix_row][categorical_variable + 1:]))
+                            encoded_matrix[matrix_row] = new_genome
+        return encoded_matrix
 
     def predictModelAccuracy(self, model, responses, testing_matrix, testing_set, analysis_type):
         if model is None:
             return 0
         predictions = model.predict(testing_matrix)
-        accuracies = []
-        for i in range(0, len(predictions)):
-            genome = testing_set[i]
-            real_response = responses[genome]
-            prediction = predictions[i]
-            accuracy = 0
-            if analysis_type == SupportedAnalysisTypes.CLASSIFICATION and real_response == prediction:
-                accuracy = 1
-            if analysis_type == SupportedAnalysisTypes.REGRESSION and\
-                            numpy.abs(prediction - real_response) <= numpy.std(responses):
-                accuracy = 1
-            accuracies.append(accuracy)
-            self.log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,
-                           real_response)
-        average_accuracy = numpy.average(accuracies)
-        return average_accuracy
+        if analysis_type == SupportedAnalysisTypes.REGRESSION:
+            real_responses = []
+            corresponding_predictions = []
+            for i in range(0, len(predictions)):
+                genome = testing_set[i]
+                real_responses.append(responses[genome])
+                corresponding_predictions.append(predictions[i])
+            return r2_score(real_responses, corresponding_predictions)
+        else:
+            accuracies = []
+            for i in range(0, len(predictions)):
+                genome = testing_set[i]
+                real_response = responses[genome]
+                prediction = predictions[i]
+                accuracy = 0
+                if real_response == prediction:
+                    accuracy = 1
+                accuracies.append(accuracy)
+                self.log.debug("Predicted outcome for genome %s vs actual outcome: %s vs %s", genome, prediction,
+                               real_response)
+            average_accuracy = numpy.average(accuracies)
+            return average_accuracy
 
-    def plotResults(self, full_results, csv_file_location, title):
+    def plotResults(self, full_results, csv_file_location, analysis_type, title):
         try:
             output_path = ""
             csv_path_split = csv_file_location.split("/")
             for i in range(1, len(csv_path_split) - 1):
                 output_path += "/" + csv_path_split[i]
             graphing_service = GraphingService()
-            graphing_service.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, title)
+            graphing_service.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, analysis_type, title)
         except Exception as exception:
             self.log.error("Unable to create or save graphs due to: %s", exception)

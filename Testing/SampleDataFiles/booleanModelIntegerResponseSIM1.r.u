@@ -42,34 +42,39 @@ if (M_AKT1!=-1){
     fixGenes(network, "AKT1", M_AKT1)
 }
 
-$mutate(CDH2, .1, .1), name= M_CDH2$
+s[1] = $discrete(-1,0,1), name=M_CDH2$
+s[2] = $discrete(-1,0,1), name=M_DKK1$
+s[3] = $discrete(-1,0,1), name=M_GF$
+s[4] = $discrete(-1,0,1), name=M_miR200$
+s[5] = $discrete(-1,0,1), name=M_miR203$
+s[6] = $discrete(-1,0,1), name=M_miR34$
+s[7] = $discrete(-1,0,1), name=M_p21$
+s[8] = $discrete(-1,0,1), name=M_p63$
+s[9] = $discrete(-1,0,1), name=M_p73$
+s[10] = $discrete(-1,0,1), name=M_SMAD$
+s[11] = $discrete(-1,0,1), name=M_SNAI1$
+s[12] = $discrete(-1,0,1), name=M_VIM$
+s[13] = $discrete(-1,0,1), name=M_ZEB1$
+s[14] = $discrete(-1,0,1), name=M_ZEB2$
 
-$mutate(DKK1, .1, .1), name= M_DKK1$
+#externel inputs to the network
+s[15] = $boolean(.5), name=B_DNAdamage$
+s[16] = $boolean(.5), name=B_ECM$
 
-$mutate(GF, .1, .1), name= M_GF$
-
-$mutate(miR200, .1, .1), name= M_miR200$
-
-$mutate(miR203, .1, .1), name= M_miR203$
-
-$mutate(miR34, .1, .1), name= M_miR34$
-
-$mutate(p21, .1, .1), name= M_p21$
-
-$mutate(p63, .1, .1), name= M_p63$
-
-$mutate(p73, .1, .1), name= M_p73$
-
-$mutate(SMAD, .1, .1), name= M_SMAD$
-
-$mutate(SNAI1, .1, .1), name= M_SNAI1$
-
-$mutate(VIM, .1, .1), name= M_VIM$
-
-$mutate(ZEB1, .1, .1), name= M_ZEB1$
-
-$mutate(ZEB2, .1, .1), name= M_ZEB2$
-
+network <- fixGenes( network, "M_CDH2", s[1])
+network <- fixGenes( network, "M_DKK1", s[2])
+network <- fixGenes( network, "M_GF", s[3])
+network <- fixGenes( network, "M_miR200", s[4])
+network <- fixGenes( network, "M_miR203", s[5])
+network <- fixGenes( network, "M_miR34", s[6])
+network <- fixGenes( network, "M_p21", s[7])
+network <- fixGenes( network, "M_p63", s[8])
+network <- fixGenes( network, "M_p73", s[9])
+network <- fixGenes( network, "M_SMAD", s[10])
+network <- fixGenes( network, "M_SNAI1", s[11])
+network <- fixGenes( network, "M_VIM", s[12])
+network <- fixGenes( network, "M_ZEB1", s[13])
+network <- fixGenes( network, "M_ZEB2", s[14])
 
 
 attr <- getAttractors(network, method = "chosen", startStates = list(c(B_AKT1,

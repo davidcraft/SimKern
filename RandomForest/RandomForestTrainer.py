@@ -55,8 +55,6 @@ class RandomForestTrainer(object):
 
         return [model, [train_accuracy, test_accuracy, total_accuracy]]  # Return tuple of model and accuracies
 
-
-
     def trainRandomForestRegressor(self, pct_train):
         if type(self.third_party_response) != list:
             response_as_list = list(self.third_party_response.values())

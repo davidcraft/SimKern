@@ -55,15 +55,17 @@ def main():
 
     elif SafeCastUtil.safeCast(arguments[0], int) == 2:
         log.info("Machine Learning on SIM0 data requested...")
-        if len(arguments) is not 4:
-            log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
+        if len(arguments) is not 5:
+            log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
                      "a file Sim0Output.csv file expressing the third party program results of SIM0, the accompanying "
-                     "Sim0GenomesMatrix file., and 'REGRESSION' or 'CLASSIFICATION' for the type of analysis.")
+                     "Sim0GenomesMatrix file., 'REGRESSION' or 'CLASSIFICATION' for the type of analysis, and a list of"
+                     "indices for categorical features in the Sim0GenomesMatrix.")
             return
         output_file = arguments[1]
         genomes_matrix_file = arguments[2]
         analysis = arguments[3]
-        performSIM0Analysis(analysis, genomes_matrix_file, output_file)
+        categorical_variables = arguments[4].split(",")
+        performSIM0Analysis(analysis, genomes_matrix_file, output_file, categorical_variables)
     elif SafeCastUtil.safeCast(arguments[0], int) == 3:
         log.info("Machine Learning on SIM1 data requested...")
         if len(arguments) is not 4:
@@ -77,17 +79,20 @@ def main():
         performSIM1Analysis(output_file, similarity_matrix, analysis_type)
     elif SafeCastUtil.safeCast(arguments[0], int) == 4:
         log.info("Machine Learning on both SIM0 and SIM1 data requested...")
-        if len(arguments) is not 5:
-            log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
+        if len(arguments) is not 6:
+            log.info("Program expects 6 arguments: an integer expressing the desired action from the main menu, "
                      "a file Sim0Output.csv file expressing the third party program results of SIM0 ,the accompanying "
-                     "Sim0GenomesMatrix file, a Sim1SimilarityMatrix.csv file and 'REGRESSION' or 'CLASSIFICATION' "
-                     "for the type of analysis.")
+                     "Sim0GenomesMatrix file, a Sim1SimilarityMatrix.csv file, 'REGRESSION' or 'CLASSIFICATION' "
+                     "for the type of analysis, and a list of indices for categorical features in "
+                     "the Sim0GenomesMatrix.")
             return
         output_file = arguments[1]
         genomes_matrix_file = arguments[2]
         similarity_matrix = arguments[3]
-        analysis_type = arguments[4]
-        performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type)
+        analysis_type = arguments[4].split(",")
+        categorical_variables = arguments[5]
+        performSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type,
+                                categorical_variables)
     return
 
 
@@ -115,13 +120,15 @@ def promptUserForInput():
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         number_of_trials = recursivelyPromptUser("Enter number of trials for each genome (R) as an integer:\n", int)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
-        response_type = recursivelyPromptUser("Enter expected third party response type:\n", str)
+        response_type = recursivelyPromptUser("Enter expected third party response type:\n", str).split(",")
         createGenomesSIM1(file_extension, input_file, path, permutations, number_of_trials, response_type)
     elif simulation_as_int == 2:
         output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
         genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
         analysis = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type:\n", str)
-        performSIM0Analysis(analysis, genomes_matrix_file, output_file)
+        categorical_variables = recursivelyPromptUser("Enter categorical variables for Sim0GenomesMatrix.\n", str).split(",")
+        performSIM0Analysis(analysis, genomes_matrix_file, output_file,
+                            SafeCastUtil.safeCast(categorical_variables, list))
     elif simulation_as_int == 3:
         output_file = recursivelyPromptUser("Enter path of Sim1Responses.csv file:\n", str)
         similarity_matrix = recursivelyPromptUser("Enter path of .CSV file representing the similarity matrix:\n", str)
@@ -131,8 +138,10 @@ def promptUserForInput():
         output_file = recursivelyPromptUser("Enter path of Sim1Responses.csv file:\n", str)
         genomes_matrix_file = recursivelyPromptUser("Enter path of input Sim0GenomesMatrix.csv file:\n", str)
         similarity_matrix = recursivelyPromptUser("Enter path of .CSV file representing the similarity matrix:\n", str)
-        analysis_type = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type", str)
-        performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type)
+        analysis_type = recursivelyPromptUser("Enter 'REGRESSION' or 'CLASSIFICATION' for analysis type\n", str)
+        categorical_variables = recursivelyPromptUser("Enter categorical variables for Sim0GenomesMatrix.\n", str).split(",")
+        performSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type,
+                                SafeCastUtil.safeCast(categorical_variables, list))
     elif simulation_as_string == "Q":
         return
     else:
@@ -198,9 +207,9 @@ def createTrialFiles(data_file, file_extension, number_of_genomes, number_of_tri
     return trial_files
 
 
-def performSIM0Analysis(analysis, genomes_matrix_file, output_file):
+def performSIM0Analysis(analysis, genomes_matrix_file, output_file, categorical_variables):
     data_processor = MachineLearningDataProcessingService(100)
-    data_processor.performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis)
+    data_processor.performMachineLearningOnSIM0(output_file, genomes_matrix_file, analysis, categorical_variables)
 
 
 def performSIM1Analysis(output_file, similarity_matrix, analysis_type):
@@ -208,9 +217,10 @@ def performSIM1Analysis(output_file, similarity_matrix, analysis_type):
     data_processor.performMachineLearningOnSIM1(output_file, similarity_matrix, analysis_type)
 
 
-def performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type):
+def performSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type, categorical_variables):
     data_processor = MachineLearningDataProcessingService(100)
-    data_processor.performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type)
+    data_processor.performFullSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type,
+                                               categorical_variables)
 
 if __name__ == "__main__":
     main()
