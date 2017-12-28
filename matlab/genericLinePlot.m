@@ -1,4 +1,4 @@
-function genericLinePlot(algs,expInfo,classificationBoolean)
+function genericLinePlot(algs,expInfo,classificationBoolean,titleName)
 for i_algs = 1:length(algs)
     nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
     linSvmResult(i_algs,:) = algs(i_algs).linSvm.perfMetric;
@@ -73,4 +73,10 @@ if classificationBoolean
 else
     ylabel('R^2')
 end
+
+% add model name
+% curYLim = ylim;
+% vertPosTitle = 0.99 * curYLim(2);
+% text(5.0,vertPosTitle,titleName,'Color','k','FontSize',14,'FontWeight','bold','BackgroundColor',[2/3 2/3 2/3])
+
 end

@@ -1,7 +1,7 @@
 clear
 clc
 close all
-
+addpath('C:\Users\timo.deist\Documents\matlab_functions\matlab2tikz\src')
 %% radiation line (with bad kernel) and boxplot
 dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\radiation_14_Dec_2017_18_28_25');
 
@@ -16,11 +16,12 @@ expInfoBad = dataDump.expInfo;
 hpsBad = dataDump.hps;
 
 radiationLinePlot(algs,algsBad,expInfo,classificationBoolean)
-
-saveas(gcf,'..\..\data\radiationLine.png')
+matlab2tikz('..\..\data\radiationLine.tex')
+saveas(gcf,'..\..\data\radiationLine.pdf')
 
 radiationBoxplot(algs,expInfo,classificationBoolean)
 set(gcf,'PaperUnits','inches','PaperPosition',[0 0 15 7]);
+matlab2tikz('..\..\data\radiationBox.tex')
 saveas(gcf,'..\..\data\radiationBox.png')
 
 %% flowering line
@@ -34,8 +35,9 @@ expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
-genericLinePlot(algs,expInfo,classificationBoolean)
-saveas(gcf,'..\..\data\flowerLine.png')
+genericLinePlot(algs,expInfo,classificationBoolean,'Flowering time model')
+matlab2tikz('..\..\data\floweringLine.tex')
+saveas(gcf,'..\..\data\floweringLine.png')
 
 %% network line
 clear
@@ -48,7 +50,8 @@ expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
-genericLinePlot(algs,expInfo,classificationBoolean)
+genericLinePlot(algs,expInfo,classificationBoolean,'Network flow model')
+matlab2tikz('..\..\data\networkLine.tex')
 saveas(gcf,'..\..\data\networkLine.png')
 
 %% boolean line
@@ -63,5 +66,6 @@ expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
-genericLinePlot(algs,expInfo,classificationBoolean)
+genericLinePlot(algs,expInfo,classificationBoolean,'Boolean cell model')
+matlab2tikz('..\..\data\booleanLine.tex')
 saveas(gcf,'..\..\data\booleanLine.png')

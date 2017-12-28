@@ -56,6 +56,7 @@ plotLabels = [linSvmLabels rbfSvmLabels rfLabels skSvmLabels skRfLabels skNnLabe
 figure
 hold on
 grid on
+set(gca,'FontSize',20)
 fh = boxplot([linSvmResult rbfSvmResult rfResult skSvmResult skRfResult skNnResult],...
     'FactorSeparator',1,...
     'position',...
@@ -89,14 +90,14 @@ whiskerInd = strcmpi(myHandles2,'Whisker');
 whiskerLines = myHandles(whiskerInd);
 set(whiskerLines,'linewidth',2);
 
-h = zeros(3,1);
-% h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGreyRed,'MarkerFaceColor',myGreyRed);
-h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
-h(2) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
-h(3) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGrey,'MarkerFaceColor',myGrey);
-legend(h,'No prior knowledge',...
-    'With prior knowledge','NN with prior knowledge',...
-    'Location','southeast');
+% h = zeros(3,1);
+% % h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGreyRed,'MarkerFaceColor',myGreyRed);
+% h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
+% h(2) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
+% h(3) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGrey,'MarkerFaceColor',myGrey);
+% legend(h,'No prior knowledge',...
+%     'With prior knowledge','NN with prior knowledge',...
+%     'Location','southeast');
 
 curYLim = ylim;
 vertPos = 1.01 * curYLim(2);
@@ -113,8 +114,12 @@ else
     ylabel('R^2')
 end
 
+curYLim = ylim;
 for i_subsamples = 1:numeroSubsamples
-    line([(i_subsamples + 0.875) (i_subsamples + 0.8395)],[-100 100],'Color','k')
+    line([(i_subsamples + 0.8395) (i_subsamples + 0.8395)],[curYLim(1) curYLim(2)],'Color','k')
 end
-
+% add model name
+% curYLim = ylim;
+% vertPosTitle = 0.99 * curYLim(2);
+% text(1.0,vertPosTitle,'Cell irradiation model','Color','k','FontSize',14,'FontWeight','bold')
 end

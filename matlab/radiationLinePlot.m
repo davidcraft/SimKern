@@ -98,5 +98,4 @@ end
 
 text(50,0.77,{'Higher' 'quality' 'kernel'},'Color',myGreen,'FontSize',12,'FontWeight','bold')
 text(250,0.62,{'Lower' 'quality' 'kernel'},'Color',myGreen,'FontSize',12,'FontWeight','bold')
-
 end
