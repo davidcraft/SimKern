@@ -3,7 +3,7 @@ clc
 close all
 addpath('C:\Users\timo.deist\Documents\matlab_functions\matlab2tikz\src')
 %% radiation line (with bad kernel) and boxplot
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\radiation_14_Dec_2017_18_28_25');
+dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\radiation_29_Dec_2017_00_10_35');
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -28,7 +28,7 @@ saveas(gcf,'..\..\data\radiationBox.png')
 clear
 clc
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\flowering_14_Dec_2017_20_24_55');
+dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\flowering_29_Dec_2017_01_14_30');
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -43,7 +43,7 @@ saveas(gcf,'..\..\data\floweringLine.png')
 clear
 clc
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\network_14_Dec_2017_19_06_47');
+dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\network_28_Dec_2017_23_00_28');
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -59,7 +59,7 @@ saveas(gcf,'..\..\data\networkLine.png')
 clear
 clc
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\boolean_14_Dec_2017_19_23_29');
+dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\boolean_28_Dec_2017_23_42_29');
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -69,3 +69,7 @@ classificationBoolean = dataDump.classificationBoolean;
 genericLinePlot(algs,expInfo,classificationBoolean,'Boolean cell model')
 matlab2tikz('..\..\data\booleanLine.tex')
 saveas(gcf,'..\..\data\booleanLine.png')
+
+%% create legend
+createLegend()
+saveas(gcf,'..\..\data\legend.png')

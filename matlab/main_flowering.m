@@ -11,7 +11,12 @@ sm =  csvread(f);
 
 %xfile needed for RF and normnal SVMs, but not used by custom kernel SVM
 xfile = '..\SimKernModels\Flowering\DataReadyForML\Sim0GenomesMatrix.csv';
-unstandardizedFeatures = csvread(xfile);
+x = csvread(xfile);
+% collapse the MUT vars into 1 [if MUT.knockdown, which is x(:,1),
+% is 0, then there is no mutation, so just multiple this with the
+% discrete 19 mutation types]
+x = horzcat(x(:,1).*x(:,2),x(:,3:end));
+unstandardizedFeatures = x;
 
 yfile = '..\SimKernModels\Flowering\DataReadyForML\Sim0Output.csv';
 y=csvread(yfile);
@@ -20,13 +25,13 @@ outcome = y';
 
 %% experiment parameters
 splitRatios = [0.5 0.25 0.25];
-subsamplingRatios = [0.1 0.2 0.5 0.75 1];
+subsamplingRatios = [0.1 0.25 0.5 0.75 1];
 categoricalIndices = false(1,size(unstandardizedFeatures,2));
 categoricalIndices(1) = true;
 debuggingBoolean = false; % set to true if you want to use fewer hyperparameters to speed up the process
 classificationBoolean = false;
-numeroTrees = 10; % number of trees for all RFs
-numeroReps = 3;
+numeroTrees = 100; % number of trees for all RFs
+numeroReps = 5;
 randSeedSplitting = 1:numeroReps;
 randSeedSubsampling = 100 + reshape(1:(numeroReps*numel(subsamplingRatios)),numel(subsamplingRatios),numeroReps)';
 %% the actual experiment
