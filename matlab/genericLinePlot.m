@@ -1,4 +1,6 @@
 function genericLinePlot(algs,expInfo,classificationBoolean,titleName)
+myFontsize = 20;
+myLinewidth = 3;
 for i_algs = 1:length(algs)
     nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
     linSvmResult(i_algs,:) = algs(i_algs).linSvm.perfMetric;
@@ -18,7 +20,7 @@ numeroTestSamples = expInfo(1).numeroTestSamples(1);
 
 % error check
 if numel(unique(expInfo(1).numeroValidationSamples)) ~= 1 || numel(unique(expInfo(1).numeroTestSamples)) ~= 1 ...
-    || any(expInfo(1).numeroTrainSamples ~= expInfo(2).numeroTrainSamples)
+        || any(expInfo(1).numeroTrainSamples ~= expInfo(2).numeroTrainSamples)
     error('Data splitting wrong.')
 end
 % colors
@@ -40,7 +42,7 @@ elseif mode(maxInd) == 2
 elseif mode(maxInd) == 3
     bestNaive = rfResult;
 else
-     error('Oops.')
+    error('Oops.')
 end
 
 %% find best sk alg
@@ -51,7 +53,9 @@ else
 end
 
 %% line figure radiation
-figure
+figure('Units','inches',...
+    'Position',[0 0 5 5],...
+    'PaperPositionMode','auto')
 hold on
 grid on
 a = median(bestNaive);
@@ -62,16 +66,45 @@ fitx = linspace(min(xvals),max(xvals),100);
 fita = interp1(xvals,a,fitx,'pchip');
 fitb = interp1(xvals,b,fitx,'pchip');
 
-line(fitx,fita,'Color',myRed,'LineWidth',2);
-scatter(xvals,a,'filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed,'LineWidth',2);
-line(fitx,fitb,'Color',myGreen,'LineWidth',2);
-scatter(xvals,b,'filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen,'LineWidth',2);
+line(fitx,fita,'Color',myRed,'LineWidth',myLinewidth);
+scatter(xvals,a,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed,'LineWidth',myLinewidth);
+line(fitx,fitb,'Color',myGreen,'LineWidth',myLinewidth);
+scatter(xvals,b,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen,'LineWidth',myLinewidth);
 
-xlabel('Training Samples')
+set(gca,...
+    'Units','normalized',...
+    'FontUnits','points',...
+    'FontWeight','normal',...
+    'FontSize',myFontsize,...
+    'FontName','Times')
+
+xlabel('Training Samples',...
+    'Units','normalized',...
+    'FontUnits','points',...
+    'Interpreter','latex',...
+    'FontWeight','normal',...
+    'FontSize',myFontsize,...
+    'FontName','Times')
+
+% use latex font for ticklabels
+set(gca,'TickLabelInterpreter','latex')
+
 if classificationBoolean
-    ylabel('Accuracy')
+    ylabel('Accuracy',...
+        'Units','normalized',...
+        'FontUnits','points',...
+        'Interpreter','latex',...
+        'FontWeight','normal',...
+        'FontSize',myFontsize,...
+        'FontName','Times')
 else
-    ylabel('R^2')
+    ylabel('$R^{2}$',...
+        'Units','normalized',...
+        'FontUnits','points',...
+        'Interpreter','latex',...
+        'FontWeight','normal',...
+        'FontSize',myFontsize,...
+        'FontName','Times')
 end
 
 % add model name

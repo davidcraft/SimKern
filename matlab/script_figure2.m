@@ -10,19 +10,24 @@ expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\radiation_badKernel_14_Dec_2017_17_39_37');
+dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\radiation_badKernel_29_Dec_2017_13_29_17');
 algsBad = dataDump.algs;
 expInfoBad = dataDump.expInfo;
 hpsBad = dataDump.hps;
 
 radiationLinePlot(algs,algsBad,expInfo,classificationBoolean)
 matlab2tikz('..\..\data\radiationLine.tex')
-saveas(gcf,'..\..\data\radiationLine.pdf')
+print('..\..\data\radiationLine.eps','-depsc2')
+print('..\..\data\radiationLine.png','-dpng','-r300')
+% saveas(gcf,'..\..\data\radiationLine.pdf')
 
 radiationBoxplot(algs,expInfo,classificationBoolean)
-set(gcf,'PaperUnits','inches','PaperPosition',[0 0 15 7]);
+% set(gcf,'PaperUnits','inches','PaperPosition',[0 0 15 7]);
 matlab2tikz('..\..\data\radiationBox.tex')
-saveas(gcf,'..\..\data\radiationBox.png')
+% saveas(gcf,'..\..\data\radiationBox.png')
+print('..\..\data\radiationBox.eps','-depsc2')
+print('..\..\data\radiationBox.png','-dpng','-r300')
+
 
 %% flowering line
 clear
@@ -37,7 +42,9 @@ classificationBoolean = dataDump.classificationBoolean;
 
 genericLinePlot(algs,expInfo,classificationBoolean,'Flowering time model')
 matlab2tikz('..\..\data\floweringLine.tex')
-saveas(gcf,'..\..\data\floweringLine.png')
+% saveas(gcf,'..\..\data\floweringLine.png')
+print('..\..\data\floweringLine.eps','-depsc2')
+print('..\..\data\floweringLine.png','-dpng','-r300')
 
 %% network line
 clear
@@ -52,8 +59,9 @@ classificationBoolean = dataDump.classificationBoolean;
 
 genericLinePlot(algs,expInfo,classificationBoolean,'Network flow model')
 matlab2tikz('..\..\data\networkLine.tex')
-saveas(gcf,'..\..\data\networkLine.png')
-
+% saveas(gcf,'..\..\data\networkLine.png')
+print('..\..\data\networkLine.eps','-depsc2')
+print('..\..\data\networkLine.png','-dpng','-r300')
 %% boolean line
 
 clear
@@ -68,8 +76,11 @@ classificationBoolean = dataDump.classificationBoolean;
 
 genericLinePlot(algs,expInfo,classificationBoolean,'Boolean cell model')
 matlab2tikz('..\..\data\booleanLine.tex')
-saveas(gcf,'..\..\data\booleanLine.png')
-
+% saveas(gcf,'..\..\data\booleanLine.png')
+print('..\..\data\booleanLine.eps','-depsc2')
+print('..\..\data\booleanLine.png','-dpng','-r300')
 %% create legend
 createLegend()
-saveas(gcf,'..\..\data\legend.png')
+% saveas(gcf,'..\..\data\legend.png')
+print('..\..\data\legend.eps','-depsc2')
+print('..\..\data\legend.png','-dpng','-r300')
