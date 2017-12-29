@@ -6,7 +6,7 @@ addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows'
 %% read in data
 
 %read full similarity matrix
-f = '..\SimKernModels\Radiation\DataReadyForML\Sim1SimilarityMatrixfinal.csv';
+f = '..\..\data\radiation\Sim1SimilarityMatrixfinalHIGHERQUALITY.csv';
 sm =  csvread(f);
 
 %xfile needed for RF and normnal SVMs, but not used by custom kernel SVM
@@ -45,3 +45,26 @@ timeStamp = strrep(timeStamp,'-','_');
 timeStamp = strrep(timeStamp,' ','_');
 pathToMatFile = ['../../data/radiation_' timeStamp];
 save(pathToMatFile)
+
+pathToMatFileLight = ['../../data/radiation_light_' timeStamp];
+
+for i_reps = 1:numeroReps
+    % remove bestModel field to decrease .mat file size
+    algs(i_reps).nn = rmfield(algs(i_reps).nn,'bestModel');
+    algs(i_reps).linSvm = rmfield(algs(i_reps).linSvm,'bestModel');
+    algs(i_reps).rbfSvm = rmfield(algs(i_reps).rbfSvm,'bestModel');
+    algs(i_reps).rf = rmfield(algs(i_reps).rf,'bestModel');
+    algs(i_reps).skSvm = rmfield(algs(i_reps).skSvm,'bestModel');
+    algs(i_reps).skRf = rmfield(algs(i_reps).skRf,'bestModel');
+    algs(i_reps).skNn = rmfield(algs(i_reps).skNn,'bestModel');
+end
+
+% delete expInfo data fields to decrease .mat file size
+    expInfo = rmfield(expInfo,'subsampledTrainData');
+    expInfo = rmfield(expInfo,'subsampledValidationData');
+    expInfo = rmfield(expInfo,'subsampledTestData');
+    expInfo = rmfield(expInfo,'trainData');
+    expInfo = rmfield(expInfo,'validationData');
+    expInfo = rmfield(expInfo,'testData');
+
+save(pathToMatFileLight)

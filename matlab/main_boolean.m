@@ -43,3 +43,26 @@ timeStamp = strrep(timeStamp,'-','_');
 timeStamp = strrep(timeStamp,' ','_');
 pathToMatFile = ['../../data/boolean_' timeStamp];
 save(pathToMatFile)
+
+pathToMatFileLight = ['../../data/boolean_light_' timeStamp];
+
+for i_reps = 1:numeroReps
+    % remove bestModel field to decrease .mat file size
+    algs(i_reps).nn = rmfield(algs(i_reps).nn,'bestModel');
+    algs(i_reps).linSvm = rmfield(algs(i_reps).linSvm,'bestModel');
+    algs(i_reps).rbfSvm = rmfield(algs(i_reps).rbfSvm,'bestModel');
+    algs(i_reps).rf = rmfield(algs(i_reps).rf,'bestModel');
+    algs(i_reps).skSvm = rmfield(algs(i_reps).skSvm,'bestModel');
+    algs(i_reps).skRf = rmfield(algs(i_reps).skRf,'bestModel');
+    algs(i_reps).skNn = rmfield(algs(i_reps).skNn,'bestModel');
+end
+
+% delete expInfo data fields to decrease .mat file size
+    expInfo = rmfield(expInfo,'subsampledTrainData');
+    expInfo = rmfield(expInfo,'subsampledValidationData');
+    expInfo = rmfield(expInfo,'subsampledTestData');
+    expInfo = rmfield(expInfo,'trainData');
+    expInfo = rmfield(expInfo,'validationData');
+    expInfo = rmfield(expInfo,'testData');
+
+save(pathToMatFileLight)

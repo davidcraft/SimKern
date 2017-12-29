@@ -1,5 +1,6 @@
 function radiationLinePlot(algs,algsBad,expInfo,classificationBoolean)
-myFontsize = 20;
+myFontsize = 12;
+myLinewidth = 3;
 for i_algs = 1:length(algs)
     nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
     linSvmResult(i_algs,:) = algs(i_algs).linSvm.perfMetric;
@@ -71,7 +72,7 @@ end
 
 %% line figure radiation
 figure('Units','inches',...
-    'Position',[0 0 5 5],...
+    'Position',[0 0 4 4],...
     'PaperPositionMode','auto')
 hold on
 grid on
@@ -85,12 +86,12 @@ fita = interp1(xvals,a,fitx,'pchip');
 fitb = interp1(xvals,b,fitx,'pchip');
 fitc = interp1(xvals,c,fitx,'pchip');
 
-line(fitx,fita,'Color',myRed,'LineWidth',2);
-scatter(xvals,a,'filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed,'LineWidth',2);
-line(fitx,fitb,'Color',myGreen,'LineWidth',2);
-scatter(xvals,b,'MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen,'LineWidth',2);
-line(fitx,fitc,'Color',myGreen,'LineWidth',2,'LineStyle','--');
-scatter(xvals,c,'MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen,'LineWidth',2);
+line(fitx,fita,'Color',myRed,'LineWidth',myLinewidth);
+scatter(xvals,a,'filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed,'LineWidth',myLinewidth);
+line(fitx,fitb,'Color',myGreen,'LineWidth',myLinewidth);
+scatter(xvals,b,'MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen,'LineWidth',myLinewidth);
+line(fitx,fitc,'Color',myGreen,'LineWidth',myLinewidth,'LineStyle','--');
+scatter(xvals,c,'MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen,'LineWidth',myLinewidth);
 
 set(gca,...
     'Units','normalized',...

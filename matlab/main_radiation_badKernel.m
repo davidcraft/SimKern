@@ -6,14 +6,14 @@ addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows'
 %% read in data
 
 %read full similarity matrix
-f = '..\SimKernModels\NetworkFlow\DataReadyForML\Sim1SimilarityMatrixfinal.csv';
+f = '..\..\data\radiation\Sim1SimilarityMatrixfinal.csv';
 sm =  csvread(f);
 
 %xfile needed for RF and normnal SVMs, but not used by custom kernel SVM
-xfile = '..\SimKernModels\NetworkFlow\DataReadyForML\Sim0GenomesMatrix.csv';
+xfile = '..\SimKernModels\Radiation\DataReadyForML\Sim0GenomesMatrix.csv';
 unstandardizedFeatures = csvread(xfile);
 
-yfile = '..\SimKernModels\NetworkFlow\DataReadyForML\Sim0Output.csv';
+yfile = '..\SimKernModels\Radiation\DataReadyForML\Sim0Output.csv';
 y=csvread(yfile);
 outcome = y';
 
@@ -22,6 +22,8 @@ outcome = y';
 splitRatios = [0.5 0.25 0.25];
 subsamplingRatios = [0.1 0.25 0.5 0.75 1];
 categoricalIndices = false(1,size(unstandardizedFeatures,2));
+categoricalIndices(1) = true;
+categoricalIndices(33) = true;
 debuggingBoolean = false; % set to true if you want to use fewer hyperparameters to speed up the process
 classificationBoolean = true;
 numeroTrees = 100; % number of trees for all RFs
@@ -41,10 +43,10 @@ timeStamp = datestr(timeStamp);
 timeStamp = strrep(timeStamp,':','_');
 timeStamp = strrep(timeStamp,'-','_');
 timeStamp = strrep(timeStamp,' ','_');
-pathToMatFile = ['../../data/network_' timeStamp];
+pathToMatFile = ['../../data/radiation_badKernel_' timeStamp];
 save(pathToMatFile)
 
-pathToMatFileLight = ['../../data/network_light_' timeStamp];
+pathToMatFileLight = ['../../data/radiation_badKernel_light_' timeStamp];
 
 for i_reps = 1:numeroReps
     % remove bestModel field to decrease .mat file size

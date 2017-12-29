@@ -1,5 +1,5 @@
 function genericLinePlot(algs,expInfo,classificationBoolean,titleName)
-myFontsize = 20;
+myFontsize = 12;
 myLinewidth = 3;
 for i_algs = 1:length(algs)
     nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
@@ -54,7 +54,7 @@ end
 
 %% line figure radiation
 figure('Units','inches',...
-    'Position',[0 0 5 5],...
+    'Position',[0 0 4 4],...
     'PaperPositionMode','auto')
 hold on
 grid on
