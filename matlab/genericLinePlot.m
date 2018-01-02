@@ -37,10 +37,13 @@ myGrey = [125 125 125] ./255;
 
 if mode(maxInd) == 1
     bestNaive = linSvmResult;
+    bestNaiveLabel = 'linSVM';
 elseif mode(maxInd) == 2
     bestNaive = rbfSvmResult;
+    bestNaiveLabel = 'RBF SVM';
 elseif mode(maxInd) == 3
     bestNaive = rfResult;
+    bestNaiveLabel = 'RF';
 else
     error('Oops.')
 end
@@ -48,8 +51,10 @@ end
 %% find best sk alg
 if (mean(median(skSvmResult) > median(skRfResult)) > 0.5)
     bestSk = skSvmResult;
+    bestSkLabel = 'simkern SVM';
 else
     bestSk = skRfResult;
+    bestSkLabel = 'simkern RF';
 end
 
 %% line figure radiation
@@ -111,5 +116,11 @@ end
 % curYLim = ylim;
 % vertPosTitle = 0.99 * curYLim(2);
 % text(5.0,vertPosTitle,titleName,'Color','k','FontSize',14,'FontWeight','bold','BackgroundColor',[2/3 2/3 2/3])
+%% report best models
+disp('-------------')
+disp([titleName ' line plot:'])
+disp(['Best Naive algorithm: ' bestNaiveLabel])
+disp(['Best Simkern algorithm: ' bestSkLabel])
+disp('-------------')
 
 end

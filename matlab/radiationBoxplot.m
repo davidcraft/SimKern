@@ -44,11 +44,11 @@ rbfSvmLabels(:) = {'RBF SVM'};
 rfLabels = cell(1,numeroSubsamples);
 rfLabels(:) = {'RF'};
 skSvmLabels = cell(1,numeroSubsamples);
-skSvmLabels(:) = {'sim. SVM'};
+skSvmLabels(:) = {'simkern SVM'};
 skRfLabels = cell(1,numeroSubsamples);
-skRfLabels(:) = {'sim. RF'};
+skRfLabels(:) = {'simkern RF'};
 skNnLabels = cell(1,numeroSubsamples);
-skNnLabels(:) = {'sim. NN'};
+skNnLabels(:) = {'simkern NN'};
 
 plotLabels = [linSvmLabels rbfSvmLabels rfLabels skSvmLabels skRfLabels skNnLabels];
 
@@ -86,8 +86,8 @@ set(findobj(gca,'Type','text'),'Interpreter','latex')
 % font is longer)
 textObj = findobj(gca,'Type','text');
 for i_text = 1:length(textObj)
-textObj(i_text).Position(2) = -5;%textObj(i_text).Position(2) + 40;
-textObj(i_text).HorizontalAlignment = 'right';
+    textObj(i_text).Position(2) = -5;%textObj(i_text).Position(2) + 40;
+    textObj(i_text).HorizontalAlignment = 'right';
 end
 
 
@@ -114,6 +114,17 @@ set(medianLines,'linewidth',1);
 whiskerInd = strcmpi(myHandles2,'Whisker');
 whiskerLines = myHandles(whiskerInd);
 set(whiskerLines,'linewidth',1);
+
+% set outlier color
+myHandles = get(get(gca,'children'),'children');
+myHandles2 = get(myHandles,'tag');
+outlierInd = strcmpi(myHandles2,'Outliers');
+outlierColors = [myGrey;myGreen;myGreen;myRed;myRed;myRed];
+for i_algo = 1:6 % the number of algorithms per subsample
+    [myHandles((31 - 1) + i_algo:6:60).MarkerEdgeColor] = deal(outlierColors(i_algo,:));
+    
+end
+
 
 curYLim = ylim;
 vertPos = 1.01 * curYLim(2);
@@ -168,7 +179,7 @@ end
 
 curYLim = ylim;
 for i_subsamples = 1:(numeroSubsamples - 1)
-%     line([(i_subsamples + 0.8395) (i_subsamples + 0.8395)],[curYLim(1) curYLim(2)],'Color','k')
+    %     line([(i_subsamples + 0.8395) (i_subsamples + 0.8395)],[curYLim(1) curYLim(2)],'Color','k')
     % finds the exact middle between the last box of one subsample group
     % and the first box of the next subsample group and
     % plots a black line between those

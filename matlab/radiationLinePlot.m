@@ -47,10 +47,13 @@ myGrey = [125 125 125] ./255;
 
 if mode(maxInd) == 1
     bestNaive = linSvmResult;
+    bestNaiveLabel = 'linSVM';
 elseif mode(maxInd) == 2
     bestNaive = rbfSvmResult;
+    bestNaiveLabel = 'RBF SVM';
 elseif mode(maxInd) == 3
     bestNaive = rfResult;
+    bestNaiveLabel = 'RF';
 else
      error('Oops.')
 end
@@ -58,16 +61,20 @@ end
 %% find best sk alg
 if (mean(median(skSvmResult) > median(skRfResult)) > 0.5)
     bestSk = skSvmResult;
+    bestSkLabel = 'simkern SVM';
 else
     bestSk = skRfResult;
+    bestSkLabel = 'simkern RF';
 end
 
 
 %% find best sk alg bad
 if (mean(median(skSvmResultBad) > median(skRfResultBad)) > 0.5)
     bestSkBad = skSvmResultBad;
+    bestSkBadLabel = 'simkern SVM';
 else
     bestSkBad = skRfResultBad;
+    bestSkBadLabel = 'simkern RF';
 end
 
 %% line figure radiation
@@ -144,4 +151,11 @@ text(50,0.78,{'\textbf{Higher}' '\textbf{quality}' '\textbf{kernel}'},'Color',my
     'FontSize',2/3 * myFontsize,...
     'FontName','Times')
 
+%% report best models
+disp('-------------')
+disp('Radiation model line plot:')
+disp(['Best Naive algorithm: ' bestNaiveLabel])
+disp(['Best Simkern algorithm: ' bestSkLabel])
+disp(['Best Bad Simkern algorithm: ' bestSkBadLabel])
+disp('-------------')
 end
