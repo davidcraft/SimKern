@@ -25,11 +25,14 @@ if numel(unique(expInfo(1).numeroValidationSamples)) ~= 1 || numel(unique(expInf
 end
 % colors
 myBlue = [55 126 184] ./255;
-myRed  = [228 26 28] ./255;
-myGreen = [77 175 74] ./255;
+% myRed  = [228 26 28] ./255;
+% myGreen = [77 175 74] ./255;
 myDarkGrey = [100 100 100] ./255;
 myLightGrey = [150 150 150] ./255;
 myGrey = [125 125 125] ./255;
+
+myRed  = [217 95 2] ./255;
+myGreen = [27 158 119] ./255;
 
 
 %% find best naive alg
