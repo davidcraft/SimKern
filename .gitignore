@@ -4,6 +4,8 @@ GenomeFiles/
 
 
 #--------------------------Generic Files & Folders ------------------------
+# Matlab
+matlab/loadMyPaths.m
 # MATLAB auto save files
 matlab/*.asv
 
