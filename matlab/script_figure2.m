@@ -1,36 +1,42 @@
 clear
 clc
 close all
-% addpath('C:\Users\timo.deist\Documents\matlab_functions\matlab2tikz\src')
+
+[pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
+
+addpath(pathToMatlab2TikzFolder)
 %% radiation line (with bad kernel) and boxplot
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\02012018\RadiationBetterKernel_light_29_Dec_2017_17_21_23');
+dataDump = load(fullfile(pathToDataFolder,'RadiationBetterKernel_light'));
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\02012018\Radiation_light_29_Dec_2017_17_21_21');
+dataDump = load(fullfile(pathToDataFolder,'Radiation_light'));
 algsBad = dataDump.algs;
 expInfoBad = dataDump.expInfo;
 hpsBad = dataDump.hps;
 
 radiationLinePlot(algs,algsBad,expInfo,classificationBoolean)
-% matlab2tikz('..\..\data\radiationLine.tex')
-print('..\..\data\radiationLine.eps','-depsc2')
-print('..\..\data\radiationLine.pdf','-dpdf')
-print('..\..\data\radiationLine.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'radiationLine.tex'))
+print(fullfile(pathToPlottingFolder,'radiationLine.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'radiationLine.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'radiationLine.png'),'-dpng','-r300')
 
 genericBoxplot(algs,expInfo,classificationBoolean)
-% matlab2tikz('..\..\data\radiationBox.tex')
-print('..\..\data\radiationBox.eps','-depsc2')
-print('..\..\data\radiationBox.pdf','-dpdf')
-print('..\..\data\radiationBox.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'radiationBox.tex'))
+print(fullfile(pathToPlottingFolder,'radiationBox.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'radiationBox.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'radiationBox.png'),'-dpng','-r300')
 
 
 %% flowering line
 clear
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\02012018\Flowering_light_29_Dec_2017_17_21_24');
+
+[pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
+
+dataDump = load(fullfile(pathToDataFolder,'Flowering_light'));
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -38,21 +44,23 @@ hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
 genericLinePlot(algs,expInfo,classificationBoolean,'Flowering time model')
-% matlab2tikz('..\..\data\floweringLine.tex')
-print('..\..\data\floweringLine.eps','-depsc2')
-print('..\..\data\floweringLine.pdf','-dpdf')
-print('..\..\data\floweringLine.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'floweringLine.tex'))
+print(fullfile(pathToPlottingFolder,'floweringLine.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'floweringLine.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'floweringLine.png'),'-dpng','-r300')
 
 genericBoxplot(algs,expInfo,classificationBoolean)
-% matlab2tikz('..\..\data\floweringBox.tex')
-print('..\..\data\floweringBox.eps','-depsc2')
-print('..\..\data\floweringBox.pdf','-dpdf')
-print('..\..\data\floweringBox.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'floweringBox.tex'))
+print(fullfile(pathToPlottingFolder,'floweringBox.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'floweringBox.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'floweringBox.png'),'-dpng','-r300')
 
 %% network line
 clear
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\02012018\NetworkFlow_light_02_Jan_2018_10_00_12');
+[pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
+
+dataDump = load(fullfile(pathToDataFolder,'NetworkFlow_light'));
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -60,20 +68,22 @@ hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
 genericLinePlot(algs,expInfo,classificationBoolean,'Network flow model')
-% matlab2tikz('..\..\data\networkLine.tex')
-print('..\..\data\networkLine.eps','-depsc2')
-print('..\..\data\networkLine.pdf','-dpdf')
-print('..\..\data\networkLine.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'networkLine.tex'))
+print(fullfile(pathToPlottingFolder,'networkLine.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'networkLine.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'networkLine.png'),'-dpng','-r300')
 
 genericBoxplot(algs,expInfo,classificationBoolean)
-% matlab2tikz('..\..\data\networkBox.tex')
-print('..\..\data\networkBox.eps','-depsc2')
-print('..\..\data\networkBox.pdf','-dpdf')
-print('..\..\data\networkBox.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'networkBox.tex'))
+print(fullfile(pathToPlottingFolder,'networkBox.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'networkBox.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'networkBox.png'),'-dpng','-r300')
 %% boolean line
 clear
 
-dataDump = load('C:\Users\timo.deist\Documents\sim0sim1\data\02012018\Boolean_light_29_Dec_2017_17_21_27');
+[pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
+
+dataDump = load(fullfile(pathToDataFolder,'Boolean_light'));
 
 algs = dataDump.algs;
 expInfo = dataDump.expInfo;
@@ -81,19 +91,20 @@ hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
 
 genericLinePlot(algs,expInfo,classificationBoolean,'Boolean cell model')
-% matlab2tikz('..\..\data\booleanLine.tex')
-print('..\..\data\booleanLine.eps','-depsc2')
-print('..\..\data\booleanLine.pdf','-dpdf')
-print('..\..\data\booleanLine.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'booleanLine.tex'))
+print(fullfile(pathToPlottingFolder,'booleanLine.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'booleanLine.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'booleanLine.png'),'-dpng','-r300')
 
 genericBoxplot(algs,expInfo,classificationBoolean)
-% matlab2tikz('..\..\data\booleanBox.tex')
-print('..\..\data\booleanBox.eps','-depsc2')
-print('..\..\data\booleanBox.pdf','-dpdf')
-print('..\..\data\booleanBox.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'booleanBox.tex'))
+print(fullfile(pathToPlottingFolder,'booleanBox.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'booleanBox.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'booleanBox.png'),'-dpng','-r300')
 
 %% create legend
 createLegend()
-print('..\..\data\legend.eps','-depsc2')
-print('..\..\data\legend.pdf','-dpdf')
-print('..\..\data\legend.png','-dpng','-r300')
+% matlab2tikz(fullfile(pathToPlottingFolder,'legend.tex'))
+print(fullfile(pathToPlottingFolder,'legend.eps'),'-depsc2')
+print(fullfile(pathToPlottingFolder,'legend.pdf'),'-dpdf')
+print(fullfile(pathToPlottingFolder,'legend.png'),'-dpng','-r300')

@@ -2,7 +2,8 @@ clear
 clc
 tic
 % load libsvm
-addpath('C:\Users\timo.deist\Documents\sim0sim1\code\matlab\libsvm-3.22\windows')
+[pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
+addpath(pathToLibSvmFolder)
 %% read in data
 
 %read full similarity matrix
@@ -43,10 +44,12 @@ timeStamp = datestr(timeStamp);
 timeStamp = strrep(timeStamp,':','_');
 timeStamp = strrep(timeStamp,'-','_');
 timeStamp = strrep(timeStamp,' ','_');
-pathToMatFile = ['../../data/radiation_badKernel_' timeStamp];
+% pathToMatFile = fullfile(pathToDataFolder,['radiation_badKernel_' timeStamp]);
+pathToMatFile = fullfile(pathToDataFolder,'radiation_badKernel');
 save(pathToMatFile)
 
-pathToMatFileLight = ['../../data/radiation_badKernel_light_' timeStamp];
+% pathToMatFileLight = fullfile(pathToDataFolder,['radiation_badKernel_light_' timeStamp]);
+pathToMatFileLight = fullfile(pathToDataFolder,'radiation_badKernel_light');
 
 for i_reps = 1:numeroReps
     % remove bestModel field to decrease .mat file size
