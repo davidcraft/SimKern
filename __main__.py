@@ -58,7 +58,7 @@ def main():
         if len(arguments) is not 5:
             log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
                      "a file Sim0Output.csv file expressing the third party program results of SIM0, the accompanying "
-                     "Sim0GenomesMatrix file., 'REGRESSION' or 'CLASSIFICATION' for the type of analysis, and a list of"
+                     "Sim0GenomesMatrix file, 'REGRESSION' or 'CLASSIFICATION' for the type of analysis, and a list of"
                      "indices for categorical features in the Sim0GenomesMatrix.")
             return
         output_file = arguments[1]
