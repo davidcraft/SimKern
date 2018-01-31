@@ -1,5 +1,0 @@
-run with e.g.
-python3.5 __main__.py 0 /home/dcraft/NetworkFlowAndrew/GenomeFiles/SIM0MasterFile.octave 500 /home/dcraft/NetworkFlowAndrew/
-
-python3.5 __main__.py 1 /home/dcraft/NetworkFlowAndrew/GenomeFiles/SIM1MasterFileVECTOR.octave 500 10 /home/dcraft/NetworkFlowAndrew/
-
