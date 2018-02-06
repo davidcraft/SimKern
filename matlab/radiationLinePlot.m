@@ -1,4 +1,4 @@
-function radiationLinePlot(algs,algsBad,expInfo,classificationBoolean)
+function radiationLinePlot(algs,algsBad,expInfo,classificationBoolean,titleName)
 myFontsize = 12;
 myLinewidth = 3;
 for i_algs = 1:length(algs)
@@ -153,6 +153,11 @@ text(400,0.825,{'\textbf{Higher}' '\textbf{quality}' '\textbf{kernel}'},'Color',
     'FontWeight','normal',...
     'FontSize',2/3 * myFontsize,...
     'FontName','Times')
+
+%% add model name
+
+text(250,0.6,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
+
 
 %% report best models
 disp('-------------')

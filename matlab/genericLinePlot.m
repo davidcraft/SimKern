@@ -116,9 +116,26 @@ else
 end
 
 % add model name
+if strcmp(titleName,'Flowering time model')
+horzPosTitle = 100;
+vertPosTitle = 0.3;
+elseif strcmp(titleName,'Boolean cell model')
+horzPosTitle = 200;
+vertPosTitle = 0.75;
+elseif strcmp(titleName,'Network flow model (easier kernel)')
+horzPosTitle = 12;
+vertPosTitle = 0.75;
+elseif strcmp(titleName,'Network flow model (harder kernel)')
+horzPosTitle = 12;
+vertPosTitle = 0.75;
+else
+    error('Unknown title')
+end
 % curYLim = ylim;
-% vertPosTitle = 0.99 * curYLim(2);
-% text(5.0,vertPosTitle,titleName,'Color','k','FontSize',14,'FontWeight','bold','BackgroundColor',[2/3 2/3 2/3])
+% curXLim = xlim;
+% horzPosTitle = 0.4 * curXLim(2);
+% vertPosTitle = curYLim(1) + 0.25*(curYLim(2) - curYLim(1));
+text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
 %% report best models
 disp('-------------')
 disp([titleName ' line plot:'])

@@ -1,4 +1,4 @@
-function genericBoxplot(algs,expInfo,classificationBoolean)
+function genericBoxplot(algs,expInfo,classificationBoolean,titleName)
 withNn = 1;
 
 myFontsize = 12;
@@ -31,8 +31,13 @@ myDarkGrey = [50 50 50] ./255;
 myLightGrey = [150 150 150] ./255;
 myGrey = [125 125 125] ./255;
 
+% % original color
 myRed  = [217 95 2] ./255;
 myGreen = [27 158 119] ./255;
+
+% dlab color (color picked from webpage)
+% myRed  = [242 151 44] ./255;
+% myGreen = [27 70 132] ./255;
 
 %% boxplot figure radiation
 % compute equal spacing between algorithm bars within a subsampling
@@ -247,8 +252,27 @@ for i_subsamples = 1:(numeroSubsamples - 1)
     end
     line([midBetweenBoxes midBetweenBoxes],[curYLim(1) curYLim(2)],'Color','k')
 end
-% add model name
-% curYLim = ylim;
-% vertPosTitle = 0.99 * curYLim(2);
-% text(1.0,vertPosTitle,'Cell irradiation model','Color','k','FontSize',14,'FontWeight','bold')
+%% add model name
+curYLim = ylim;
+if strcmp(titleName,'Radiation model')
+horzPosTitle = 1;
+vertPosTitle = 0.85;   
+elseif strcmp(titleName,'Flowering time model')
+% horzPosTitle = 1;
+% vertPosTitle = 0.9;
+horzPosTitle = 4.5;
+vertPosTitle = -0.2;
+elseif strcmp(titleName,'Boolean cell model')
+horzPosTitle = 4.70;
+vertPosTitle = 0.625;
+elseif strcmp(titleName,'Network flow model (easier kernel)')
+horzPosTitle = 3.75;
+vertPosTitle = 0.5;
+elseif strcmp(titleName,'Network flow model (harder kernel)')
+horzPosTitle = 3.75;
+vertPosTitle = 0.5;
+else
+    error('Unknown title')
+end
+text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
 end
