@@ -129,26 +129,26 @@ for i_subsampling = 1:numel(subsamplingRatios)
     end
     
     nn.bestModel{i_subsampling} = subsampledTrainData;
-    [nn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,nn.bestModel{i_subsampling},'nn',classificationBoolean);
+    [nn.perfMetric(i_subsampling),nn.predictions{i_subsampling}] = predictTestData(subsampledTestData,nn.bestModel{i_subsampling},'nn',classificationBoolean);
     disp(['NN test ' perfMetricString ' = ' num2str(nn.perfMetric(i_subsampling)) '.' ])
     
-    [rf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,rf.bestModel{i_subsampling},'rf',classificationBoolean);
+    [rf.perfMetric(i_subsampling),rf.predictions{i_subsampling}] = predictTestData(subsampledTestData,rf.bestModel{i_subsampling},'rf',classificationBoolean);
     disp(['RF test ' perfMetricString ' = ' num2str(rf.perfMetric(i_subsampling)) '.' ])
     
-    [linSvm.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,linSvm.bestModel{i_subsampling},'linSvm',classificationBoolean);
+    [linSvm.perfMetric(i_subsampling),linSvm.predictions{i_subsampling}] = predictTestData(subsampledTestData,linSvm.bestModel{i_subsampling},'linSvm',classificationBoolean);
     disp(['linSVM test ' perfMetricString ' = ' num2str(linSvm.perfMetric(i_subsampling)) '.' ])
     
-    [rbfSvm.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,rbfSvm.bestModel{i_subsampling},'rbfSvm',classificationBoolean);
+    [rbfSvm.perfMetric(i_subsampling),rbfSvm.predictions{i_subsampling}] = predictTestData(subsampledTestData,rbfSvm.bestModel{i_subsampling},'rbfSvm',classificationBoolean);
     disp(['rbfSVM test ' perfMetricString ' = ' num2str(rbfSvm.perfMetric(i_subsampling)) '.' ])
     
-    [ckSvm.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckSvm.bestModel{i_subsampling},'ckSvm',classificationBoolean);
+    [ckSvm.perfMetric(i_subsampling),ckSvm.predictions{i_subsampling}] = predictTestData(subsampledTestData,ckSvm.bestModel{i_subsampling},'ckSvm',classificationBoolean);
     disp(['ckSVM test ' perfMetricString ' = ' num2str(ckSvm.perfMetric(i_subsampling)) '.' ])
     
-    [ckRf.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckRf.bestModel{i_subsampling},'ckRf',classificationBoolean);
+    [ckRf.perfMetric(i_subsampling),ckRf.predictions{i_subsampling}] = predictTestData(subsampledTestData,ckRf.bestModel{i_subsampling},'ckRf',classificationBoolean);
     disp(['ckRF test ' perfMetricString ' = ' num2str(ckRf.perfMetric(i_subsampling)) '.' ])
     
     ckNn.bestModel{i_subsampling} = subsampledTrainData;
-    [ckNn.perfMetric(i_subsampling)] = predictTestData(subsampledTestData,ckNn.bestModel{i_subsampling},'ckNn',classificationBoolean);
+    [ckNn.perfMetric(i_subsampling),ckNn.predictions{i_subsampling}] = predictTestData(subsampledTestData,ckNn.bestModel{i_subsampling},'ckNn',classificationBoolean);
     disp(['ckNN test ' perfMetricString ' = ' num2str(ckNn.perfMetric(i_subsampling)) '.' ])
     
     expInfo.numeroTrainSamples(i_subsampling) = numel(subsampledTrainData.outcome);

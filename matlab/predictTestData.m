@@ -1,4 +1,4 @@
-function [perfMetric] = predictTestData(testData,bestModel,modelType,classificationBoolean)
+function [perfMetric,predictions] = predictTestData(testData,bestModel,modelType,classificationBoolean)
 
 switch modelType
     case {'linSvm','rbfSvm'}
