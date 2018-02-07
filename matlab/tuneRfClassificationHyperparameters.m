@@ -1,4 +1,4 @@
-function [bestModel,bestM,bestMaxSplits,bestAccuracy] = tuneRfClassificationHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
+function [bestModel,bestM,bestMaxSplits,bestAccuracy,trainPredictions,validationPredictions] = tuneRfClassificationHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
 numCategories = 25;
 [mGrid,maxSplitsGrid] = ndgrid(mValues,maxSplitsValues);
 for i_m = 1:numel(mValues)
@@ -9,7 +9,7 @@ for i_m = 1:numel(mValues)
         rfModel{i_m,i_maxSplits} = TreeBagger(numeroTrees,trainData.features,trainData.outcome,'Method','classification', ...
             'NumPredictorsToSample',mGrid(i_m,i_maxSplits),'MaxNumSplits',maxSplitsGrid(i_m,i_maxSplits),'CategoricalPredictors',categoricalIndices,'MaxNumCategories',numCategories);
         
-        %use RF for prediction for testing set:
+        %use RF for prediction for validation set:
         baggerPredictions = predict(rfModel{i_m,i_maxSplits},validationData.features);
         predictions{i_m,i_maxSplits} = cellfun(@str2num,baggerPredictions);
         %compute performance metric
@@ -19,9 +19,14 @@ for i_m = 1:numel(mValues)
 end
 % find model with best performance metric
 [bestAccuracy,maxInd] = max(accuracy(:));
-% return best C & model
+% return best C & model & validation predictions for selected model
 bestM = mGrid(maxInd);
 bestMaxSplits = maxSplitsGrid(maxInd);
 bestModel = rfModel{maxInd};
+validationPredictions = predictions{maxInd};
+
+% compute train predictions for selected model
+baggerTrainPredictions = predict(bestModel,trainData.features);
+trainPredictions = cellfun(@str2num,baggerTrainPredictions);
 
 end

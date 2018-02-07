@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestEpsilon,bestRSquared] = tuneLinSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
+function [bestModel,bestC,bestEpsilon,bestRSquared,trainPredictions,validationPredictions] = tuneLinSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
 
 [cGrid,epsilonGrid] = ndgrid(cValues,epsilonValues);
 for i_c = 1:numel(cValues)
@@ -20,5 +20,9 @@ end
 bestC = cGrid(maxInd);
 bestEpsilon = epsilonGrid(maxInd);
 bestModel = svmModel{maxInd};
+validationPredictions = predictions{maxInd};
+
+% compute train predictions for selected model
+[trainPredictions] = svmpredict(zeros(size(trainData.outcome,1),size(trainData.outcome,2)),trainData.dummycodedFeatures,bestModel,'-q');
 
 end

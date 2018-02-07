@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestEpsilon,bestRSquared] = tuneCkSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
+function [bestModel,bestC,bestEpsilon,bestRSquared,trainPredictions,validationPredictions] = tuneCkSvmRegressionHyperparameters(trainData,validationData,cValues,epsilonValues)
 numeroTrainSamples = numel(trainData.outcome);
 numeroValidationSamples = numel(validationData.outcome);
 [cGrid,epsilonGrid] = ndgrid(cValues,epsilonValues);
@@ -21,5 +21,8 @@ end
 bestC = cGrid(maxInd);
 bestEpsilon = epsilonGrid(maxInd);
 bestModel = customKernelSvmModel{maxInd};
+validationPredictions = predictions{maxInd};
 
+% compute train predictions for selected model
+[trainPredictions] = svmpredict(zeros(size(trainData.outcome,1),size(trainData.outcome,2)),[(1:numeroTrainSamples)' trainData.sm],bestModel,'-q');
 end

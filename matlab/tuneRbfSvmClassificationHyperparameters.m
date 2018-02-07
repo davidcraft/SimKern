@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestGamma,bestAccuracy] = tuneRbfSvmClassificationHyperparameters(trainData,validationData,cValues,gammaValues)
+function [bestModel,bestC,bestGamma,bestAccuracy,trainPredictions,validationPredictions] = tuneRbfSvmClassificationHyperparameters(trainData,validationData,cValues,gammaValues)
 
 [cGrid,gammaGrid] = ndgrid(cValues,gammaValues);
 for i_c = 1:numel(cValues)
@@ -21,5 +21,8 @@ end
 bestC = cGrid(maxInd);
 bestGamma = gammaGrid(maxInd);
 bestModel = svmModel{maxInd};
+validationPredictions = predictions{maxInd};
 
+% compute train predictions for selected model
+[trainPredictions] = svmpredict(zeros(size(trainData.outcome,1),size(trainData.outcome,2)),trainData.dummycodedFeatures,bestModel,'-q');
 end

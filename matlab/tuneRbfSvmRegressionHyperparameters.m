@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestGamma,bestEpsilon,bestRSquared] = tuneRbfSvmRegressionHyperparameters(trainData,validationData,cValues,gammaValues,epsilonValues)
+function [bestModel,bestC,bestGamma,bestEpsilon,bestRSquared,trainPredictions,validationPredictions] = tuneRbfSvmRegressionHyperparameters(trainData,validationData,cValues,gammaValues,epsilonValues)
 
 [cGrid,gammaGrid,epsilonGrid] = ndgrid(cValues,gammaValues,epsilonValues);
 for i_c = 1:numel(cValues)
@@ -23,5 +23,8 @@ bestC = cGrid(maxInd);
 bestGamma = gammaGrid(maxInd);
 bestEpsilon = epsilonGrid(maxInd);
 bestModel = svmModel{maxInd};
+validationPredictions = predictions{maxInd};
 
+% compute train predictions for selected model
+[trainPredictions] = svmpredict(zeros(size(trainData.outcome,1),size(trainData.outcome,2)),trainData.dummycodedFeatures,bestModel,'-q');
 end

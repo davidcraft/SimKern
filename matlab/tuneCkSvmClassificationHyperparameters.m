@@ -1,4 +1,4 @@
-function [bestModel,bestC,bestAccuracy] = tuneCkSvmClassificationHyperparameters(trainData,validationData,cValues)
+function [bestModel,bestC,bestAccuracy,trainPredictions,validationPredictions] = tuneCkSvmClassificationHyperparameters(trainData,validationData,cValues)
 numeroTrainSamples = numel(trainData.outcome);
 numeroValidationSamples = numel(validationData.outcome);
 for i_c = 1:numel(cValues)
@@ -18,5 +18,9 @@ end
 % return best C & model
 bestC = cValues(maxInd);
 bestModel = customKernelSvmModel{maxInd};
+validationPredictions = predictions{maxInd};
+
+% compute train predictions for selected model
+[trainPredictions] = svmpredict(zeros(size(trainData.outcome,1),size(trainData.outcome,2)),[(1:numeroTrainSamples)' trainData.sm],bestModel,'-q');
 
 end

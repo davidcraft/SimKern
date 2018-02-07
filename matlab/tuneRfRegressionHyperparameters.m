@@ -1,4 +1,4 @@
-function [bestModel,bestM,bestMaxSplits,bestRSquared] = tuneRfRegressionHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
+function [bestModel,bestM,bestMaxSplits,bestRSquared,trainPredictions,validationPredictions] = tuneRfRegressionHyperparameters(trainData,validationData,mValues,maxSplitsValues,categoricalIndices,numeroTrees)
 numCategories = 25;
 [mGrid,maxSplitsGrid] = ndgrid(mValues,maxSplitsValues);
 for i_m = 1:numel(mValues)
@@ -9,7 +9,7 @@ for i_m = 1:numel(mValues)
         rfModel{i_m,i_maxSplits} = TreeBagger(numeroTrees,trainData.features,trainData.outcome,'Method','regression', ...
             'NumPredictorsToSample',mGrid(i_m,i_maxSplits),'MaxNumSplits',maxSplitsGrid(i_m,i_maxSplits),'CategoricalPredictors',categoricalIndices,'MaxNumCategories',numCategories);
         
-        %use RF for prediction for testing set:
+        %use RF for prediction for validation set:
         baggerPredictions = predict(rfModel{i_m,i_maxSplits},validationData.features);
         predictions{i_m,i_maxSplits} = baggerPredictions;
         %compute performance metric
@@ -22,5 +22,9 @@ end
 bestM = mGrid(maxInd);
 bestMaxSplits = maxSplitsGrid(maxInd);
 bestModel = rfModel{maxInd};
+validationPredictions = predictions{maxInd};
 
+% compute train predictions for selected model
+baggerTrainPredictions = predict(bestModel,trainData.features);
+trainPredictions = baggerTrainPredictions;
 end
