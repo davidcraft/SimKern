@@ -6,6 +6,7 @@ GenomeFiles/
 #--------------------------Generic Files & Folders ------------------------
 # Matlab
 matlab/loadMyPaths.m
+matlab/axxy2figxy.m
 # MATLAB auto save files
 matlab/*.asv
 
