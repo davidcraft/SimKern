@@ -1,4 +1,4 @@
-function radiationLinePlot(algs,algsBad,expInfo,classificationBoolean,titleName)
+function radiationLinePlot(algs,algsBad,expInfo,classificationBoolean,titleName,fig2Boolean)
 myFontsize = 12;
 myLinewidth = 3;
 for i_algs = 1:length(algs)
@@ -81,11 +81,14 @@ else
 end
 
 %% line figure radiation
+if ~fig2Boolean
 figure('Units','inches',...
     'Position',[0 0 4 4],...
     'PaperPositionMode','auto')
+end
 hold on
 grid on
+
 a = median(bestNaive);
 b = median(bestSk);
 c = median(bestSkBad);
@@ -155,8 +158,15 @@ text(400,0.825,{'\textbf{Higher}' '\textbf{quality}' '\textbf{kernel}'},'Color',
     'FontName','Times')
 
 %% add model name
-
-text(250,0.6,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
+if fig2Boolean
+[myX,myY] = axxy2figxy(gca,300,0.6);
+else
+[myX,myY] = axxy2figxy(gca,250,0.6);    
+end
+dim = [myX myY 0.001 0.001];
+annotation('textbox',dim,'String',titleName,'FitBoxToText','on', ...
+             'BackgroundColor',[5/6 5/6 5/6],'Interpreter','Latex','Color',[0 0 0]);
+% text(250,0.6,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
 
 
 %% report best models

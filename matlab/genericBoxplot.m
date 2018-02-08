@@ -1,4 +1,4 @@
-function genericBoxplot(algs,expInfo,classificationBoolean,titleName)
+function genericBoxplot(algs,expInfo,classificationBoolean,titleName,fig2Boolean)
 withNn = 1;
 
 myFontsize = 12;
@@ -65,12 +65,13 @@ if withNn == 1
 else
     plotLabels = [linSvmLabels rbfSvmLabels rfLabels skSvmLabels skRfLabels skNnLabels];
 end
-figure('Units','inches',...
-    'Position',[0 0 8 4],...
-    'PaperPositionMode','auto')
+if ~fig2Boolean
+    figure('Units','inches',...
+        'Position',[0 0 8 4],...
+        'PaperPositionMode','auto')
+end
 hold on
 grid on
-
 if withNn == 1
     fh = boxplot([nnResult linSvmResult rbfSvmResult rfResult skSvmResult skRfResult skNnResult],...
         'FactorSeparator',1,...
@@ -165,7 +166,7 @@ end
 firstOutlierInd = numeroAlgs * numeroSubsamples + 1;
 numeroOutliersHandles = numeroAlgs * numeroSubsamples;
 for i_algo = 1:numeroAlgs % the number of algorithms per subsample
-        [myHandles((firstOutlierInd) + [(i_algo- 1):numeroAlgs:(numeroOutliersHandles - 1)]).MarkerEdgeColor] = deal(outlierColors(i_algo,:));
+    [myHandles((firstOutlierInd) + [(i_algo- 1):numeroAlgs:(numeroOutliersHandles - 1)]).MarkerEdgeColor] = deal(outlierColors(i_algo,:));
 end
 
 if withNn == 1
@@ -173,14 +174,14 @@ if withNn == 1
 else
     subsamplingMidpoint = (x(3)+x(4))/2;
 end
-    
+
 
 
 curYLim = ylim;
 
-% make invisible title to get title height chosen by Matlab. 
+% make invisible title to get title height chosen by Matlab.
 % manually setting the height leads to inconsistent results for different datasets
-title('') 
+title('')
 titleHandle = get(gca,'title');
 vertPos = 0.005 + titleHandle.Position(2);
 % vertPos = 1.015 * curYLim(2);
@@ -255,24 +256,49 @@ end
 %% add model name
 curYLim = ylim;
 if strcmp(titleName,'Radiation model')
-horzPosTitle = 1;
-vertPosTitle = 0.85;   
+    % horzPosTitle = 1;
+    % vertPosTitle = 0.85;
+    horzPosTitle = 1;
+    vertPosTitle = 0.875;
 elseif strcmp(titleName,'Flowering time model')
-% horzPosTitle = 1;
-% vertPosTitle = 0.9;
-horzPosTitle = 4.5;
-vertPosTitle = -0.2;
+    % horzPosTitle = 1;
+    % vertPosTitle = 0.9;
+    horzPosTitle = 4.5;
+    vertPosTitle = 0;
 elseif strcmp(titleName,'Boolean cell model')
-horzPosTitle = 4.70;
-vertPosTitle = 0.625;
+    horzPosTitle = 4.70;
+    vertPosTitle = 0.65;
 elseif strcmp(titleName,'Network flow model (easier kernel)')
-horzPosTitle = 3.75;
-vertPosTitle = 0.5;
+    horzPosTitle = 3.75;
+    vertPosTitle = 0.51;
 elseif strcmp(titleName,'Network flow model (harder kernel)')
-horzPosTitle = 3.75;
-vertPosTitle = 0.5;
+    % horzPosTitle = 3.75;
+    % vertPosTitle = 0.5;
+    horzPosTitle = 3.75;
+    vertPosTitle = 0.51;
 else
     error('Unknown title')
 end
-text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
+
+[myX,myY] = axxy2figxy(gca,horzPosTitle,vertPosTitle);
+dim = [myX myY 0.001 0.001];
+annotation('textbox',dim,'String',titleName,'FitBoxToText','on', ...
+    'BackgroundColor',[5/6 5/6 5/6],'Interpreter','Latex','Color',[0 0 0]);
+% text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
+%% add legend if it is figure2
+if fig2Boolean
+%     hold on
+    h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myDarkGrey,'MarkerFaceColor',myDarkGrey);
+    h(2) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
+    h(3) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
+    h(4) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGrey,'MarkerFaceColor',myGrey);
+    % h(1) = scatter(1,1,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
+    % h(2) = scatter(2,2,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
+    % h(3) = scatter(3,3,'o','filled','MarkerEdgeColor',myGrey,'MarkerFaceColor',myGrey);
+%     axis off
+    myLegend = legend(h,'NN without prior knowledge','No prior knowledge','With prior knowledge','NN with prior knowledge','Location','southwest');
+    myLegend = legend(h,'Standard NN','Standard ML','SimKern ML','SimKern NN','Location','southeast');
+    set(myLegend,'Interpreter','latex');
+end
+
 end

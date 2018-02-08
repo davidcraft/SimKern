@@ -1,4 +1,4 @@
-function genericLinePlot(algs,expInfo,classificationBoolean,titleName)
+function genericLinePlot(algs,expInfo,classificationBoolean,titleName,fig2Boolean)
 myFontsize = 12;
 myLinewidth = 3;
 for i_algs = 1:length(algs)
@@ -61,9 +61,11 @@ else
 end
 
 %% line figure radiation
+if ~fig2Boolean
 figure('Units','inches',...
     'Position',[0 0 4 4],...
     'PaperPositionMode','auto')
+end
 hold on
 grid on
 a = median(bestNaive);
@@ -117,16 +119,26 @@ end
 
 % add model name
 if strcmp(titleName,'Flowering time model')
-horzPosTitle = 100;
-vertPosTitle = 0.3;
+% horzPosTitle = 100;
+% vertPosTitle = 0.3;
+    if fig2Boolean
+        horzPosTitle = 150;
+    else
+        horzPosTitle = 100;
+    end
+vertPosTitle = 0.5;
 elseif strcmp(titleName,'Boolean cell model')
 horzPosTitle = 200;
 vertPosTitle = 0.75;
 elseif strcmp(titleName,'Network flow model (easier kernel)')
-horzPosTitle = 12;
+% horzPosTitle = 12;
+% vertPosTitle = 0.75;
+horzPosTitle = 15;
 vertPosTitle = 0.75;
 elseif strcmp(titleName,'Network flow model (harder kernel)')
-horzPosTitle = 12;
+% horzPosTitle = 12;
+% vertPosTitle = 0.75;
+horzPosTitle = 15;
 vertPosTitle = 0.75;
 else
     error('Unknown title')
@@ -135,7 +147,13 @@ end
 % curXLim = xlim;
 % horzPosTitle = 0.4 * curXLim(2);
 % vertPosTitle = curYLim(1) + 0.25*(curYLim(2) - curYLim(1));
-text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
+[myX,myY] = axxy2figxy(gca,horzPosTitle,vertPosTitle);
+dim = [myX myY 0.001 0.001];
+annotation('textbox',dim,'String',titleName,'FitBoxToText','on', ...
+             'BackgroundColor',[5/6 5/6 5/6],'Interpreter','Latex','Color',[0 0 0]);
+
+
+% text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
 %% report best models
 disp('-------------')
 disp([titleName ' line plot:'])
