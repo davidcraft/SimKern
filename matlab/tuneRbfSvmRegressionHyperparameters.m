@@ -6,7 +6,7 @@ for i_c = 1:numel(cValues)
         for i_epsilon = 1:numel(epsilonValues)
             
             % trainSvm & store model
-            inputString = ['-s 0 -t 2 -c ' num2str(cGrid(i_c,i_gamma)) ' -g ' num2str(gammaGrid(i_c,i_gamma)) ' -p ' num2str(epsilonGrid(i_c,i_gamma)) ' -q'];
+            inputString = ['-s 3 -t 2 -c ' num2str(cGrid(i_c,i_gamma,i_epsilon)) ' -g ' num2str(gammaGrid(i_c,i_gamma,i_epsilon)) ' -p ' num2str(epsilonGrid(i_c,i_gamma,i_epsilon)) ' -q'];
             [svmModel{i_c,i_gamma,i_epsilon}] = svmtrain(trainData.outcome, trainData.dummycodedFeatures, inputString);
             % testSvm on validation data
             [predictions{i_c,i_gamma,i_epsilon}] = svmpredict(zeros(size(validationData.outcome,1),size(validationData.outcome,2)),validationData.dummycodedFeatures,svmModel{i_c,i_gamma,i_epsilon},'-q');

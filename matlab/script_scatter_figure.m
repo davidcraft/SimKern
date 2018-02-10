@@ -33,9 +33,9 @@ maxVal = max([x; standardYLeft; simkernYLeft; standardYRight; simkernYRight]);
 
 
 disp(['LEFT R2 for linSVM: ' num2str(algs(1).linSvm.perfMetric(subsamplingIndLeft))])
-disp(['LEFT R2 for linSVM: ' num2str(algs(1).skSvm.perfMetric(subsamplingIndLeft))])
+disp(['LEFT R2 for skSVM: ' num2str(algs(1).skSvm.perfMetric(subsamplingIndLeft))])
 
-disp(['RIGHT R2 for skSVM: ' num2str(algs(1).linSvm.perfMetric(subsamplingIndRight))])
+disp(['RIGHT R2 for linSVM: ' num2str(algs(1).linSvm.perfMetric(subsamplingIndRight))])
 disp(['RIGHT R2 for skSVM: ' num2str(algs(1).skSvm.perfMetric(subsamplingIndRight))])
 
 

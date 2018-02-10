@@ -26,13 +26,13 @@ outcome = y';
 
 %% experiment parameters
 splitRatios = [0.5 0.25 0.25];
-subsamplingRatios = [0.1 0.25 0.5 0.75 1];
+subsamplingRatios = [0.05 0.1 0.3 0.6 1];
 categoricalIndices = false(1,size(unstandardizedFeatures,2));
 categoricalIndices(1) = true;
 debuggingBoolean = false; % set to true if you want to use fewer hyperparameters to speed up the process
 classificationBoolean = false;
 numeroTrees = 100; % number of trees for all RFs
-numeroReps = 5;
+numeroReps = 10;
 randSeedSplitting = 1:numeroReps;
 randSeedSubsampling = 100 + reshape(1:(numeroReps*numel(subsamplingRatios)),numel(subsamplingRatios),numeroReps)';
 %% the actual experiment

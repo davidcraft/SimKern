@@ -65,10 +65,12 @@ for i_subsampling = 1:numel(subsamplingRatios)
     else
         %% hyperparameters
         % all svms
-        cValues = 10.^[-12:2:12];
-        epsilonValues = [0.000001 0.00001 0.0001 0.001 0.01 0.05 0.1 0.15 0.25 0.5];
+        cValues = 10.^[-12:1:12];
+        %         epsilonValues = [10.^[-8:1:-2] 0.05 0.1 0.15 0.25 0.5 0.75 1];
+%         epsilonValues = [10.^[-3:1:-2] 0.1:0.1:1 1];
+        epsilonValues = [10.^[-5:1:-1] 0.25 0.5 0.75 1];
         % rbf svm
-        gammaValues = 10.^[-15:2:1];
+        gammaValues = 10.^[-15:1:1];
         % rfs (rf and custom kernel rf)
         n = numel(subsampledTrainData.outcome); % number of training samples
         p = size(subsampledTrainData.features,2); %number of features
