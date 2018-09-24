@@ -50,13 +50,13 @@ take a Matlab or R file representing a model of some kind of system which return
 a process within a cell or a flowering model. This file should have declarations of variables and values within it. For
 example, in Matlab the line:
 ```
-	global_parameter=0.1;
+global_parameter=0.1;
 ```
 would be assigning a value of 0.1 to the variable global_parameter. If global_parameter is a value that could be
 important in determining the scalar output of the final result of a file, or would make a good candidate for a feature
 in a machine learning model, it can be automatically permuted by using some rendition of the following syntax:
 ```
-    global_parameter=$gauss(.1,.01),name=global_param$;
+global_parameter=$gauss(.1,.01),name=global_param$;
 ```
 The explicit value of this variable is instead assigned to a range of variables. In this case, it's a Gaussian spread
 with a mean of 0.1 and a standard deviation of 0.01.
@@ -77,16 +77,28 @@ The supported probability distributions and their parameters are given below:
 These files also support the syntax $val$ and $val,name=coefficient_name$, both of which default to a
 gaussian distribution with std.deviation .1. For example:
 
-`$5$` is the same as writing: `$gauss(5,.1),name=coefficient1$`
-`$5,name=gaussian_coefficient$` is the same as writing: `$gauss(5,.1),name=gaussian_coefficient$`
+```
+$5$
+``` 
+is the same as writing: 
+```
+$gauss(5,.1),name=coefficient1$
+```
+and
+```
+$5,name=gaussian_coefficient$
+``` 
+is the same as writing: 
+```
+$gauss(5,.1),name=gaussian_coefficient$
+```
 
 Once these important variables have had their explicit declarations replaced with this "dollar sign" syntax, save the
 file in one of the following formats:
 
-".R" for R files
-".m" for Matlab files
-".octave" for Octave files
-(.m files work in Octave, but the file extension allows the program to know which third party program to call).
+* ".R" for R files
+* ".m" for Matlab files
+* ".octave" for Octave files (.m files work in Octave, but the file extension allows the program to know which third party program to call).
 
 
 Number of genomes to create:
@@ -108,14 +120,16 @@ classifiers) are supported.
 Outputs:
 SIM0 will create 2K + 2 files, where K is the number of genomes. For each genome there is a version of the original SIM0
 master file, with the variables replaced by actual values. So for example:
-    ```
-    global_parameter=$gauss(.1,.01),name=global_param$;
-    ```
+
+```
+global_parameter=$gauss(.1,.01),name=global_param$;
+```
 
 might be replaced with:
-    ```
-    global_parameter=0.105;
-    ```
+
+```
+global_parameter=0.105;
+```
 
 since 0.105 is within reason for the Gaussian distribution with a mean of .1 and a standard deviation of .01. Every
 $$ syntax in the original file will be replaced with values according to the appropriate distribution, making a file
@@ -135,16 +149,16 @@ permuted with the $$ syntax, and the original variables that were replaced with 
 SIM0. To do this, load genome_key1 at the top of the file so all those values are defined in scope. Then just replace
 the original $$ syntax with the originally chosen variable names. For example:
 ```
-    global_parameter=$gauss(.1,.01),name=global_param$;
+global_parameter=$gauss(.1,.01),name=global_param$;
 ```
 would be replaced with:
 ```
-    global_parameter=global_param;
+global_parameter=global_param;
 ```
 where global_param is already defined because genome_key1 was loaded at the top of the file. Then just permute a
 separate set of variables.
 ```
-    other_coefficient=$discrete(1,2,3,4),name=discrete$
+other_coefficient=$discrete(1,2,3,4),name=discrete$
 ```
 All of the same $$ syntaxes and file types that were supported in SIM0 are also supported for SIM1.
 
