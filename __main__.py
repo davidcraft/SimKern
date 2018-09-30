@@ -57,7 +57,7 @@ def main():
         log.info("Machine Learning on SIM0 data requested...")
         if len(arguments) is not 5:
             log.info("Program expects 5 arguments: an integer expressing the desired action from the main menu, "
-                     "a file Sim0Output.csv file expressing the third party program results of SIM0, the accompanying "
+                     "a Sim0Output.csv file expressing the third party program results of SIM0, the accompanying "
                      "Sim0GenomesMatrix file, 'REGRESSION' or 'CLASSIFICATION' for the type of analysis, and a list of"
                      "indices for categorical features in the Sim0GenomesMatrix.")
             return
@@ -70,7 +70,7 @@ def main():
         log.info("Machine Learning on SIM1 data requested...")
         if len(arguments) is not 4:
             log.info("Program expects 4 arguments: an integer expressing the desired action from the main menu, "
-                     "a file Sim0Output.csv file expressing the third party program results of SIM0, "
+                     "a Sim0Output.csv file expressing the third party program results of SIM0, "
                      "a Sim1SimilarityMatrix.csv file, and 'REGRESSION' or 'CLASSIFICATION' for the type of analysis.")
             return
         output_file = arguments[1]
@@ -81,7 +81,7 @@ def main():
         log.info("Machine Learning on both SIM0 and SIM1 data requested...")
         if len(arguments) is not 6:
             log.info("Program expects 6 arguments: an integer expressing the desired action from the main menu, "
-                     "a file Sim0Output.csv file expressing the third party program results of SIM0 ,the accompanying "
+                     "a Sim0Output.csv file expressing the third party program results of SIM0, the accompanying "
                      "Sim0GenomesMatrix file, a Sim1SimilarityMatrix.csv file, 'REGRESSION' or 'CLASSIFICATION' "
                      "for the type of analysis, and a list of indices for categorical features in "
                      "the Sim0GenomesMatrix.")

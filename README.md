@@ -4,7 +4,7 @@ This program is designed to simulate permutations of genomes and analyze the res
 This system can receive a file containing a series of differential equations, a network flow model, or a boolean
 network which represents a cell or some other complex system. Once the permutations on this file are created, they are
 run through a third party program (Matlab, Octave, or R) to record a scalar result for each permutation to be used in
-standard machine learning models. This process is known as SIM0 and the permutations are referred to as genomes.
+standard machine learning models. This process is known as SIM0 and the permutations are referred to as <b>genomes</b>.
 
 In a process known as SIM1, a separate set of permutations can be run on each of the genomes and after analyzing the
 outputs, a similarity score can be determined between genomes. A similarity matrix is then built up, making it eligible
@@ -102,7 +102,7 @@ file in one of the following formats:
 
 
 Number of genomes to create:
-This value (sometimes referred to as K) is the number of permutations to run on the SIM0 master file.
+This value (referred to as K) is the number of permutations to run on the SIM0 master file.
 
 
 Existing output folder:
@@ -186,15 +186,13 @@ classifiers) are supported as well as "vector" for vector response types from a 
 
 
 Outputs:
-SIM0 will create R\*K + 1 files, where R is the number of trials and K is the number of genomes. Similar to SIM0 all
-$$ have been replaced with real values, but now "genome_key1" has been replaced with the "genome_key2" all the way up
-to k. All of these R*K files are created and run automatically, and their results used to create a similarity matrix.
-For each genome, the similarity is measured by how many of the R trials return the same result. So if R is 10 and 7
-of the trials return the same result when comparing two different genomes, the similarity score for those two genomes
-will be 0.7. The similarity score is therefore in the range [0,1]. This similarity matrix is automatically saved as a
-CSV file called "Sim1SimilarityMatrixfinal.csv".
-//TODO: details on the incremental calculation of the similarity score.
-
+SIM1 will create R\*K + 1 files, where R is the number of trials and K is the number of genomes. Similar to SIM0 all
+$$ have been replaced with real values, but now "genome_key1" will also have been replaced with "genome_key2" all the
+way up to k. All of these R*K files are created and run automatically, and their results used to create a similarity
+matrix. For each genome, the similarity is measured by how many of the R trials return the same result. So if R is 10
+and 7 of the trials return the same result when comparing two different genomes, the similarity score for those two
+genomes will be 0.7. The similarity score is therefore in the range [0,1]. This similarity matrix is automatically
+saved as a CSV file called "Sim1SimilarityMatrixfinal.csv".
 
 
 ## 2: SIM0 MACHINE LEARNING
@@ -212,7 +210,7 @@ training percentages.
 
 ## 3: SIM1 MACHINE LEARNING
 To analyze the results of SIM1, 3 arguments are needed: a file Sim0Output.csv file expressing the third party program
-results of SIM0, a Sim1SimilarityMatrix.csv file, and 'REGRESSION' or 'CLASSIFICATION' for the type of analysis..
+results of SIM0, a Sim1SimilarityMatrix.csv file, and 'REGRESSION' or 'CLASSIFICATION' for the type of analysis.
 
 Once these are submitted 1 machine learning algorithm will be run: Kernelized Support Vector Machines (with radial basis
 function kernel). Hyperparameters are optimized and the data is split in to training, testing, and validation groups.
@@ -236,24 +234,95 @@ output a graph called MachineLearningMultiBarPlot.png which shows the accuracy o
 range of different training percentages.
 
 
+<h2>Instructions for using the program:</h2>
+
+<h4>Start with SIM0</h4>
+To use this software the following are needed:
+- Python 3
+- The Python packages numpy scikit-learn, and matplotlib (which can be installed via pip)
+- Matlab, Octave, or R (the program binary should be accessible via the command line e.g. typing "octave" in the
+command line should open Octave)
+
+The first step is to create a SIM0 master file which can be permuted to create separate genomes. This should be an R,
+Octave or Matlab file which returns an output based on declared numeric variables. An example of this can be found in
+the file SimKernModels/Radiation/v4.m.t. Some variables are hard coded while others are surrounded with the "dollar
+sign" syntax. The second step should be to create an empty output folder. An example of how to run a SIM0 classifier
+and create 10 genomes is given below:
+
+```
+python __main__.py 0 /path/to/SIM0_MASTER_FILE 10 int /path/to/OUTPUT_FOLDER
+```
+If successful, 22 files should now be in this output folder. 10 permuted files of the original Matlab/R/Octave file,
+10 key files, a summary of the outputs called "Sim0Output.csv", and the "Sim0GenomesMatrix.csv".
+
+<h4>Edit SIM0 Master File to Prepare for SIM1</h4>
+These 10 permuted files and their corresponding genome_key files can be used for SIM1 analysis. Refactor the original
+SIM0 master file to instead fetch the newly created "dollar sign" variables from a genome_key file in the same folder.
+An example of this can be found in SimKernModels/Radiation/v4plus.m.u. Take note how the SIM0 master file (v4.m.t)
+explicitly declared the variable "RP.ARF_muta" and gives it a binary value. v4plus.m.u however, does not declare this
+variable and instead imports it from one of the genome key files generated in SIM0. Line 12 explicitly declares
+("genome1_key") and any variables defined in that file will be in scope for the v4plus.m.u. As SIM1 loops through
+genomes, this line will automatically be replaced with the relevant genomes.
+
+The final step in creating a SIM1 master file is to permute another set of variables not used to create genomes in
+SIM0. The same "dollar sign" syntax will apply.
+
+<h4>Run SIM1</h4>
+When SIM1 runs, it will generate a new set of R permutations (where it replaces the "dollar sign" syntax with values.
+Then, for every K genome created, make a file using those genomes. The end result is R*K "trial" files with K files
+using the same genome and R files using the same set of permutations. An example of how to run a SIM1 classifier
+and permute 10 genomes 20 times is given below:
+
+```
+python __main__.py 1 /path/to/SIM1_MASTER_FILE 10 20 int /path/to/OUTPUT_FOLDER
+```
+
+Note that the 3rd argument passed in must be the number of genomes created in SIM0. If successful, R*K trial files
+will be created as well as the similarity matrix: "Sim1SimilarityMatrixfinal.csv".
 
 
-# Required citation:
-(BibTex/LaTex):
+<h4>Analyze results</h4>
+In order to analyze results for SIM0 simply run:
 
-@Article{Hunter:2007,
-  Author    = {Hunter, J. D.},
-  Title     = {Matplotlib: A 2D graphics environment},
-  Journal   = {Computing In Science \& Engineering},
-  Volume    = {9},
-  Number    = {3},
-  Pages     = {90--95},
-  abstract  = {Matplotlib is a 2D graphics package used for Python
-  for application development, interactive scripting, and
-  publication-quality image generation across user
-  interfaces and operating systems.},
-  publisher = {IEEE COMPUTER SOC},
-  doi = {10.1109/MCSE.2007.55},
-  year      = 2007
-}
+```
+python __main__.py 2 /path/to/Sim0Output.csv /path/to/Sim0GenomesMatrix.csv 'CLASSIFICATION' "0,1,2"
+```
+Here the first argument is just the desired menu option, the second argument is the output from SIM0, the third
+argument is the Sim0GenomesMatrix.csv, the fourth argument is either "CLASSIFICATION" or "REGRESSION" depending on what
+the original SIM0 master file returned, and the final argument is a comma separated list of categorical variables in
+Sim0GenomesMatrix.csv. Once this is analyzed a plot will be created in the Sim0GenomesMatrix.csv folder.
+
+In order to analyze results for SIM1 simply run:
+```
+python __main__.py 3 /path/to/Sim0Output.csv /path/to/Sim1SimilarityMatrix.csv 'CLASSIFICATION'
+```
+Here the first argument is just the desired menu option, the second argument is the output from SIM0, the third
+argument is the similarity matrix from SIM1, and the final argument is either "CLASSIFICATION" or "REGRESSION"
+depending on what the original SIM0 master file returned, and the final argument is a comma separated list of
+categorical variables in Sim0GenomesMatrix.csv. Once this is analyzed a plot will be created in the
+Sim1SimilarityMatrix.csv folder.
+
+To analyze both SIM0 and SIM1 at the same time run:
+```
+python __main__.py 4 /path/to/Sim0Output.csv /path/to/Sim0GenomesMatrix.csv /path/to/Sim1SimilarityMatrix.csv 'CLASSIFICATION' "0,1,2"
+```
+Here the first argument is just the desired menu option, the second argument is the output from SIM0, the third
+argument is the Sim0GenomesMatrix.csv, the fourth argument is the similarity matrix from SIM1, the fifth argument
+is either 'CLASSIFICATION' or 'REGRESSION', and the final is the list of categorical variables in Sim0GenomesMatrix.csv.
+Once this is analyzed a plot will be created in the Sim1SimilarityMatrix.csv folder.
+
+SimKern was created by Timo Deist, Andrew Patti, Zhaoqi Wang, David Krane, and Taylor Sorenson, under the supervision
+of David Craft.
+
+This software utilizes the Python package Matplotlib by Hunter, J.D.
+Title: Matplotlib: A 2D graphics environment
+Journal: Computing In Science & Engineering
+Volume: 9
+Number: 3
+Pages: 90--95
+Matplotlib is a 2D graphics package used for Python for application development, interactive scripting, and
+publication-quality image generation across user interfaces and operating systems.
+Publisher: IEEE COMPUTER SOC
+Year: 2007
+DOI: 10.1109/MCSE.2007.55
 

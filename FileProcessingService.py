@@ -83,7 +83,7 @@ class FileProcessingService(object):
             params = self.extractParameters(target_sequence)
             coefficient_value = self.retrieveCoefficientValueFromDistribution(distribution, params)
 
-            # Replace $stuff$ with extracted coefficient value, write to file
+            # Replace $dollar sign contents$ with extracted coefficient value, write to file
             new_line = new_line.replace("$" + target_sequence + "$", str(coefficient_value), 1)
             if type(coefficient_value) is str:
                 coefficient_value = self.replaceCoefValue(coefficient_value)

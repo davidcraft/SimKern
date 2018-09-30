@@ -33,7 +33,7 @@ global DNA_DSB_due_to_IR;
 DNA_DSB_due_to_IR = IR_Gy*DNA_DSB_per_IR_Gy/tp2; % irradiation phase duration-
                                                  % adjusted rate
 
-%CRAFT: these lines instantiate the person-specific genomes
+%these lines instantiate the person-specific genomes
 global Gs6 Gt2 Gd12
 %this next line just reads in the g1.m file.
 %if this file were a CSV or something it would take a couple more

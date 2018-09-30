@@ -40,8 +40,6 @@ class FileProcessingServiceIT(unittest.TestCase):
         self.setupFileProcessingService(data_file, SupportedFileTypes.OCTAVE)
         self.assertGenomeFilesCreatedSuccessfully(SupportedFileTypes.OCTAVE)
 
-    # TODO: test for MATLAB
-
     def testRGenomeFilesSuccessfullyCreated(self):
         # Note: This is R the program, not R an integer representing permutations.
         data_file = self.setTargetFile('SampleDataFiles', 'booleanModelTest.r.t')
@@ -74,8 +72,6 @@ class FileProcessingServiceIT(unittest.TestCase):
         self.file_processing_service.createGenomes()
 
         self.assertSim1TrialFilesSuccessfullyCreated(number_of_genomes, number_of_trials)
-
-    # TODO: Test for MATLAB
 
     def testSim1FileProcessingServiceForR(self):
         data_file = self.setTargetFile('SampleDataFiles', 'booleanModelTest.r.t')

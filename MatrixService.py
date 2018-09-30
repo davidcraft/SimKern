@@ -32,7 +32,6 @@ class MatrixService(object):
         self.writeDataFile(similarity_matrix, self.OUTPUT_FILE_NAME + output_trials + ".csv")
         return similarity_matrix
 
-
     def generateResponseMatrix(self):
         response_list = self.generateResponseList()
         response_list = np.array(response_list)
