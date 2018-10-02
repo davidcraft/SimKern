@@ -1,4 +1,15 @@
+# Contents
 
+* Introduction
+* Main Menu
+  * SIM0 GENOME CREATION
+  * SIM1 SIMILARITY PERMUTATIONS
+  * SIM0 MACHINE LEARNING
+  * SIM1 MACHINE LEARNING
+  * SIM0 SIM1 COMBINED MACHINE LEARNING
+* A guided example 
+
+# Introduction
 
 This program is designed to simulate permutations of genomes and analyze the results with machine learning algorithms.
 This system can receive a file containing a series of differential equations, a network flow model, or a boolean
@@ -20,14 +31,16 @@ output matrices and the genome files created will be output to a directory chose
 In order to use this program to generate genome files and get the responses, several requirements must be met. The user
 must have python version 3.6 installed on their machine. Type `python --version` on the command line to check. The user
 also needs the binary of a third party program of their choice (Matlab, Octave, or R) in their path. For example, typing
-`octave` on the command line should start that program. To start the program, simply run the \_\_main\_\_.py class.
+`octave` on the command line should start that program. 
 
-python /PATH/TO/\_\_main\_\_.py
-
+# Main Menu
+To start the program, simply run the \_\_main\_\_.py class.
+```
+python /PATH/TO/__main__.py
+```
 The following prompt should come up:
 
 
-# Main Menu
 ```
 Choose your task:
 
@@ -234,13 +247,14 @@ output a graph called MachineLearningMultiBarPlot.png which shows the accuracy o
 range of different training percentages.
 
 
-<h2>Instructions for using the program:</h2>
+# A guided example
 
 <h4>Start with SIM0</h4>
 To use this software the following are needed:
-- Python 3
-- The Python packages numpy scikit-learn, and matplotlib (which can be installed via pip)
-- Matlab, Octave, or R (the program binary should be accessible via the command line e.g. typing "octave" in the
+
+* Python 3
+* The Python packages numpy scikit-learn, and matplotlib (which can be installed via pip)
+* Matlab, Octave, or R (the program binary should be accessible via the command line e.g. typing "octave" in the
 command line should open Octave)
 
 The first step is to create a SIM0 master file which can be permuted to create separate genomes. This should be an R,
