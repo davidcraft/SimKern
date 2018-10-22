@@ -2,15 +2,8 @@ function genericBoxplot(algs,expInfo,classificationBoolean,titleName,fig2Boolean
 withNn = 1;
 
 myFontsize = 12;
-for i_algs = 1:length(algs)
-    nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
-    linSvmResult(i_algs,:) = algs(i_algs).linSvm.perfMetric;
-    rbfSvmResult(i_algs,:) = algs(i_algs).rbfSvm.perfMetric;
-    rfResult(i_algs,:) = algs(i_algs).rf.perfMetric;
-    skSvmResult(i_algs,:) = algs(i_algs).skSvm.perfMetric;
-    skRfResult(i_algs,:) = algs(i_algs).skRf.perfMetric;
-    skNnResult(i_algs,:) = algs(i_algs).skNn.perfMetric;
-end
+
+[nnResult,linSvmResult,rbfSvmResult,rfResult,skSvmResult,skRfResult,skNnResult] = getAlgPerformanceFromStruct(algs);
 
 numeroSubsamples = numel(expInfo(1).numeroTrainSamples);
 

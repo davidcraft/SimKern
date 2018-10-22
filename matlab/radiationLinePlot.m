@@ -1,25 +1,10 @@
 function radiationLinePlot(algs,algsBad,expInfo,classificationBoolean,titleName,fig2Boolean)
 myFontsize = 12;
 myLinewidth = 3;
-for i_algs = 1:length(algs)
-    nnResult(i_algs,:) = algs(i_algs).nn.perfMetric;
-    linSvmResult(i_algs,:) = algs(i_algs).linSvm.perfMetric;
-    rbfSvmResult(i_algs,:) = algs(i_algs).rbfSvm.perfMetric;
-    rfResult(i_algs,:) = algs(i_algs).rf.perfMetric;
-    skSvmResult(i_algs,:) = algs(i_algs).skSvm.perfMetric;
-    skRfResult(i_algs,:) = algs(i_algs).skRf.perfMetric;
-    skNnResult(i_algs,:) = algs(i_algs).skNn.perfMetric;
-end
 
-for i_algs = 1:length(algsBad)
-    nnResultBad(i_algs,:) = algsBad(i_algs).nn.perfMetric;
-    linSvmResultBad(i_algs,:) = algsBad(i_algs).linSvm.perfMetric;
-    rbfSvmResultBad(i_algs,:) = algsBad(i_algs).rbfSvm.perfMetric;
-    rfResultBad(i_algs,:) = algsBad(i_algs).rf.perfMetric;
-    skSvmResultBad(i_algs,:) = algsBad(i_algs).skSvm.perfMetric;
-    skRfResultBad(i_algs,:) = algsBad(i_algs).skRf.perfMetric;
-    skNnResultBad(i_algs,:) = algsBad(i_algs).skNn.perfMetric;
-end
+[nnResult,linSvmResult,rbfSvmResult,rfResult,skSvmResult,skRfResult,skNnResult] = getAlgPerformanceFromStruct(algs);
+
+[nnResultBad,linSvmResultBad,rbfSvmResultBad,rfResultBad,skSvmResultBad,skRfResultBad,skNnResultBad] = getAlgPerformanceFromStruct(algsBad);
 
 %%
 numeroSubsamples = numel(expInfo(1).numeroTrainSamples);
