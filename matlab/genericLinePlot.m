@@ -126,7 +126,7 @@ if strcmp(titleName,'Flowering time model')
     else
         horzPosTitle = 100;
     end
-vertPosTitle = 0.5;
+vertPosTitle = 0.325;
 elseif strcmp(titleName,'Boolean cell model')
 horzPosTitle = 200;
 vertPosTitle = 0.75;
