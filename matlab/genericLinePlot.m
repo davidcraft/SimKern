@@ -36,29 +36,10 @@ myGreen = [27 158 119] ./255;
 
 
 %% find best naive alg
-[maxVal,maxInd] = max([median(linSvmResult);median(rbfSvmResult);median(rfResult)]);
-
-if mode(maxInd) == 1
-    bestNaive = linSvmResult;
-    bestNaiveLabel = 'linSVM';
-elseif mode(maxInd) == 2
-    bestNaive = rbfSvmResult;
-    bestNaiveLabel = 'RBF SVM';
-elseif mode(maxInd) == 3
-    bestNaive = rfResult;
-    bestNaiveLabel = 'RF';
-else
-    error('Oops.')
-end
+[bestNaive,bestNaiveLabel] = findBestNaivePerformance(linSvmResult,rbfSvmResult,rfResult);
 
 %% find best sk alg
-if (mean(median(skSvmResult) > median(skRfResult)) > 0.5)
-    bestSk = skSvmResult;
-    bestSkLabel = 'simkern SVM';
-else
-    bestSk = skRfResult;
-    bestSkLabel = 'simkern RF';
-end
+[bestSk,bestSkLabel] = findBestSkPerformance(skSvmResult,skRfResult);
 
 %% line figure radiation
 if ~fig2Boolean

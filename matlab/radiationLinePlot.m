@@ -46,39 +46,14 @@ myGreen = [27 158 119] ./255;
 
 
 %% find best naive alg
-[maxVal,maxInd] = max([median(linSvmResult);median(rbfSvmResult);median(rfResult)]);
-
-if mode(maxInd) == 1
-    bestNaive = linSvmResult;
-    bestNaiveLabel = 'linSVM';
-elseif mode(maxInd) == 2
-    bestNaive = rbfSvmResult;
-    bestNaiveLabel = 'RBF SVM';
-elseif mode(maxInd) == 3
-    bestNaive = rfResult;
-    bestNaiveLabel = 'RF';
-else
-     error('Oops.')
-end
+[bestNaive,bestNaiveLabel] = findBestNaivePerformance(linSvmResult,rbfSvmResult,rfResult);
 
 %% find best sk alg
-if (mean(median(skSvmResult) > median(skRfResult)) > 0.5)
-    bestSk = skSvmResult;
-    bestSkLabel = 'simkern SVM';
-else
-    bestSk = skRfResult;
-    bestSkLabel = 'simkern RF';
-end
+[bestSk,bestSkLabel] = findBestSkPerformance(skSvmResult,skRfResult);
 
 
 %% find best sk alg bad
-if (mean(median(skSvmResultBad) > median(skRfResultBad)) > 0.5)
-    bestSkBad = skSvmResultBad;
-    bestSkBadLabel = 'simkern SVM';
-else
-    bestSkBad = skRfResultBad;
-    bestSkBadLabel = 'simkern RF';
-end
+[bestSkBad,bestSkBadLabel] = findBestSkPerformance(skSvmResultBad,skRfResultBad);
 
 %% line figure radiation
 if ~fig2Boolean
@@ -142,7 +117,6 @@ else
     'FontName','Times')
 end
 
-% text(50,0.77,{'Higher' 'quality' 'kernel'},'Color',myGreen,'FontSize',12,'FontWeight','bold')
 text(400,0.725,{'\textbf{Lower}' '\textbf{quality}' '\textbf{kernel}'},'Color',myGreen,...
     'FontUnits','points',...
     'Interpreter','latex',...
@@ -166,8 +140,6 @@ end
 dim = [myX myY 0.001 0.001];
 annotation('textbox',dim,'String',titleName,'FitBoxToText','on', ...
              'BackgroundColor',[5/6 5/6 5/6],'Interpreter','Latex','Color',[0 0 0]);
-% text(250,0.6,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
-
 
 %% report best models
 disp('-------------')
