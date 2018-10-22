@@ -276,6 +276,9 @@ elseif strcmp(titleName,'Network flow model (harder kernel)')
     % vertPosTitle = 0.5;
     horzPosTitle = 3.75;
     vertPosTitle = 0.51;
+elseif strcmp(titleName,'Flowering model, noise better') || strcmp(titleName,'Flowering model, noise bad') || strcmp(titleName,'Flowering model, noise nominal') || strcmp(titleName,'Flowering model, noise biased')
+    horzPosTitle = 3.75;
+    vertPosTitle = 0.51;
 else
     error('Unknown title')
 end
@@ -287,7 +290,7 @@ annotation('textbox',dim,'String',titleName,'FitBoxToText','on', ...
 % text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
 %% add legend if it is figure2
 if fig2Boolean
-%     hold on
+    %     hold on
     h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myDarkGrey,'MarkerFaceColor',myDarkGrey);
     h(2) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
     h(3) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
@@ -295,7 +298,7 @@ if fig2Boolean
     % h(1) = scatter(1,1,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
     % h(2) = scatter(2,2,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
     % h(3) = scatter(3,3,'o','filled','MarkerEdgeColor',myGrey,'MarkerFaceColor',myGrey);
-%     axis off
+    %     axis off
     myLegend = legend(h,'Standard NN','Standard ML','SimKern ML','SimKern NN','Location','southeast');
     set(myLegend,'Interpreter','latex');
 end
