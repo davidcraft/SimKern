@@ -1,7 +1,7 @@
 function floweringNoiseBoxPlot(algs,algsBad,algsNominal,algsBiased,expInfo,classificationBoolean,titleName,subplotStyleBoolean,boxPlotLabels)
 myFontsize = 12;
 myLinewidth = 3;
-
+includeNaiveBoolean = true;
 % extract relevant performance data
 [nnResult,linSvmResult,rbfSvmResult,rfResult,skSvmResult,skRfResult,skNnResult] = getAlgPerformanceFromStruct(algs);
 [nnResultBad,linSvmResultBad,rbfSvmResultBad,rfResultBad,skSvmResultBad,skRfResultBad,skNnResultBad] = getAlgPerformanceFromStruct(algsBad);
@@ -31,11 +31,12 @@ if numel(unique(expInfo(1).numeroValidationSamples)) ~= 1 || numel(unique(expInf
     error('Data splitting wrong.')
 end
 % colors
+myRed  = [217 95 2] ./255;
 myGreen = [27 158 119] ./255;
 
 %% find best algorithms
 %% find best naive alg
-% [bestNaive,bestNaiveLabel] = findBestNaivePerformance(linSvmResult,rbfSvmResult,rfResult); % unused in boxplot
+[bestNaive,bestNaiveLabel] = findBestNaivePerformance(linSvmResult,rbfSvmResult,rfResult); % unused in boxplot
 
 %% find best sk alg
 [bestSk,bestSkLabel] = findBestSkPerformance(skSvmResult,skRfResult);
@@ -59,7 +60,20 @@ hold on
 grid on
 
 subsampleChoice = 2;
-fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkBad(:,subsampleChoice),bestSkBiased(:,subsampleChoice)],...
+if includeNaiveBoolean
+fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkBad(:,subsampleChoice),bestSkBiased(:,subsampleChoice),bestNaive(:,subsampleChoice)],...
+    'labels',...
+    boxPlotLabels,...    
+    'LabelOrientation',...     
+    'inline',...
+    'PlotStyle',...
+    'compact',...
+    'Boxstyle',...
+    'filled',...
+    'Colors',...
+    [1*myGreen;1*myGreen;1*myGreen;0.7*myGreen;myRed]);
+else
+    fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkBad(:,subsampleChoice),bestSkBiased(:,subsampleChoice)],...
     'labels',...
     boxPlotLabels,...    
     'LabelOrientation',...     
@@ -70,7 +84,7 @@ fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkB
     'filled',...
     'Colors',...
     [1*myGreen;1*myGreen;1*myGreen;0.7*myGreen]);
-
+end
 % Find all text boxes and set font size and interpreter (LATEX doesnt work
 % with LabelOrientation inline because matlab uses text() to create xticks in boxplot)
 set(findobj(gca,'Type','text'),'FontSize', myFontsize)
@@ -113,9 +127,14 @@ set(whiskerLines,'linewidth',1);
 myHandles = get(get(gca,'children'),'children');
 myHandles2 = get(myHandles,'tag');
 outlierInd = strcmpi(myHandles2,'Outliers');
-
-    numeroAlgs = 4;
+if includeNaiveBoolean
+        numeroAlgs = 5;
+    outlierColors = [myRed;0.7*myGreen;1*myGreen;1*myGreen;1*myGreen]; % reverse color order here!
+else
+        numeroAlgs = 4;
     outlierColors = [0.7*myGreen;1*myGreen;1*myGreen;1*myGreen]; % reverse color order here!
+end
+
 
 firstOutlierInd = numeroAlgs * 1 + 1;
 numeroOutliersHandles = numeroAlgs * 1;
@@ -154,7 +173,7 @@ end
 %% report best models
 disp('-------------')
 disp('Flowing noise experiment box plot:')
-% disp(['Best Naive algorithm: ' bestNaiveLabel]) % unused in boxplot
+disp(['Best Naive algorithm: ' bestNaiveLabel]) % unused in boxplot
 disp(['Best Simkern algorithm: ' bestSkLabel])
 disp(['Best Bad Simkern algorithm: ' bestSkBadLabel])
 disp(['Best Nominal Simkern algorithm: ' bestSkNominalLabel])

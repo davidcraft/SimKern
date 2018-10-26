@@ -146,7 +146,7 @@ rectanglePosition(4) = axesPosition(4) + 0.15;
 
 rectangle('Position',rectanglePosition,'FaceColor','w') % draw rectangle box around boxplot
 axes('position', axesPositionRelative) % generate axes for box subplot inside rectangle
-boxSubplot(bestSk,bestSkNominal,bestSkBad,bestSkBiased,myGreen,myFontsize,classificationBoolean,numeroTrainSamples,boxPlotLabels) % draw box subplot (local function, see below)
+boxSubplot(bestNaive,bestSk,bestSkNominal,bestSkBad,bestSkBiased,myGreen,myRed,myFontsize,classificationBoolean,numeroTrainSamples,boxPlotLabels) % draw box subplot (local function, see below)
 
 %% report best models
 disp('-------------')
@@ -160,12 +160,12 @@ disp('-------------')
 end
 
 %% local functions
-function boxSubplot(bestSk,bestSkNominal,bestSkBad,bestSkBiased,myGreen,myFontsize,classificationBoolean,numeroTrainSamples,boxPlotLabels)
+function boxSubplot(bestNaive,bestSk,bestSkNominal,bestSkBad,bestSkBiased,myGreen,myRed,myFontsize,classificationBoolean,numeroTrainSamples,boxPlotLabels)
 hold on
 grid on
 
 subsampleChoice = 2; % choose which training data subsample you want to plot
-fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkBad(:,subsampleChoice),bestSkBiased(:,subsampleChoice)],...
+fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkBad(:,subsampleChoice),bestSkBiased(:,subsampleChoice),bestNaive(:,subsampleChoice)],...
     'labels',...
     boxPlotLabels,...    
     'LabelOrientation',...     
@@ -175,7 +175,7 @@ fh = boxplot([bestSk(:,subsampleChoice),bestSkNominal(:,subsampleChoice),bestSkB
     'Boxstyle',...
     'filled',...
     'Colors',...
-    [1*myGreen;1*myGreen;1*myGreen;0.7*myGreen]);
+    [1*myGreen;1*myGreen;1*myGreen;0.7*myGreen;myRed]);
 
 % Find all text boxes and set font size and interpreter (LATEX doesnt work
 % with LabelOrientation inline because matlab uses text() to create xticks in boxplot)
@@ -220,8 +220,8 @@ myHandles = get(get(gca,'children'),'children');
 myHandles2 = get(myHandles,'tag');
 outlierInd = strcmpi(myHandles2,'Outliers');
 
-    numeroAlgs = 4;
-    outlierColors = [0.7*myGreen;1*myGreen;1*myGreen;1*myGreen]; % revert color order here!
+    numeroAlgs = 5;
+    outlierColors = [myRed;0.7*myGreen;1*myGreen;1*myGreen;1*myGreen]; % revert color order here!
 
 firstOutlierInd = numeroAlgs * 1 + 1;
 numeroOutliersHandles = numeroAlgs * 1;
