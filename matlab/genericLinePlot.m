@@ -101,15 +101,15 @@ if strcmp(titleName,'Flowering time model')
         horzPosTitle = 100;
     end
 vertPosTitle = 0.325;
-elseif strcmp(titleName,'Boolean cell model')
+elseif strcmp(titleName,'Boolean cancer model')
 horzPosTitle = 200;
 vertPosTitle = 0.75;
-elseif strcmp(titleName,'Network flow model (easier kernel)')
+elseif strcmp(titleName,'Network flow model (hi. q. kernel)')
 % horzPosTitle = 12;
 % vertPosTitle = 0.75;
 horzPosTitle = 15;
 vertPosTitle = 0.75;
-elseif strcmp(titleName,'Network flow model (harder kernel)')
+elseif strcmp(titleName,'Network flow model (lo. q. kernel)')
 % horzPosTitle = 12;
 % vertPosTitle = 0.75;
 horzPosTitle = 15;

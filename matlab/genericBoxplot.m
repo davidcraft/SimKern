@@ -1,6 +1,5 @@
-function genericBoxplot(algs,expInfo,classificationBoolean,titleName,fig2Boolean)
+function genericBoxplot(algs,expInfo,classificationBoolean,titleName,fig2Boolean,legendOn)
 withNn = 1;
-
 myFontsize = 12;
 
 [nnResult,linSvmResult,rbfSvmResult,rfResult,skSvmResult,skRfResult,skNnResult] = getAlgPerformanceFromStruct(algs);
@@ -47,11 +46,11 @@ rbfSvmLabels(:) = {'RBF SVM'};
 rfLabels = cell(1,numeroSubsamples);
 rfLabels(:) = {'RF'};
 skSvmLabels = cell(1,numeroSubsamples);
-skSvmLabels(:) = {'simkern SVM'};
+skSvmLabels(:) = {'SimKern SVM'};
 skRfLabels = cell(1,numeroSubsamples);
-skRfLabels(:) = {'simkern RF'};
+skRfLabels(:) = {'SimKern RF'};
 skNnLabels = cell(1,numeroSubsamples);
-skNnLabels(:) = {'simkern NN'};
+skNnLabels(:) = {'SimKern NN'};
 
 if withNn == 1
     plotLabels = [nnLabels linSvmLabels rbfSvmLabels rfLabels skSvmLabels skRfLabels skNnLabels];
@@ -258,20 +257,20 @@ elseif strcmp(titleName,'Flowering time model')
     % vertPosTitle = 0.9;
     horzPosTitle = 4.5;
     vertPosTitle = 0;
-elseif strcmp(titleName,'Boolean cell model')
-    horzPosTitle = 4.70;
+elseif strcmp(titleName,'Boolean cancer model')
+    horzPosTitle = 4.50;
     vertPosTitle = 0.65;
-elseif strcmp(titleName,'Network flow model (easier kernel)')
+elseif strcmp(titleName,'Network flow model (hi. q. kernel)')
     horzPosTitle = 3.75;
     vertPosTitle = 0.51;
-elseif strcmp(titleName,'Network flow model (harder kernel)')
+elseif strcmp(titleName,'Network flow model (lo. q. kernel)')
     % horzPosTitle = 3.75;
     % vertPosTitle = 0.5;
     horzPosTitle = 3.75;
     vertPosTitle = 0.51;
-elseif strcmp(titleName,'Flowering model, noise better') || strcmp(titleName,'Flowering model, noise bad') || strcmp(titleName,'Flowering model, noise nominal') || strcmp(titleName,'Flowering model, noise biased')
+elseif strcmp(titleName,'Flowering model (less noise)') || strcmp(titleName,'Flowering model (more noise)') || strcmp(titleName,'Flowering model (baseline noise)') || strcmp(titleName,'Flowering model (biased noise)')
     horzPosTitle = 3.75;
-    vertPosTitle = 0.51;
+    vertPosTitle = 0;
 else
     error('Unknown title')
 end
@@ -282,7 +281,7 @@ annotation('textbox',dim,'String',titleName,'FitBoxToText','on', ...
     'BackgroundColor',[5/6 5/6 5/6],'Interpreter','Latex','Color',[0 0 0]);
 % text(horzPosTitle,vertPosTitle,titleName,'Color','k','FontSize',12,'FontWeight','bold','Interpreter','Latex','BackgroundColor',[5/6 5/6 5/6])
 %% add legend if it is figure2
-if fig2Boolean
+if legendOn
     %     hold on
     h(1) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myDarkGrey,'MarkerFaceColor',myDarkGrey);
     h(2) = scatter(NaN,NaN,'o','filled','MarkerEdgeColor',myRed,'MarkerFaceColor',myRed);
@@ -292,7 +291,8 @@ if fig2Boolean
     % h(2) = scatter(2,2,'o','filled','MarkerEdgeColor',myGreen,'MarkerFaceColor',myGreen);
     % h(3) = scatter(3,3,'o','filled','MarkerEdgeColor',myGrey,'MarkerFaceColor',myGrey);
     %     axis off
-    myLegend = legend(h,'Standard NN','Standard ML','SimKern ML','SimKern NN','Location','southeast');
+%     myLegend = legend(h,'Standard NN','Standard ML','SimKern ML','SimKern NN','Location','southeast');
+    myLegend = legend(h,'NN without prior knowledge','No prior knowledge','With prior knowledge','NN with prior knowledge','Location','east');
     set(myLegend,'Interpreter','latex');
 end
 

@@ -24,9 +24,10 @@ myRed  = [217 95 2] ./255;
 myGreen = [27 158 119] ./255;
 
 fig2Boolean = true;
+legendOn = false;
 clf
 subplot(2,2,[1 2])
-genericBoxplot(algs,expInfo,classificationBoolean,'Radiation model',fig2Boolean)
+genericBoxplot(algs,expInfo,classificationBoolean,'Radiation model',fig2Boolean,legendOn)
 
 subplot(2,2,3)
 radiationLinePlot(algs,algsBad,expInfo,classificationBoolean,'Radiation model',fig2Boolean)
