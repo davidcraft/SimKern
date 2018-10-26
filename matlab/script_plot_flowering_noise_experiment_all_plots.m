@@ -29,15 +29,15 @@ algsBiased = dataDump.algs;
 expInfoBiased = dataDump.expInfo;
 hpsBiased = dataDump.hps;
 
-boxPlotLabels = {'Gaussian(1,0.1)','Gaussian(1,0.2)','Gaussian(1,0.4)','Biased noise kernel'};
-linePlotLabels = {'Baseline kernel, gaussian(1,0.1)','Baseline kernel, gaussian(1,0.2)','Baseline kernel, gaussian(1,0.4)','Biased noise kernel','Standard ML'};
-saveBoolean = false;
-
+boxPlotLabels = {'Gaussian(1,0.1)','Gaussian(1,0.2)','Gaussian(1,0.4)','Biased SimKern','Standard ML'};
+linePlotLabels = {'SimKern, Gaussian(1,0.1)','Baseline SimKern, Gaussian(1,0.2)','SimKern, Gaussian(1,0.4)','Biased SimKern','Standard ML'};
+saveBoolean = true;
+legendOn = false;
 %% subplot (line plot on the left, box plot on the right)
 figure('Position', [676 309 900 578]);
 subplotStyleBoolean = true;
 sph = subplot(1,2,1);
-titleName = 'Flowering model, noise experiments';
+titleName = 'Flowering model (noise experiments)';
 floweringNoiseLinePlot(algsBetter,algsBad,algsNominal,algsBiased,expInfoBetter,classificationBoolean,titleName,subplotStyleBoolean,linePlotLabels)
 
 sph = subplot(1,2,2);
@@ -71,7 +71,7 @@ end
 %% Standard ML + gaussian line plot
 close all
 subplotStyleBoolean = false;
-titleName = 'Flowering model, noise experiments';
+titleName = 'Flowering model (noise experiments)';
 floweringNoiseLinePlot(algsBetter,algsBad,algsNominal,algsBiased,expInfoBetter,classificationBoolean,titleName,subplotStyleBoolean,linePlotLabels)
 if saveBoolean
     print(fullfile(pathToPlottingFolder,'floweringNoiseLine.eps'),'-depsc2')
@@ -81,8 +81,8 @@ end
 %% boxplots per kernel (gaussians)
 close all
 subplotStyleBoolean = false;
-titleName = 'Flowering model, noise better';
-genericBoxplot(algsBetter,expInfoBetter,classificationBoolean,titleName,subplotStyleBoolean)
+titleName = 'Flowering model (less noise)';
+genericBoxplot(algsBetter,expInfoBetter,classificationBoolean,titleName,subplotStyleBoolean,legendOn)
 if saveBoolean
     print(fullfile(pathToPlottingFolder,'floweringBox_betterNoise.eps'),'-depsc2')
     print(fullfile(pathToPlottingFolder,'floweringBox_betterNoise.pdf'),'-dpdf')
@@ -90,8 +90,8 @@ if saveBoolean
 end
 close all
 subplotStyleBoolean = false;
-titleName = 'Flowering model, noise bad';
-genericBoxplot(algsBad,expInfoBad,classificationBoolean,titleName,subplotStyleBoolean)
+titleName = 'Flowering model (more noise)';
+genericBoxplot(algsBad,expInfoBad,classificationBoolean,titleName,subplotStyleBoolean,legendOn)
 if saveBoolean
     print(fullfile(pathToPlottingFolder,'floweringBox_badNoise.eps'),'-depsc2')
     print(fullfile(pathToPlottingFolder,'floweringBox_badNoise.pdf'),'-dpdf')
@@ -99,8 +99,8 @@ if saveBoolean
 end
 close all
 subplotStyleBoolean = false;
-titleName = 'Flowering model, noise nominal';
-genericBoxplot(algsNominal,expInfoNominal,classificationBoolean,titleName,subplotStyleBoolean)
+titleName = 'Flowering model (baseline noise)';
+genericBoxplot(algsNominal,expInfoNominal,classificationBoolean,titleName,subplotStyleBoolean,legendOn)
 if saveBoolean
     print(fullfile(pathToPlottingFolder,'floweringBox_nominalNoise.eps'),'-depsc2')
     print(fullfile(pathToPlottingFolder,'floweringBox_nominalNoise.pdf'),'-dpdf')
@@ -109,7 +109,7 @@ end
 %% biased noise is deactivated because it does not have the naive algorithms (nn, linSsvm,rbfSvm,rf) and then genericBoxplot() crashes
 % close all
 % subplotStyleBoolean = false;
-% titleName = 'Flowering model, noise biased';
+% titleName = 'Flowering model, biased noise';
 % genericBoxplot(algsBiased,expInfoBiased,classificationBoolean,titleName,subplotStyleBoolean)
 % if saveBoolean
 %     print(fullfile(pathToPlottingFolder,'floweringBox_biasedNoise.eps'),'-depsc2')
