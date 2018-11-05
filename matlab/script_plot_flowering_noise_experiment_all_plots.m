@@ -46,6 +46,8 @@ set(gcf,'PaperOrientation','landscape')
 
 if saveBoolean
     print(fullfile(pathToPlottingFolder,'floweringNoiseSubplots.pdf'),'-dpdf')
+    print(fullfile(pathToPlottingFolder,'floweringNoiseSubplots.eps'),'-depsc2')
+    print(fullfile(pathToPlottingFolder,'floweringNoiseSubplots.png'),'-dpng','-r300')
 end
 %% combination plot (boxplot inside line plot)
 close all
