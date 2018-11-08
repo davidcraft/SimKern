@@ -260,10 +260,10 @@ elseif strcmp(titleName,'Flowering time model')
 elseif strcmp(titleName,'Boolean cancer model')
     horzPosTitle = 4.50;
     vertPosTitle = 0.65;
-elseif strcmp(titleName,'Network flow model (hi. q. kernel)')
+elseif strcmp(titleName,'Network flow model (less noise)')
     horzPosTitle = 3.75;
     vertPosTitle = 0.51;
-elseif strcmp(titleName,'Network flow model (lo. q. kernel)')
+elseif strcmp(titleName,'Network flow model (more noise)')
     % horzPosTitle = 3.75;
     % vertPosTitle = 0.5;
     horzPosTitle = 3.75;

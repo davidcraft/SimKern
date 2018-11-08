@@ -104,12 +104,12 @@ vertPosTitle = 0.325;
 elseif strcmp(titleName,'Boolean cancer model')
 horzPosTitle = 200;
 vertPosTitle = 0.75;
-elseif strcmp(titleName,'Network flow model (hi. q. kernel)')
+elseif strcmp(titleName,'Network flow model (less noise)')
 % horzPosTitle = 12;
 % vertPosTitle = 0.75;
 horzPosTitle = 15;
 vertPosTitle = 0.75;
-elseif strcmp(titleName,'Network flow model (lo. q. kernel)')
+elseif strcmp(titleName,'Network flow model (more noise)')
 % horzPosTitle = 12;
 % vertPosTitle = 0.75;
 horzPosTitle = 15;

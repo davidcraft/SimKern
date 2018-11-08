@@ -71,7 +71,7 @@ algs = dataDump.algs;
 expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
-titleName = 'Network flow model (lo. q. kernel)';
+titleName = 'Network flow model (more noise)';
 genericLinePlot(algs,expInfo,classificationBoolean,titleName,fig2Boolean)
 % matlab2tikz(fullfile(pathToPlottingFolder,'networkLine_harder.eps.tex'))
 print(fullfile(pathToPlottingFolder,'networkLine_harder.eps'),'-depsc2')
@@ -96,7 +96,7 @@ algs = dataDump.algs;
 expInfo = dataDump.expInfo;
 hps = dataDump.hps;
 classificationBoolean = dataDump.classificationBoolean;
-titleName = 'Network flow model (hi. q. kernel)';
+titleName = 'Network flow model (less noise)';
 genericLinePlot(algs,expInfo,classificationBoolean,titleName,fig2Boolean)
 % matlab2tikz(fullfile(pathToPlottingFolder,'networkLine_easier.tex'))
 print(fullfile(pathToPlottingFolder,'networkLine_easier.eps'),'-depsc2')
