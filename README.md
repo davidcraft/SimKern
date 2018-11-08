@@ -7,7 +7,7 @@
   * SIM0 MACHINE LEARNING
   * SIM1 MACHINE LEARNING
   * SIM0 SIM1 COMBINED MACHINE LEARNING
-* A guided example 
+* A step-by-step example 
 
 # Introduction
 
@@ -247,7 +247,7 @@ output a graph called MachineLearningMultiBarPlot.png which shows the accuracy o
 range of different training percentages.
 
 
-# A guided example
+# A step-by-step example
 
 <h4>Start with SIM0</h4>
 To use this software the following are needed:
