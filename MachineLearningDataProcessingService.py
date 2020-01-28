@@ -135,8 +135,8 @@ class MachineLearningDataProcessingService(object):
         most_accurate_model = None
         most_accurate_model_score = 0
         for c_val in [10E-2, 10E-1, 10E0, 10E1, 10E2, 10E3, 10E4, 10E5, 10E6]:
-            if analysis_type is SupportedAnalysisTypes.CLASSIFICATION:
-                if kernel_type is SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION:
+            if analysis_type == SupportedAnalysisTypes.CLASSIFICATION:
+                if kernel_type == SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION:
                     for gamma in [10E-5, 10E-4, 10E-3, 10E-2, 10E-1, 10E0, 10E1]:
                         svm_trainer = SupportVectorMachineTrainer(training_matrix, responses)
                         model = svm_trainer.trainSupportVectorMachineMultiClassifier(sub_training_set, kernel_type,
@@ -157,9 +157,9 @@ class MachineLearningDataProcessingService(object):
                         continue
                     most_accurate_model = model
                     most_accurate_model_score = model_score
-            elif analysis_type is SupportedAnalysisTypes.REGRESSION:
+            elif analysis_type == SupportedAnalysisTypes.REGRESSION:
                 for epsilon in [0.01, 0.05, 0.1, 0.15, 0.2]:
-                    if kernel_type is SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION:
+                    if kernel_type == SupportedKernelFunctionTypes.RADIAL_BASIS_FUNCTION:
                         for gamma in [10E-5, 10E-4, 10E-3, 10E-2, 10E-1, 10E0, 10E1]:
                             svm_trainer = SupportVectorMachineTrainer(training_matrix, responses)
                             model = svm_trainer.trainSupportVectorMachineRegressor(sub_training_set, kernel_type,
