@@ -89,8 +89,8 @@ def main():
         output_file = arguments[1]
         genomes_matrix_file = arguments[2]
         similarity_matrix = arguments[3]
-        analysis_type = arguments[4].split(",")
-        categorical_variables = arguments[5]
+        analysis_type = arguments[4]
+        categorical_variables = arguments[5].split(",")
         performSIM0SIM1Analysis(output_file, genomes_matrix_file, similarity_matrix, analysis_type,
                                 categorical_variables)
     return
