@@ -124,8 +124,8 @@ class MachineLearningDataProcessingService(object):
                 self.log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
                 total_accuracies.append(average_accuracy)
                 svm_results[training_percent] = total_accuracies
-            self.log.info("Total accuracy of SVM %s for all rounds of matrix permutations with %s percent "
-                          "split: %s", analysis_type, training_percent * 100,
+            self.log.info("Total accuracy of %s SVM %s for all rounds of matrix permutations with %s percent "
+                          "split: %s", kernel_type, analysis_type, training_percent * 100,
                           numpy.round(numpy.average(total_accuracies), 2))
         self.log.debug("Accuracies by training percent: %s", svm_results)
         return svm_results
