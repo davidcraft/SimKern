@@ -110,17 +110,17 @@ def promptUserForInput():
     if simulation_as_int == 0:
         input_file = recursivelyPromptUser("Enter path of input file:\n", str)
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
+        response_type = recursivelyPromptUser("Enter expected third party response type:\n", str)
         path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
         file_extension = input_file.split(".")[1]
-        response_type = recursivelyPromptUser("Enter expected third party response type:\n", str)
         createGenomesSIM0(file_extension, input_file, path, permutations, response_type)
     elif simulation_as_int == 1:
         input_file = recursivelyPromptUser("Enter path of input file:\n", str)
         file_extension = input_file.split(".")[1]
         permutations = recursivelyPromptUser("Enter number of genomes (K) as an integer:\n", int)
         number_of_trials = recursivelyPromptUser("Enter number of trials for each genome (R) as an integer:\n", int)
-        path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
         response_type = recursivelyPromptUser("Enter expected third party response type:\n", str).split(",")
+        path = recursivelyPromptUser("Enter path of output folder (must not be root directory):\n", str)
         createGenomesSIM1(file_extension, input_file, path, permutations, number_of_trials, response_type)
     elif simulation_as_int == 2:
         output_file = recursivelyPromptUser("Enter path of input Sim0Output.csv file:\n", str)
