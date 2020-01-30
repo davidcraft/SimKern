@@ -129,7 +129,7 @@ class MatrixService(object):
         n = len(matrix)
         with open(file_name, 'w') as csv_file:
             try:
-                data_writer = csv.writer(csv_file)
+                data_writer = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 for i in range(0, n):
                     data_writer.writerow(matrix[i])
             finally:

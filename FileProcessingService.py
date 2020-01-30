@@ -205,7 +205,7 @@ class FileProcessingService(object):
         OperatingSystemUtil.changeWorkingDirectory(self.path + "/GenomeFiles")
         with open(self.OUTPUT_FILE_NAME, 'w') as csv_file:
             try:
-                data_writer = csv.writer(csv_file)
+                data_writer = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 for i in range(0, self.number_of_genomes):
                     data_writer.writerow(genomes_matrix[i])
             finally:

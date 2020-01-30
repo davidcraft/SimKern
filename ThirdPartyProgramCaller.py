@@ -94,7 +94,7 @@ class ThirdPartyProgramCaller(object):
         file_name = output_file_name + ".csv"
         with open(file_name, 'w') as csv_file:
             try:
-                outputs_writer = csv.writer(csv_file)
+                outputs_writer = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 outputs_writer.writerow(outputs)
             except ValueError as error:
                 self.log.error("Error writing %s to file %s. %s", outputs, file_name, error)
