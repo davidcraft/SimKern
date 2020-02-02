@@ -8,6 +8,7 @@ from RandomForest.RandomForestTrainer import RandomForestTrainer
 from SupportVectorMachine.SupportVectorMachineTrainer import SupportVectorMachineTrainer
 from SupportVectorMachine.SupportedKernelFunctionTypes import SupportedKernelFunctionTypes
 from SupportedAnalysisTypes import SupportedAnalysisTypes
+from Utilities.GarbageCollectionUtility import GarbageCollectionUtility
 from Utilities.SafeCastUtil import SafeCastUtil
 from sklearn.metrics import r2_score
 
@@ -76,9 +77,12 @@ class MachineLearningDataProcessingService(object):
                                                                         validation_matrix, validation_set)
                 average_accuracy = self.predictModelAccuracy(most_accurate_model, responses,
                                                              testing_matrix, testing_set, analysis_type)
-                self.log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
                 total_accuracies.append(average_accuracy)
                 rf_results[training_percent] = total_accuracies
+
+                self.log.debug("Average accuracy for round %s of matrix permutations: %s", i + 1, average_accuracy)
+                self.manuallyGarbageCollect(most_accurate_model, split_train_training_matrix, sub_order,
+                                            sub_training_set, sub_train_length)
             self.log.info("Total accuracy of RF Classifier for all rounds of matrix permutations with %s percent "
                           "split: %s", training_percent * 100, numpy.round(numpy.average(total_accuracies), 2))
         self.log.debug("Accuracies by training percent: %s", rf_results)
@@ -121,7 +125,10 @@ class MachineLearningDataProcessingService(object):
 
                 average_accuracy = self.predictModelAccuracy(most_accurate_model, responses,
                                                              testing_matrix, testing_set, analysis_type)
-                self.log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
+
+                self.log.debug("Average accuracy for round %s of matrix permutations: %s\n", i + 1, average_accuracy)
+                self.manuallyGarbageCollect(most_accurate_model, split_train_training_matrix, sub_order,
+                                            sub_training_set, sub_train_length)
                 total_accuracies.append(average_accuracy)
                 svm_results[training_percent] = total_accuracies
             self.log.info("Total accuracy of %s SVM %s for all rounds of matrix permutations with %s percent "
@@ -234,7 +241,11 @@ class MachineLearningDataProcessingService(object):
                                                                          trimmed_validation_matrix, validation_set)
                 average_accuracy = self.predictModelAccuracy(most_accurate_model, responses,
                                                              trimmed_testing_matrix, testing_set, analysis_type)
-                self.log.debug("Average accuracy for this round of matrix permutations: %s\n", average_accuracy)
+
+                self.log.debug("Average accuracy for round %s of matrix permutations: %s\n", permutation + 1,
+                               average_accuracy)
+                self.manuallyGarbageCollect(most_accurate_model, split_train_training_matrix, sub_order,
+                                            sub_training_set, sub_train_length)
                 total_accuracies.append(average_accuracy)
 
             results_by_percent_train[training_percent] = total_accuracies
@@ -376,3 +387,12 @@ class MachineLearningDataProcessingService(object):
             graphing_service.makeMultiBarPlotWithMultipleAnalysis(full_results, output_path, analysis_type, title)
         except Exception as exception:
             self.log.error("Unable to create or save graphs due to: %s", exception)
+
+    def manuallyGarbageCollect(self, most_accurate_model, split_train_training_matrix, sub_order, sub_training_set,
+                               sub_train_length):
+        GarbageCollectionUtility.logMemoryUsageAndGarbageCollect(self.log)
+        del most_accurate_model
+        del split_train_training_matrix
+        del sub_order
+        del sub_training_set
+        del sub_train_length
