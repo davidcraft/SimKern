@@ -14,6 +14,7 @@ from sklearn.metrics import r2_score
 
 
 class MachineLearningDataProcessingService(object):
+
     log = logging.getLogger(__name__)
     logging.basicConfig()
     log.setLevel(logging.INFO)
@@ -80,7 +81,7 @@ class MachineLearningDataProcessingService(object):
                 total_accuracies.append(average_accuracy)
                 rf_results[training_percent] = total_accuracies
 
-                self.log.debug("Average accuracy for round %s of matrix permutations: %s", i + 1, average_accuracy)
+                self.log.info("Average accuracy for round %s of matrix permutations: %s", i + 1, average_accuracy)
                 self.manuallyGarbageCollect(most_accurate_model, split_train_training_matrix, sub_order,
                                             sub_training_set, sub_train_length)
             self.log.info("Total accuracy of RF Classifier for all rounds of matrix permutations with %s percent "
@@ -126,7 +127,7 @@ class MachineLearningDataProcessingService(object):
                 average_accuracy = self.predictModelAccuracy(most_accurate_model, responses,
                                                              testing_matrix, testing_set, analysis_type)
 
-                self.log.debug("Average accuracy for round %s of matrix permutations: %s\n", i + 1, average_accuracy)
+                self.log.info("Average accuracy for round %s of matrix permutations: %s\n", i + 1, average_accuracy)
                 self.manuallyGarbageCollect(most_accurate_model, split_train_training_matrix, sub_order,
                                             sub_training_set, sub_train_length)
                 total_accuracies.append(average_accuracy)
@@ -242,7 +243,7 @@ class MachineLearningDataProcessingService(object):
                 average_accuracy = self.predictModelAccuracy(most_accurate_model, responses,
                                                              trimmed_testing_matrix, testing_set, analysis_type)
 
-                self.log.debug("Average accuracy for round %s of matrix permutations: %s\n", permutation + 1,
+                self.log.info("Average accuracy for round %s of matrix permutations: %s\n", permutation + 1,
                                average_accuracy)
                 self.manuallyGarbageCollect(most_accurate_model, split_train_training_matrix, sub_order,
                                             sub_training_set, sub_train_length)
