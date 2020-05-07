@@ -4,7 +4,7 @@ close all
 
 [pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
 
-addpath(pathToMatlab2TikzFolder)
+%addpath(pathToMatlab2TikzFolder)
 %% radiation line (with bad kernel) and boxplot
 fig2Boolean = false;
 legendOn = false;

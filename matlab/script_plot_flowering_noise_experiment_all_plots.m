@@ -4,7 +4,7 @@ close all
 
 [pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
 
-addpath(pathToMatlab2TikzFolder)
+%addpath(pathToMatlab2TikzFolder)
 %% flowering data with noisy kernels (un-biased and biased)
 dataDump = load(fullfile(pathToDataFolder,'flowering_noise_better_light'));
 

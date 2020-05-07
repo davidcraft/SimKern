@@ -4,7 +4,7 @@ close all
 
 [pathToPlottingFolder,pathToDataFolder,pathToLibSvmFolder,pathToMatlab2TikzFolder] = loadMyPaths();
 
-addpath(pathToMatlab2TikzFolder)
+%addpath(pathToMatlab2TikzFolder)
 %% radiation line good and bad kernels
 subplotStyleBoolean = true;
 dataDump = load(fullfile(pathToDataFolder,'radiationBetter_light'));
