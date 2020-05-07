@@ -7,7 +7,7 @@ addpath(pathToLibSvmFolder)
 %% read in data
 
 %read full similarity matrix
-f = '..\..\data\radiation\Sim1SimilarityMatrixfinal.csv';
+f = '..\SimKernModels\Radiation\DataReadyForML\Sim1SimilarityMatrixfinal.csv';
 sm =  csvread(f);
 
 %xfile needed for RF and normnal SVMs, but not used by custom kernel SVM
